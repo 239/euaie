@@ -1,5 +1,9 @@
 # euaie
-simple file synchronization
+
+- tries to minimize complexity of application and codebase
+- plain but effective string-based filter syntax (no glob or regex)
+- minimal and easy configuration
+- ...
 
 ### help
 
@@ -27,7 +31,7 @@ simple file synchronization
   -V, --version              print version and exit
 ```
 
-### recommended alternatives
+### related recommendations
 
 - [Unison](https://github.com/bcpierce00/unison)
 - [Syncthing](https://github.com/syncthing/syncthing)
