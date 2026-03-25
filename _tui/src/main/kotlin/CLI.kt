@@ -11,7 +11,7 @@ val versionFull = Properties().run {
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
     val c = getProperty("git.total.commit.count").orEmpty()
-    "0.$t.$c-$i-$b" //TODO move c?
+    "0.$t-$c-$i-$b"
 }
 val version = versionFull.substringBefore('-')
 
