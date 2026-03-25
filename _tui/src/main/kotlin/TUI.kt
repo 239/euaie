@@ -135,8 +135,8 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     if (it.proposed != it.actual) totalDi[totalDi.lastIndex]++
                 }
                 sector.forEach {
-                    val x = abs(it.l2.pq.x.size) //TODO files only?
-                    val y = abs(it.l2.pq.y.size)
+                    val x = if (it.l2.pq.x.file) abs(it.l2.pq.x.size) else 0L
+                    val y = if (it.l2.pq.y.file) abs(it.l2.pq.y.size) else 0L
                     bytes[0] += abs(x - y)
                     bytes[1] += x
                     bytes[2] += y
