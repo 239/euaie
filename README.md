@@ -73,7 +73,7 @@ Music/
 
 #### filter syntax for including and excluding paths relative to root
 
-each filter is a triple of strings, all three parts have to match the path or can be empty:
+each filter is a triple of string patterns, all three parts have to match the path or can be empty:
 
 - `<starts>:<contains>:<ends>`
 - `<starts>::` or just `<starts>`
@@ -82,9 +82,9 @@ each filter is a triple of strings, all three parts have to match the path or ca
 
 ##### examples
 
-- `.config/::.toml`: all **.toml** files anywhere in **.config/**
-- `:.git/:`: all **.git/** directories in any location
-- `path/to/::file`: **file** in **path/to/** but not **path/to/file.old**
+- `.config/::.toml` matches all **.toml** files anywhere in **root/.config/**
+- `:.git/:` matches all **.git/** directories in any location
+- `path/to/::/file` matches **file** in **root/path/to/** but not **root/path/to/file.old**
 
 ## related recommendations
 - [Unison](https://github.com/bcpierce00/unison)
