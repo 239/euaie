@@ -65,10 +65,10 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 
     private fun match(p: String): Boolean {
         var r = including.isEmpty()
-        r = r || including.any { match(p, it, optionIgnoreFilterCase) }
+        r = r || including.any { match(p, it, optionIgnoreFilterCase) } //TODO ignore case broken?
         r = r && excluding.all { !match(p, it, optionIgnoreFilterCase) }
         if (r) included++ else excluded++
-        if (r) L.trace { "+ $p" } else L.trace { "- $p" }
+        L.trace { "${if (r) '+' else '-'} $p" }
         return r
     }
 
@@ -111,7 +111,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             if (task.canceled()) FileVisitResult.TERMINATE else FileVisitResult.CONTINUE
         }
         onVisitFileFailed { p, e ->
-            val r = p.relativeTo(base).toString() + if(p.isDirectory()) '/' else ""
+            val r = p.relativeTo(base).toString() + if (p.isDirectory()) '/' else ""
             if (match(if (slash) r else r.replace(File.separatorChar, '/')))
                 L.warn { "visit: ${e.message}" }
             FileVisitResult.CONTINUE
