@@ -5,6 +5,9 @@
 - minimal and easy configuration
 - ...
 
+![](web/main.png)
+![](web/help.png)
+
 ### help
 
 ```
