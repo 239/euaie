@@ -25,7 +25,7 @@ fun main(arguments: Array<String>) {
 
 @Command(
     description = ["simple file synchronization"],
-    mixinStandardHelpOptions = true,
+    mixinStandardHelpOptions = true, //TODO use custom options?
     name = "euaie",
     showAtFileInUsageHelp = true,
     sortOptions = false,

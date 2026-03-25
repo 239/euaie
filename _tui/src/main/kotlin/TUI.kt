@@ -109,16 +109,16 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                         else filterCh == null || filterCh == it.l2.pq.c) &&
                                 (filterDi == null || filterDi == it.proposed)
                     }
-                }).run {
+                }).run { //TODO filter files/folders
                     if (filter.isNotBlank()) filter {
                         it.l2.pq.x.path.contains(filter, true) || it.l2.pq.y.path.contains(filter, true)
                     } else this
                 }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
-                limit = sector.size - 1
+                limit = sector.size - 1 //can be negative!
                 range = max(height - static, 0) //static lines for top and bottom
                 index = max(min(index, limit), 0) //liveVarOf: update only once!
                 shift = max(min(shift, limit - range + 1), 0) //scroll back but...
-                shift = max(min(shift, index), index - range + 1) //follow index //TODO coerceIn?
+                shift = max(min(shift, index), index - range + 1) //follow index
                 val item = sector.getOrNull(index)
                 current = item?.l2?.pq ?: fake
                 if (order != Di.U && item != null) {
