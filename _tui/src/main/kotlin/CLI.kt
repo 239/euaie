@@ -24,11 +24,12 @@ fun main(arguments: Array<String>) {
 }
 
 @Command(
-    name = "euaie",
     description = ["simple file synchronization"],
-    version = [$$"${sys:$$keyVersion}"],
     mixinStandardHelpOptions = true,
-    showAtFileInUsageHelp = true
+    name = "euaie",
+    showAtFileInUsageHelp = true,
+    sortOptions = false,
+    version = [$$"${sys:$$keyVersion}"],
 )
 class CLI : Callable<Int> {
     @Parameters(index = "0")
@@ -38,7 +39,7 @@ class CLI : Callable<Int> {
     lateinit var rootR: String
 
     //0
-    @Option(names = ["-e", "--exclude"], arity = "*")
+    @Option(names = ["-e", "--exclude"], arity = "*") //TODO add description!
     var exclude: Set<String> = emptySet()
 
     @Option(names = ["-i", "--include"], arity = "*")
@@ -46,11 +47,11 @@ class CLI : Callable<Int> {
 
     //1
     @Option(names = ["-s", "--symlinks"],
-        description = ["policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
+        description = ["set policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"],
-        description = ["allowed time difference (ms)"])
+        description = ["set allowed time difference (ms)"])
     var tolerance: Long = L0.tolerance
 
     @Option(names = ["-x", "--exit-when-done"],
@@ -59,11 +60,11 @@ class CLI : Callable<Int> {
 
     //2
     @Option(names = ["-C", "--copy-threshold"],
-        description = ["interruptable copy threshold (MiB)"])
+        description = ["set threshold for interruptable copy mode (MiB)"])
     var threshold: Int = optionCopyThreshold
 
     @Option(names = ["-I", "--ignore-filter-case"],
-        description = ["case insensitive filters"])
+        description = ["use case insensitive filters"])
     var ignore: Boolean = optionIgnoreFilterCase
 
     @Option(names = ["-S", "--stateless"],
