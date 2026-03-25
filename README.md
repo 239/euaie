@@ -1,6 +1,32 @@
 # euaie
 simple file synchronization
 
+### help
+
+```
+Usage: euaie [-hISVx] [-C=<threshold>] [-s=<symlinks>] [-t=<tolerance>]
+             [-e[=<exclude>...]]... [-i[=<include>...]]... [@<filename>...]
+             <rootL> <rootR>
+simple file synchronization
+      [@<filename>...]       One or more argument files containing options.
+      <rootL>
+      <rootR>
+  -e, --exclude[=<exclude>...]
+
+  -i, --include[=<include>...]
+
+  -s, --symlinks=<symlinks>  set policy for symbolic links
+                             FOLLOW, IGNORE, PRESERVE
+  -t, --tolerance=<tolerance>
+                             set allowed time difference (ms)
+  -x, --exit-when-done       exit when both sides are equal
+  -C, --copy-threshold=<threshold>
+                             set threshold for interruptable copy mode (MiB)
+  -I, --ignore-filter-case   use case insensitive filters
+  -S, --stateless            ignore previous state
+  -V, --version              print version and exit
+```
+
 ### recommended alternatives
 
 - [Unison](https://github.com/bcpierce00/unison)
