@@ -11,7 +11,7 @@ val versionFull = Properties().run {
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
     val c = getProperty("git.total.commit.count").orEmpty()
-    "0.$t.$c-$i-$b"
+    "0.$t.$c-$i-$b" //TODO move c?
 }
 val version = versionFull.substringBefore('-')
 
@@ -37,11 +37,17 @@ class CLI : Callable<Int> {
     @Parameters(index = "1")
     lateinit var rootR: String
 
+    //0
     @Option(names = ["-e", "--exclude"], arity = "*")
     var exclude: Set<String> = emptySet()
 
     @Option(names = ["-i", "--include"], arity = "*")
     var include: Set<String> = emptySet()
+
+    //1
+    @Option(names = ["-s", "--symlinks"],
+        description = ["policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
+    var symlinks: OptionSymbolicLink = optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"],
         description = ["allowed time difference (ms)"])
@@ -51,25 +57,27 @@ class CLI : Callable<Int> {
         description = ["exit when both sides are equal"])
     var exit: Boolean = optionExitWhenDone
 
+    //2
+    @Option(names = ["-C", "--copy-threshold"],
+        description = ["interruptable copy threshold (MiB)"])
+    var threshold: Int = optionCopyThreshold
+
     @Option(names = ["-I", "--ignore-filter-case"],
         description = ["case insensitive filters"])
     var ignore: Boolean = optionIgnoreFilterCase
 
-    @Option(names = ["-s", "--symlinks"],
-        description = ["policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
-    var symlinks: OptionSymbolicLink = optionSymbolicLink
-
-    @Option(names = ["-c", "--copy-threshold"],
-        description = ["interruptable copy threshold (MiB)"])
-    var threshold: Int = optionCopyThreshold
+    @Option(names = ["-S", "--stateless"],
+        description = ["ignore previous state"])
+    var stateless: Boolean = optionStateless
 
     override fun call(): Int {
+        optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
         optionExitWhenDone = exit
-        optionIgnoreFilterCase = ignore
-        optionSymbolicLink = symlinks
         optionCopyThreshold = threshold.coerceAtLeast(0)
+        optionIgnoreFilterCase = ignore
+        optionStateless = stateless
         runTUI(rootL, rootR, include, exclude)
-        return 0
+        return 0 //TODO errors?
     }
 }

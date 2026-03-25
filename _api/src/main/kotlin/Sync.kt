@@ -5,9 +5,10 @@ import java.security.*
 import kotlin.io.path.*
 import org.tinylog.kotlin.Logger as L
 
+var optionStateless = false
 var optionCopyThreshold = 512 //TODO companion?
-private const val suffix = "euaie"
 private const val sleep = 239L
+private const val suffix = "euaie"
 private val copyOptions = if (optionSymbolicLink == OptionSymbolicLink.FOLLOW)
     arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
 else
@@ -37,8 +38,10 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         }
         val sl = scanL.scan(save)
         val sr = scanR.scan(save)
-        val bp = link(scanL.load(), sl) //TODO ignore old state on demand?
-        val qd = link(sr, scanR.load())
+        val ll = scanL.load(optionStateless)
+        val lr = scanR.load(optionStateless)
+        val bp = link(ll, sl)
+        val qd = link(sr, lr)
         val pq = link(sl, sr)
         result = wrap(link(bp, pq, qd).sortedBy { it.pq.x.path })
         L.debug { "${result.size}" }

@@ -41,19 +41,19 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         return result
     }
 
-    fun load(): M0 {
+    fun load(stateless: Boolean = false): M0 {
         val r = mutableMapOf<String, L0>()
-        try {
+        if (!stateless) try {
             state.forEachLine { L0.fromLine(it)?.apply { r[this.path] = this } }
             L.debug { "loaded $state" }
         } catch (e: Exception) {
             L.warn { "failed to load previous state: ${e.message}" }
         }
-        r[""] = L0("", 0, 0) //mark loaded
+        r[""] = L0("", 0, 0) //mark loaded (previous state)
         return r
     }
 
-    private fun save() {
+    private fun save() { //TODO stateless?
         try {
             state.createParentDirectories()
             state.writeLines(result.values.map { it.toLine() })
