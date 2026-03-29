@@ -102,7 +102,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             if (source.fileSize() < copyThreshold)
                 source.copyTo(t, *copyOptions)
             else
-                source.copyTo(t, copy) //TODO bufferSize?
+                source.copyTo(t, copy)
         } catch (e: Exception) {
             L.error { "copy: ${e.message}" }
         }
