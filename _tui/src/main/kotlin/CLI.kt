@@ -11,7 +11,7 @@ val versionFull = Properties().run {
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
     val c = getProperty("git.total.commit.count").orEmpty()
-    "0.$t-$c-$i-$b"
+    "0.$t-$c-$i-$b" //TODO inject?
 }
 val version = versionFull.substringBefore('-')
 
@@ -25,7 +25,7 @@ fun main(arguments: Array<String>) {
 
 @Command(
     description = ["simple file synchronization"],
-    mixinStandardHelpOptions = true, //TODO use custom options?
+//    mixinStandardHelpOptions = true,
     name = "euaie",
     showAtFileInUsageHelp = true,
     sortOptions = false,
@@ -71,6 +71,10 @@ class CLI : Callable<Int> {
         description = ["ignore previous state"])
     var stateless: Boolean = Sync.optionStateless
 
+    @Option(names = ["-V", "--version"], versionHelp = true,
+        description = ["print version and exit"])
+    var version: Boolean = false
+
     override fun call(): Int {
         Scan.optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
@@ -79,6 +83,6 @@ class CLI : Callable<Int> {
         Scan.optionIgnoreFilterCase = ignore
         Sync.optionStateless = stateless
         runTUI(rootL, rootR, include, exclude)
-        return 0 //TODO errors?
+        return if (version) 0 else 0//TODO errors?
     }
 }
