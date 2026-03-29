@@ -9,7 +9,7 @@ var optionStateless = false
 var optionCopyThreshold = 512 //TODO companion?
 private const val sleep = 239L
 private const val suffix = "euaie"
-private val copyOptions = if (optionSymbolicLink == OptionSymbolicLink.FOLLOW)
+private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
     arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
 else
     arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)

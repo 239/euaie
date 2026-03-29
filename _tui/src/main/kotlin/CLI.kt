@@ -48,7 +48,7 @@ class CLI : Callable<Int> {
     //1
     @Option(names = ["-s", "--symlinks"],
         description = ["set policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
-    var symlinks: OptionSymbolicLink = optionSymbolicLink
+    var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"],
         description = ["set allowed time difference (ms)"])
@@ -65,18 +65,18 @@ class CLI : Callable<Int> {
 
     @Option(names = ["-I", "--ignore-filter-case"],
         description = ["use case insensitive filters"])
-    var ignore: Boolean = optionIgnoreFilterCase
+    var ignore: Boolean = Scan.optionIgnoreFilterCase
 
     @Option(names = ["-S", "--stateless"],
         description = ["ignore previous state"])
     var stateless: Boolean = optionStateless
 
     override fun call(): Int {
-        optionSymbolicLink = symlinks
+        Scan.optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
         optionExitWhenDone = exit
         optionCopyThreshold = threshold.coerceAtLeast(0)
-        optionIgnoreFilterCase = ignore
+        Scan.optionIgnoreFilterCase = ignore
         optionStateless = stateless
         runTUI(rootL, rootR, include, exclude)
         return 0 //TODO errors?
