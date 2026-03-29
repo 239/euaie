@@ -1,6 +1,10 @@
 package euaie
 
-class L1(val x: L0, val y: L0, val c: Ch)
+class L1(val x: L0, val y: L0, val c: Ch) {
+    companion object {
+        val fake = L1(L0.fake, L0.fake, Ch.U)
+    }
+}
 
 fun link(mx: M0, my: M0): List<L1> = buildList {
     val x = mx.toMutableMap()
