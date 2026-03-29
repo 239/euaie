@@ -61,7 +61,7 @@ class CLI : Callable<Int> {
     //2
     @Option(names = ["-C", "--copy-threshold"],
         description = ["set threshold for interruptable copy mode (MiB)"])
-    var threshold: Int = optionCopyThreshold
+    var threshold: Int = Sync.optionCopyThreshold
 
     @Option(names = ["-I", "--ignore-filter-case"],
         description = ["use case insensitive filters"])
@@ -69,15 +69,15 @@ class CLI : Callable<Int> {
 
     @Option(names = ["-S", "--stateless"],
         description = ["ignore previous state"])
-    var stateless: Boolean = optionStateless
+    var stateless: Boolean = Sync.optionStateless
 
     override fun call(): Int {
         Scan.optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
         optionExitWhenDone = exit
-        optionCopyThreshold = threshold.coerceAtLeast(0)
+        Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Scan.optionIgnoreFilterCase = ignore
-        optionStateless = stateless
+        Sync.optionStateless = stateless
         runTUI(rootL, rootR, include, exclude)
         return 0 //TODO errors?
     }

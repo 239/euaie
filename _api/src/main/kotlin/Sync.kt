@@ -5,15 +5,6 @@ import java.security.*
 import kotlin.io.path.*
 import org.tinylog.kotlin.Logger as L
 
-var optionStateless = false
-var optionCopyThreshold = 512 //TODO companion?
-private const val sleep = 239L
-private const val suffix = "euaie"
-private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
-    arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
-else
-    arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
-
 class Sync(val rootL: String, val rootR: String, val include: Set<String>, val exclude: Set<String>) {
     val task = Task()
     val scan = Task()
@@ -25,6 +16,17 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private val finish = mutableListOf<Triple<Path, Path, Boolean>>()
     private var result = emptyList<L3>()
     private var copyThreshold = 0
+
+    companion object {
+        const val SLEEP = 239L
+        private const val SUFFIX = "euaie"
+        private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
+            arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
+        else
+            arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
+        var optionStateless = false
+        var optionCopyThreshold = 512
+    }
 
     fun list(): List<L3> = result
 
@@ -63,7 +65,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             else         -> m[o]
         }?.forEach {
 //            Thread.sleep(1000) //debug slowdown
-            while (task.paused()) Thread.sleep(sleep)
+            while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
             task.done.incrementAndGet()
             operate(it, o)
@@ -92,7 +94,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun copy(source: Path, target: Path) {
         val exists = target.exists()
         val t = if (!exists) target
-        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$suffix")
+        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$SUFFIX")
         if (exists && source.isDirectory()) return
         try {
             L.info { "copy $source to $t" }
@@ -110,7 +112,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun move(source: Path, target: Path, overwrite: Boolean = false) {
         var t = target
         if (!overwrite && target.exists()) {
-            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$suffix")
+            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$SUFFIX")
             finish.add(Triple(t, target, false))
         }
         try {
@@ -143,7 +145,7 @@ fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
             var check = 0
             while (check-- > 0 || task.enabled()) { //do not check task on every loop
                 if (check < 0) check = 64
-                while (task.paused()) Thread.sleep(sleep)
+                while (task.paused()) Thread.sleep(Sync.SLEEP)
                 val bytes = input.read(buffer)
                 if (bytes >= 0) {
                     output.write(buffer, 0, bytes)

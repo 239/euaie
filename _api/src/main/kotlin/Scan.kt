@@ -6,14 +6,6 @@ import kotlin.io.path.*
 import org.tinylog.kotlin.Logger as L
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
-    companion object {
-        const val D = ':'
-        private val slash = File.separatorChar == '/'
-        private val sensitive = Path("a") != Path("A")
-        var optionIgnoreFilterCase = !sensitive
-        var optionSymbolicLink = OptionSymbolicLink.PRESERVE
-    }
-
     private val base = Path(root)
     private val state = statePath(this::class.java.`package`?.name ?: "euaie").resolve(hash)
     private val result = mutableMapOf<String, L0>()
@@ -24,6 +16,14 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
         .map { it.replace(File.separatorChar, '/') }.sorted().map { it.split(D) }
         .map { Triple(it.getOrElse(0) { "" }, it.getOrElse(1) { "" }, it.getOrElse(2) { "" }) }.toSet()
+
+    companion object {
+        const val D = ':'
+        private val slash = File.separatorChar == '/'
+        private val sensitive = Path("a") != Path("A")
+        var optionIgnoreFilterCase = !sensitive
+        var optionSymbolicLink = OptionSymbolicLink.PRESERVE
+    }
 
     fun scan(save: Boolean = false): M0 {
         L.info { "-----------------------scan" }
