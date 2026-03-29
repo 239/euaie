@@ -56,7 +56,7 @@ class CLI : Callable<Int> {
 
     @Option(names = ["-x", "--exit-when-done"],
         description = ["exit when both sides are equal"])
-    var exit: Boolean = optionExitWhenDone
+    var exit: Boolean = TUI.optionExitWhenDone
 
     //2
     @Option(names = ["-C", "--copy-threshold"],
@@ -74,7 +74,7 @@ class CLI : Callable<Int> {
     override fun call(): Int {
         Scan.optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
-        optionExitWhenDone = exit
+        TUI.optionExitWhenDone = exit
         Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Scan.optionIgnoreFilterCase = ignore
         Sync.optionStateless = stateless

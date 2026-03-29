@@ -15,13 +15,14 @@ import org.tinylog.*
 
 enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO LOG?
 
-val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
-val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
-val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
-val keysF = orderCh.joinToString("|") { "${it.icon}" } +
-        "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
-val fake = L1(L0.fake, L0.fake, Ch.U)
-var optionExitWhenDone = false
+object TUI {
+    val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
+    val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
+    val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
+    val keysF = orderCh.joinToString("|") { "${it.icon}" } +
+            "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
+    var optionExitWhenDone = false
+}
 
 fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
     { SystemTerminal() },
@@ -29,9 +30,9 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
 ).firstSuccess()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
+    var current = L1.fake
     var active = true //exit flag
     var action = Action.SCAN
-    var current = fake
     var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
@@ -120,7 +121,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                 shift = max(min(shift, limit - range + 1), 0) //scroll back but...
                 shift = max(min(shift, index), index - range + 1) //follow index
                 val item = sector.getOrNull(index)
-                current = item?.l2?.pq ?: fake
+                current = item?.l2?.pq ?: L1.fake
                 if (order != Di.U && item != null) {
                     if (item.proposed != Di.N) item.actual = order
                     if (!item.l2.pq.x.file) list.filter { it.l2.pq.x.path.startsWith(item.l2.pq.x.path) }
@@ -149,14 +150,14 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$sort | $path | $line | $width x $height"
                 underline { textLine(spread(topL, topR, width)) }
-                orderCh.forEach {
+                TUI.orderCh.forEach {
                     scopedState {
                         if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
                             if (it == Ch.U) blue(ColorLayer.BG) else invert()
                         text("${totalCh[it.ordinal]}${it.icon}")
                     }; text(" $space")
                 }; textLine()
-                orderDi.forEach {
+                TUI.orderDi.forEach {
                     scopedState {
                         if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
                         if (it == Di.U && totalDi[it.ordinal] > 0) red()
@@ -170,7 +171,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                 }; textLine()
                 scopedState {
                     if (confirm) yellow()
-                    textLine(orderOp.joinToString(space) { "${totalOp[it.ordinal]}$it" }) //cut fails with tabs!
+                    textLine(TUI.orderOp.joinToString(space) { "${totalOp[it.ordinal]}$it" }) //cut fails with tabs!
                 }
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width)) }
                 bytes.map { formatSize(it) }.let {
@@ -231,7 +232,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
 //keys----------------
-                val more = "[V] view [F] find [S] sort [D] diff [N] $path [,] $line [$keysF] filter"
+                val more = "[V] view [F] find [S] sort [D] diff [N] $path [,] $line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
                 else
@@ -240,7 +241,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     "[.] more [Esc] quit"
                 else
                     "[Tab] help [Q] quit"
-                if (!optionExitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
+                if (!TUI.optionExitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
                     if (showMore) textLine(cut(more, width * sign))
                     text(spread(keysL, keysR, width * sign))
                 }
@@ -296,7 +297,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     order = o
                     if (action != Action.MAIN) signal()
                 }
-                if (optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
+                if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
                     action = Action.EXIT
                     signal()
                 }
