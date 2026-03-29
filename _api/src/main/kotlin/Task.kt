@@ -3,7 +3,7 @@ package euaie
 import java.util.concurrent.atomic.*
 import kotlin.time.*
 
-val time = TimeSource.Monotonic
+private val time = TimeSource.Monotonic
 
 class Task {
     val done = AtomicLong(0L)
