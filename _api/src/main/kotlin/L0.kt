@@ -19,8 +19,8 @@ data class L0(val path: String, val size: Long, val time: Long) {
     override fun toString() = "[$path|${if (file) size else '/'}|${if (real) time else '°'}]"
 
     companion object {
-        const val LINK = 239L
         const val D = Char.MIN_VALUE
+        const val LINK = 239L
         val fake = L0("", 0, -1)
         var tolerance = 0L
         fun fromLine(line: String): L0? {
