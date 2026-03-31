@@ -47,8 +47,11 @@ fun cutC(text: String, length: Int): String {
     val t = AttributedString(text)
     val l = t.columnLength()
     return if (l <= abs(length)) text
-    else if (length < 0) "…${t.columnSubSequence(l + length + 1, l).let { if (it.columnLength() >= -length) it.drop(1) else it }}"
-    else if (length > 0) "${t.columnSubSequence(0, length - 1)}…" else ""
+    else if (length < 0)
+        "…${t.columnSubSequence(l + length + 1, l).let { if (it.columnLength() >= -length) it.drop(1) else it }}"
+    else if (length > 0)
+        "${t.columnSubSequence(0, length - 1)}…"
+    else ""
 }
 
 fun gapC(left: String, right: String, width: Int): Int =
