@@ -8,6 +8,8 @@ import com.varabyte.kotter.foundation.text.*
 import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
+import com.varabyte.kotterx.grid.*
+import com.varabyte.kotterx.util.collections.indicesOf
 import kotlin.concurrent.*
 import kotlin.math.*
 import kotlin.time.*
@@ -26,7 +28,7 @@ object TUI {
 
 fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
     { SystemTerminal() },
-//    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
+    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
 ).firstSuccess()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
@@ -397,28 +399,32 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
             action = Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
-        Action.HELP -> section { //TODO expand | cut? | grid?
+        Action.HELP -> section { //TODO expand!
             underline { textLine(spread("help", "$width x $height", width)) }
-            textLine("${Ch.U.icon}\t${Ch.U.text} | skip")
-            textLine("${Ch.R.icon}\t${Ch.R.text} | delete")
-            textLine("${Ch.M.icon}\t${Ch.M.text} | move")
-            textLine("${Ch.C.icon}\t${Ch.C.text}")
-            textLine("${Ch.A.icon}\t${Ch.A.text} | copy")
-            textLine()
-            blue(ColorLayer.BG) { text("${Ch.U.icon}") }; textLine("\thide unchanged")
-            invert { text("${Ch.R.icon}") }; textLine("\tshow only removed")
-            invert { text("${Ch.M.icon}") }; textLine("\tshow only moved")
-            invert { text("${Ch.C.icon}") }; textLine("\tshow only changed")
-            invert { text("${Ch.A.icon}") }; textLine("\tshow only added")
-            textLine()
-            textLine("${Di.N.icon}\tneutral")
-            textLine("${Di.L.icon}\tto the left")
-            textLine("${Di.R.icon}\tto the right")
-            textLine("${Di.U.icon}\tunclear")
-            textLine("!\trevised")
-            textLine()
+            grid(Cols { fit(); fit(maxWidth = width - 8) }, //TODO 4 columns?
+                maxCellHeight = 1, paddingLeftRight = 1,
+                characters = GridCharacters.BOX_DOUBLE, //TODO INVISIBLE?
+                horizontalSeparatorIndices = indicesOf(5, 10)) {
+                cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
+                cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
+                cell { text("${Ch.M.icon}") }; cell { text("${Ch.M.text} / move") }
+                cell { text("${Ch.C.icon}") }; cell { text("${Ch.C.text} ") }
+                cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
+                //
+                cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
+                cell { invert { text("${Ch.R.icon}") } }; cell { text("show only removed") }
+                cell { invert { text("${Ch.M.icon}") } }; cell { text("show only moved") }
+                cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
+                cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
+                //
+                cell { text("${Di.N.icon}") }; cell { text("neutral") }
+                cell { text("${Di.L.icon}") }; cell { text("to the left") }
+                cell { text("${Di.R.icon}") }; cell { text("to the right") }
+                cell { text("${Di.U.icon}") }; cell { text("unclear") }
+                cell { text("!") }; cell { text("revised") }
+            }
             cyan { textLine(cut("$version made with Kotter + picocli + tinylog + ♥", width)) }
-            bold { text("[Enter|Esc|Tab] return") }
+            bold { text(cut("[Enter|Esc|Tab] return", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) { action = Action.MAIN }
 //-------------------------------------------------------------------------------------------------
         Action.TEST -> run {
