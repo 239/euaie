@@ -9,7 +9,7 @@ import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
 import com.varabyte.kotterx.grid.*
-import com.varabyte.kotterx.util.collections.indicesOf
+import com.varabyte.kotterx.util.collections.*
 import kotlin.concurrent.*
 import kotlin.math.*
 import kotlin.time.*
@@ -28,7 +28,7 @@ object TUI {
 
 fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
     { SystemTerminal() },
-    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
+//    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
 ).firstSuccess()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
@@ -210,7 +210,6 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     }
                 }
 //details-------
-                //TODO dividing line when height > x?
                 if (item != null) {
                     val pq = item.l2.pq
                     val px = if (pq.x.real) pq.x.path.removeSuffix("/").removeSuffix(pq.x.name) else ""
@@ -313,7 +312,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
         }
 //-------------------------------------------------------------------------------------------------
         Action.FIND -> section {
-            magenta { text("find: "); input(initialText = filter) } //TODO breaks if too long!
+            magenta { text("find: "); input(initialText = filter) }
             textLine()
             bold { text(cut("[Enter] apply", width)) }
         }.runUntilInputEntered {
@@ -409,8 +408,8 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
             action = Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
-        Action.HELP -> section { //TODO expand!
-            underline { textLine(spread("help", "$width x $height", width)) }
+        Action.HELP -> section {
+            underline { textLine(spread(version, " made with Kotter + picocli + tinylog + ♥", width)) }
             grid(Cols { fit(); fit(maxWidth = width - 8) }, //TODO 4 columns?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.BOX_DOUBLE, //TODO INVISIBLE?
@@ -433,7 +432,6 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                 cell { text("${Di.U.icon}") }; cell { text("unclear") }
                 cell { text("!") }; cell { text("revised") }
             }
-            cyan { textLine(cut("$version made with Kotter + picocli + tinylog + ♥", width)) } //TODO links?
             bold { text(cut("[Enter|Esc|Tab] return", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) {
             aside { textLine() }
