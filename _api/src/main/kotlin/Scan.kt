@@ -55,7 +55,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         return r
     }
 
-    private fun save() { //TODO stateless?
+    private fun save() {
         try {
             state.createParentDirectories()
             state.writeLines(result.values.map { it.toLine() })

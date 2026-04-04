@@ -75,7 +75,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         finish.clear()
         result = emptyList()
         if (task.started()) task.finish()
-        if (task.finished()) compare(true) //save new state
+        if (task.finished()) compare(!optionStateless) //save new state
     }
 
     private fun operate(l: L1, o: Op) {
