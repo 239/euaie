@@ -87,7 +87,11 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     Keys.Delete, Keys.Space -> if (sync.scan.started()) sync.scan.cancel()
                 }
             }
-            aside { textLine("${sync.pathL} | ${sync.pathR}") }
+            aside {
+//                textLine("═".repeat(50)) //─═ //TODO width not available!?
+                textLine()
+                textLine("${sync.pathL} | ${sync.pathR}")
+            }
             runSync(true)
         }
 //-------------------------------------------------------------------------------------------------
@@ -145,7 +149,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     bytes[2] += y
                 }
                 confirm = totalOp.sum() - totalOp[Op.NO.ordinal] > totalOp[Op.NO.ordinal]
-//overview------------
+//overview------
                 val sort = if (sortBySize) "size" else "path"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
@@ -181,7 +185,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     val sR = "${index + 1} / ${limit + 1}"
                     underline { textLine(spread(sL, sR, width * sign)) }
                 }
-//list----------------
+//list----------
                 for (i in shift until minOf(shift + range, sector.size)) {
                     val l = sector[i]
                     val ch = "${l.l2.pq.c.icon} ${l.l2.bp.c.icon}${l.l2.qd.c.icon} "
@@ -205,7 +209,8 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                         } else textLine(c0 + cutC("$px$p2", (width - c0.length) * sign))
                     }
                 }
-//details-------------
+//details-------
+                //TODO dividing line when height > x?
                 if (item != null) {
                     val pq = item.l2.pq
                     val px = if (pq.x.real) pq.x.path.removeSuffix("/").removeSuffix(pq.x.name) else ""
@@ -233,7 +238,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     textLine(cut("$sd ($sx | $sy) [$wx | $wy]", width * sign))
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
-//keys----------------
+//keys----------
                 val more = "[V] view [F] find [S] sort [D] diff [N] $path [,] $line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
@@ -299,6 +304,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     order = o
                     if (action != Action.MAIN) signal()
                 }
+                aside { textLine() }
                 if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
                     action = Action.EXIT
                     signal()
@@ -312,6 +318,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
             bold { text(cut("[Enter] apply", width)) }
         }.runUntilInputEntered {
             onInputEntered { filter = input }
+            aside { textLine() }
             action = Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
@@ -325,6 +332,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     else               -> Action.MAIN
                 }
             }
+            aside { textLine() }
         }
 //-------------------------------------------------------------------------------------------------
         Action.SYNC -> section {
@@ -358,6 +366,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     }
                 }
             }
+            aside { textLine() }
             runSync(false)
         }
 //-------------------------------------------------------------------------------------------------
@@ -387,6 +396,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                         Keys.Right -> head = false
                     }
                 }
+                aside { textLine() }
                 result = try {
                     val command = "diff ${sync.pathL}/${current.x.path} ${sync.pathR}/${current.y.path}"
                     ProcessBuilder(command.split(" ")).redirectErrorStream(true)
@@ -423,9 +433,12 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                 cell { text("${Di.U.icon}") }; cell { text("unclear") }
                 cell { text("!") }; cell { text("revised") }
             }
-            cyan { textLine(cut("$version made with Kotter + picocli + tinylog + ♥", width)) }
+            cyan { textLine(cut("$version made with Kotter + picocli + tinylog + ♥", width)) } //TODO links?
             bold { text(cut("[Enter|Esc|Tab] return", width)) }
-        }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) { action = Action.MAIN }
+        }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) {
+            aside { textLine() }
+            action = Action.MAIN
+        }
 //-------------------------------------------------------------------------------------------------
         Action.TEST -> run {
             println("run")
@@ -445,7 +458,10 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     println("onKeyPressed")
                     last = key
                 }
-                aside { println("aside") }
+                aside {
+                    println("aside")
+                    textLine()
+                }
                 action = Action.EXIT
             }
         }
