@@ -13,7 +13,7 @@ val version = java.util.Properties().run {
 
 @Command(
     description = ["simple file synchronization"],
-//    mixinStandardHelpOptions = true,
+    mixinStandardHelpOptions = false,
     name = "euaie",
     showAtFileInUsageHelp = true,
     showDefaultValues = false,
@@ -39,7 +39,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //1
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
-        description = ["set policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
+        description = ["set policy for symbolic links:", $$"${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
