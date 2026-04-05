@@ -86,12 +86,13 @@ each filter is a triple of string patterns, all three parts have to match the pa
 - `:.git/:` matches all **.git/** directories in any location
 - `path/to/::/file` matches **file** in **root/path/to/** but not **root/path/to/file.old**
 
+## build
+
+`./gradlew shadowJar`
+
 ## related recommendations
 - [Unison](https://github.com/bcpierce00/unison)
+- [rclone](https://github.com/rclone/rclone)
 - [Mutagen](https://github.com/mutagen-io/mutagen)
 - [Syncthing](https://github.com/syncthing/syncthing)
 - [FreeFileSync](https://freefilesync.org/)
-
-### comparison
-
-...
