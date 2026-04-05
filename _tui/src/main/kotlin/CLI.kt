@@ -13,21 +13,15 @@ val version = Properties().run {
     if (b.matches("""\d+\.\d+\.\d+""".toRegex())) "$b-$i" else "$t-$i-$b"
 }
 
-fun main(arguments: Array<String>) {
-    System.setProperty(keyVersion, version)
-    picocli.CommandLine(CLI())
-        .setCaseInsensitiveEnumValuesAllowed(true)
-        .setUseSimplifiedAtFiles(true)
-        .execute(*arguments)
-}
-
 @Command(
     description = ["simple file synchronization"],
 //    mixinStandardHelpOptions = true,
     name = "euaie",
     showAtFileInUsageHelp = true,
+    showDefaultValues = false,
     sortOptions = false,
-    version = [$$"${sys:$$keyVersion}"],
+    usageHelpAutoWidth = false,
+    version = [$$"${sys:$$keyVersion}"]
 )
 class CLI : Callable<Int> {
     @Parameters(index = "0")
@@ -37,19 +31,21 @@ class CLI : Callable<Int> {
     lateinit var rootR: String
 
     //0
-    @Option(names = ["-e", "--exclude"], arity = "*") //TODO add description!
+    @Option(names = ["-e", "--exclude"], arity = "*", paramLabel = "<s:c:e>",
+        description = ["pattern syntax: '<starts>:<contains>:<ends>'"])
     var exclude: Set<String> = emptySet()
 
-    @Option(names = ["-i", "--include"], arity = "*")
+    @Option(names = ["-i", "--include"], arity = "*", paramLabel = "<s:c:e>",
+        description = ["pattern syntax: '<starts>:<contains>:<ends>'"])
     var include: Set<String> = emptySet()
 
     //1
-    @Option(names = ["-s", "--symlinks"],
+    @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
         description = ["set policy for symbolic links", $$"${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
-    @Option(names = ["-t", "--tolerance"],
-        description = ["set allowed time difference (ms)"])
+    @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
+        description = ["set allowed time difference"])
     var tolerance: Long = L0.tolerance
 
     @Option(names = ["-x", "--exit-when-done"],
@@ -57,8 +53,8 @@ class CLI : Callable<Int> {
     var exit: Boolean = TUI.optionExitWhenDone
 
     //2
-    @Option(names = ["-C", "--copy-threshold"],
-        description = ["set threshold for interruptable copy mode (MiB)"])
+    @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
+        description = ["set threshold for interruptable copy mode"])
     var threshold: Int = Sync.optionCopyThreshold
 
     @Option(names = ["-I", "--ignore-filter-case"],
@@ -81,6 +77,14 @@ class CLI : Callable<Int> {
         Scan.optionIgnoreFilterCase = ignore
         Sync.optionStateless = stateless
         runTUI(rootL, rootR, include, exclude)
-        return if (version) 0 else 0//TODO errors?
+        return if (version) 0 else 0 //TODO errors?
     }
+}
+
+fun main(arguments: Array<String>) {
+    System.setProperty(keyVersion, version)
+    picocli.CommandLine(CLI())
+        .setCaseInsensitiveEnumValuesAllowed(true)
+        .setUseSimplifiedAtFiles(true)
+        .execute(*arguments) //TODO System.exit(code)?
 }
