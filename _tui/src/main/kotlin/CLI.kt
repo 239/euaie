@@ -10,7 +10,7 @@ val version = Properties().run {
     val b = getProperty("git.branch").orEmpty()
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
-    if (b.matches("""\d+\.\d+\.\d+""".toRegex())) "$b-$i" else "$b.$t-$i"
+    if (b.matches("""\d+\.\d+\.\d+""".toRegex())) "$b-$i" else "$t-$i-$b"
 }
 
 fun main(arguments: Array<String>) {
