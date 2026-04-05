@@ -10,8 +10,7 @@ val version = Properties().run {
     val b = getProperty("git.branch").orEmpty()
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
-    val c = getProperty("git.total.commit.count").orEmpty()
-    "$b-$t-$i" //TODO inject?
+    if (b.matches("""\d+\.\d+\.\d+""".toRegex())) "$b-$i" else "$b.$t-$i"
 }
 
 fun main(arguments: Array<String>) {
