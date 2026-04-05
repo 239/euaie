@@ -16,10 +16,8 @@ jobs:
           java-version: 25
       - run: ./gradlew shadowJar
       - run: ls -lh _tui/build/libs/
-      #      - name: Create release
       - run: |
           gh release create "${{ github.ref_name }}" \
-        #            --title "Release ${{ github.ref_name }}" \
             --draft \
             _tui/build/libs/*.jar
         env:
