@@ -11,6 +11,7 @@
 ![](web/help.png)
 
 ### usage
+
 ```
 Usage: euaie [-hISVx] [-C=<threshold>] [-s=<symlinks>] [-t=<tolerance>]
              [-e[=<exclude>...]]... [-i[=<include>...]]... [@<filename>...]
@@ -37,16 +38,15 @@ simple file synchronization
 
 #### examples
 
-##### dotfiles
-
+dotfiles:  
 `euaie ~/ ~/cloud/dotfiles/ -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 #### configuration
 
-all options can be provided by arguments and argument files:
+all options can be provided by arguments and argument files:  
 `euaie @path/to/arguments.txt --exit-when-done`
 
-**arguments.txt**
+`arguments.txt`:
 ```
 # comments start with #
 
@@ -82,14 +82,22 @@ each filter is a triple of string patterns, all three parts have to match the pa
 - `:<contains>:` or `:<contains>`
 - `::<ends>`
 
-#### examples
+examples:
 
 - `.config/::.toml` matches all **.toml** files anywhere in **root/.config/**
 - `:.git/:` matches all **.git/** directories in any location
 - `path/to/::/file` matches **file** in **root/path/to/** but not **root/path/to/file.old**
 
 ### build
+
+cross-platform jar:  
 `./gradlew shadowJar`
+
+native executable:  
+`native-image -jar euaie.jar`
+
+native executable with Podman/Docker:  
+`podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25 -jar euaie.jar`
 
 ### dependencies
 
