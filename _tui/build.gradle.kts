@@ -45,3 +45,5 @@ tasks.shadowJar { //TODO reproducible?
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
     }
 }
+
+tasks.test { outputs.upToDateWhen { false } }
