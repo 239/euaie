@@ -1,4 +1,5 @@
-.gradle
-.idea
-.kotlin
-build
+_tui/src/test/args
+.gradle/
+.idea/
+.kotlin/
+build/
