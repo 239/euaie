@@ -1,6 +1,6 @@
 [versions]
 ggp = "2.5.7"
-jline = "4.0.8"
+jline = "4.0.10"
 kotlin = "2.3.20"
 kotter="1.3.0-SNAPSHOT" #TODO 1.3.0?
 picocli="4.7.7"
