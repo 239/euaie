@@ -13,24 +13,19 @@
 ### usage
 
 ```
-Usage: euaie [-hISVx] [-C=<threshold>] [-s=<symlinks>] [-t=<tolerance>]
-             [-e[=<exclude>...]]... [-i[=<include>...]]... [@<filename>...]
-             <rootL> <rootR>
+Usage: euaie [-ISVx] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
+             [-i[=<s:c:e>...]]... [@<filename>...] <rootL> <rootR>
 simple file synchronization
       [@<filename>...]       one or more argument files containing options
       <rootL>
       <rootR>
-  -e, --exclude[=<exclude>...]
-
-  -i, --include[=<include>...]
-
-  -s, --symlinks=<symlinks>  set policy for symbolic links
+  -e, --exclude[=<s:c:e>...] pattern syntax: '<starts>:<contains>:<ends>'
+  -i, --include[=<s:c:e>...] pattern syntax: '<starts>:<contains>:<ends>'
+  -s, --symlinks=<policy>    set policy for symbolic links:
                              FOLLOW, IGNORE, PRESERVE
-  -t, --tolerance=<tolerance>
-                             set allowed time difference (ms)
+  -t, --tolerance=<ms>       set allowed time difference
   -x, --exit-when-done       exit when both sides are equal
-  -C, --copy-threshold=<threshold>
-                             set threshold for interruptable copy mode (MiB)
+  -C, --copy-threshold=<MiB> set threshold for interruptable copy mode
   -I, --ignore-filter-case   use case insensitive filters
   -S, --stateless            ignore previous state
   -V, --version              print version and exit
