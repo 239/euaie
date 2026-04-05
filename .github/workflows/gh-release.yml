@@ -18,6 +18,7 @@ jobs:
       - run: ls -lh _tui/build/libs/
       - run: |
           gh release create "${{ github.ref_name }}" \
+            --title "Release ${{ github.ref_name }}" \
             --draft \
             _tui/build/libs/*.jar
         env:
