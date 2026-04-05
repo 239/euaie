@@ -1,9 +1,10 @@
 # euaie
 
-- minimal and easy configuration
+- local file synchronization with a functional TUI
+- flexible but minimal and easy configuration
 - plain but effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
-- runs on Linux, macOS and Windows
+- runs in terminals on Linux, macOS and Windows
 
 ![](web/main.png)
 ![](web/help.png)
@@ -41,10 +42,10 @@ simple file synchronization
 
 #### configuration
 
-all options can be provided by arguments and argument files: `euaie @path/to/arguments.txt --exit-when-done`
+all options can be provided by arguments and argument files:
+`euaie @path/to/arguments.txt --exit-when-done`
 
 **arguments.txt**
-
 ```
 # comments start with #
 
@@ -99,8 +100,9 @@ each filter is a triple of string patterns, all three parts have to match the pa
 - [Truthish](https://github.com/varabyte/truthish)
 
 ### related recommendations
-- [Unison](https://github.com/bcpierce00/unison)
+
 - [rclone](https://github.com/rclone/rclone)
+- [Unison](https://github.com/bcpierce00/unison)
 - [Mutagen](https://github.com/mutagen-io/mutagen)
 - [Syncthing](https://github.com/syncthing/syncthing)
 - [FreeFileSync](https://freefilesync.org/)
