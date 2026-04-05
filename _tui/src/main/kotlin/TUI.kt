@@ -15,7 +15,7 @@ import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO LOG?
+enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST }
 
 object TUI {
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
@@ -28,7 +28,7 @@ object TUI {
 
 fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
     { SystemTerminal() },
-    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
+//    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
 ).firstSuccess()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
@@ -409,7 +409,8 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
         }
 //-------------------------------------------------------------------------------------------------
         Action.HELP -> section {
-            underline { textLine(spread(version, " made with Kotter + picocli + tinylog + ♥", width)) }
+            val credits = " made with Kotter + picocli + tinylog + ♥"
+            underline { textLine(spread(version.substringBefore('-'), credits, width)) }
             grid(Cols { fit(); fit(maxWidth = width - 8) }, //TODO 4 columns?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.BOX_DOUBLE, //TODO INVISIBLE?

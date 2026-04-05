@@ -5,7 +5,7 @@ import java.util.concurrent.*
 import picocli.CommandLine.*
 
 private const val keyVersion = "euaie.version"
-val versionFull = Properties().run {
+val version = Properties().run {
     load(object {}.javaClass.classLoader.getResourceAsStream("git.properties"))
     val b = getProperty("git.branch").orEmpty()
     val i = getProperty("git.commit.id.abbrev").orEmpty()
@@ -13,10 +13,9 @@ val versionFull = Properties().run {
     val c = getProperty("git.total.commit.count").orEmpty()
     "0.$t-$c-$i-$b" //TODO inject?
 }
-val version = versionFull.substringBefore('-')
 
 fun main(arguments: Array<String>) {
-    System.setProperty(keyVersion, versionFull)
+    System.setProperty(keyVersion, version)
     picocli.CommandLine(CLI())
         .setCaseInsensitiveEnumValuesAllowed(true)
         .setUseSimplifiedAtFiles(true)
