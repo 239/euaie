@@ -1,9 +1,20 @@
 package euaie
 
+import com.varabyte.kotter.runtime.terminal.TerminalSize
+import com.varabyte.kotter.terminal.virtual.VirtualTerminal
 import com.varabyte.truthish.*
 import kotlin.test.Test
 
 class Tests {
+    @Test
+    fun run() {
+        TUI.terminal = VirtualTerminal.create("Test", TerminalSize(60, 30))
+        picocli.CommandLine(CLI())
+            .setCaseInsensitiveEnumValuesAllowed(true)
+            .setUseSimplifiedAtFiles(true)
+            .execute(*arrayOf("@src/test/args"))
+    }
+
     @Test
     fun cutC() {
         assertThat(cutC("", +1)).isEmpty()
@@ -40,8 +51,8 @@ class Tests {
     @Test
     fun `cutC with emoji`() {
         val e = "\uD83C\uDDFA\uD83C\uDDE6"
-        val s = "123${e}456"
-        assertThat(cutC(s, +9)).isEqualTo("123${e}4…")
-        assertThat(cutC(s, -9)).isEqualTo("…3${e}456")
+        val s = "abc${e}def"
+        assertThat(cutC(s, +7)).isEqualTo("abc${e}d…")
+        assertThat(cutC(s, -7)).isEqualTo("…c${e}def")
     }
 }
