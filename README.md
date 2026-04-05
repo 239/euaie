@@ -5,6 +5,7 @@
 - plain but effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
 - runs in terminals on Linux, macOS and Windows
+- native executables built with GraalVM Native Image
 
 ![](web/main.png)
 ![](web/help.png)
