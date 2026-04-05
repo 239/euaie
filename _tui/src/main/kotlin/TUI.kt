@@ -149,7 +149,7 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
                     bytes[2] += y
                 }
                 confirm = totalOp.sum() - totalOp[Op.NO.ordinal] > totalOp[Op.NO.ordinal]
-//overview------
+//overview------ //TODO use grid?
                 val sort = if (sortBySize) "size" else "path"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"

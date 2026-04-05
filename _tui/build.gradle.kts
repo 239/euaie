@@ -36,7 +36,7 @@ gitProperties {
     keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time", "git.total.commit.count")
 }
 
-tasks.shadowJar {
+tasks.shadowJar { //TODO reproducible?
     archiveBaseName = rootProject.name
     archiveClassifier = ""
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

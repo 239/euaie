@@ -41,7 +41,7 @@ simple file synchronization
 dotfiles:  
 `euaie ~/ ~/cloud/dotfiles/ -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
-pictures and videos:
+pictures and videos:  
 `euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000`
 
 #### configuration
