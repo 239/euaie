@@ -11,7 +11,7 @@ val version = Properties().run {
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
     val c = getProperty("git.total.commit.count").orEmpty()
-    "0.$t-$i-$b" //TODO inject?
+    "$b-$t-$i" //TODO inject?
 }
 
 fun main(arguments: Array<String>) {
