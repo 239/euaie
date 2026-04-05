@@ -8,7 +8,7 @@
 ![](web/main.png)
 ![](web/help.png)
 
-## usage
+### usage
 ```
 Usage: euaie [-hISVx] [-C=<threshold>] [-s=<symlinks>] [-t=<tolerance>]
              [-e[=<exclude>...]]... [-i[=<include>...]]... [@<filename>...]
@@ -33,13 +33,13 @@ simple file synchronization
   -V, --version              print version and exit
 ```
 
-### examples
+#### examples
 
-#### dotfiles
+##### dotfiles
 
 `euaie ~/ ~/cloud/dotfiles/ -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
-### configuration
+#### configuration
 
 all options can be provided by arguments and argument files: `euaie @path/to/arguments.txt --exit-when-done`
 
@@ -80,17 +80,25 @@ each filter is a triple of string patterns, all three parts have to match the pa
 - `:<contains>:` or `:<contains>`
 - `::<ends>`
 
-##### examples
+#### examples
 
 - `.config/::.toml` matches all **.toml** files anywhere in **root/.config/**
 - `:.git/:` matches all **.git/** directories in any location
 - `path/to/::/file` matches **file** in **root/path/to/** but not **root/path/to/file.old**
 
-## build
-
+### build
 `./gradlew shadowJar`
 
-## related recommendations
+### dependencies
+
+- [Kotter](https://github.com/varabyte/kotter)
+- [picocli](https://github.com/remkop/picocli)
+- [tinylog](https://github.com/tinylog-org/tinylog)
+- [JLine](https://github.com/jline/jline3)
+- [Shadow](https://github.com/GradleUp/shadow)
+- [Truthish](https://github.com/varabyte/truthish)
+
+### related recommendations
 - [Unison](https://github.com/bcpierce00/unison)
 - [rclone](https://github.com/rclone/rclone)
 - [Mutagen](https://github.com/mutagen-io/mutagen)
