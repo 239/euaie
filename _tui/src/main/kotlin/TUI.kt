@@ -24,12 +24,11 @@ object TUI {
     val keysF = orderCh.joinToString("|") { "${it.icon}" } +
             "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
     var optionExitWhenDone = false
+    var terminal: Terminal? = null
 }
 
-fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
-    { SystemTerminal() },
-//    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
-).firstSuccess()) {
+fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session( //TODO start?
+    TUI.terminal ?: SystemTerminal()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     var current = L1.fake
