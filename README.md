@@ -41,6 +41,9 @@ simple file synchronization
 dotfiles:  
 `euaie ~/ ~/cloud/dotfiles/ -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
+pictures and videos:
+`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000`
+
 #### configuration
 
 all options can be provided by arguments and argument files:  
@@ -75,7 +78,7 @@ Music/
 
 #### filter syntax for including and excluding paths relative to root
 
-each filter is a triple of string patterns, all three parts have to match the path or can be empty:
+each filter is a string-triple, all three parts have to match a path or can be empty:
 
 - `<starts>:<contains>:<ends>`
 - `<starts>::` or just `<starts>`
@@ -86,6 +89,7 @@ examples:
 
 - `.config/::.toml` matches all **.toml** files anywhere in **root/.config/**
 - `:.git/:` matches all **.git/** directories in any location
+- `:2026:.flac` matches all **.flac** files with '2026' in their paths
 - `path/to/::/file` matches **file** in **root/path/to/** but not **root/path/to/file.old**
 
 ### build
