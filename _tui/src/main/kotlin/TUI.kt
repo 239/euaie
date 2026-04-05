@@ -27,7 +27,7 @@ object TUI {
     var terminal: Terminal? = null
 }
 
-fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session( //TODO start?
+fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(
     TUI.terminal ?: SystemTerminal()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()

@@ -1,11 +1,9 @@
 package euaie
 
-import java.util.*
-import java.util.concurrent.*
 import picocli.CommandLine.*
 
 private const val keyVersion = "euaie.version"
-val version = Properties().run {
+val version = java.util.Properties().run {
     load(object {}.javaClass.classLoader.getResourceAsStream("git.properties"))
     val b = getProperty("git.branch").orEmpty()
     val i = getProperty("git.commit.id.abbrev").orEmpty()
@@ -23,7 +21,7 @@ val version = Properties().run {
     usageHelpAutoWidth = false,
     version = [$$"${sys:$$keyVersion}"]
 )
-class CLI : Callable<Int> {
+class CLI : java.util.concurrent.Callable<Int> {
     @Parameters(index = "0")
     lateinit var rootL: String
 
@@ -76,7 +74,7 @@ class CLI : Callable<Int> {
         Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Scan.optionIgnoreFilterCase = ignore
         Sync.optionStateless = stateless
-        runTUI(rootL, rootR, include, exclude)
+        start(rootL, rootR, include, exclude)
         return if (version) 0 else 0 //TODO errors?
     }
 }
