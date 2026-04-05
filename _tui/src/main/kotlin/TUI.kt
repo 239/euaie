@@ -28,7 +28,7 @@ object TUI {
 
 fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(listOf(
     { SystemTerminal() },
-//    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
+    { com.varabyte.kotter.terminal.virtual.VirtualTerminal.create("VT", TerminalSize(60, 30)) }, //remove! (GraalVM)
 ).firstSuccess()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
@@ -464,6 +464,6 @@ fun runTUI(rootL: String, rootR: String, include: Set<String>, exclude: Set<Stri
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.EXIT -> section { textLine() }.run { active = false } //TODO save settings?
+        Action.EXIT -> section {}.run { active = false } //TODO save settings?
     }
 }
