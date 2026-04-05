@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  #  workflow_dispatch:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+
+      - run: ./gradlew shadowJar
+
+      - run: ls -lh _tui/build/libs/
+
+      - name: Create release
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --title "Release ${{ github.ref_name }}" \
+            --draft \
+            _tui/build/libs/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
