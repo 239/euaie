@@ -10,7 +10,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     private val state = statePath(this::class.java.`package`?.name ?: "euaie").resolve(hash)
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
-    private val excluding = parse(exclude)
+    private val excluding = parse(exclude.plus(Sync.MARK))
     private var included = 0L
     private var excluded = 0L
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
@@ -55,7 +55,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         return r
     }
 
-    private fun save() {
+    private fun save() { //TODO compression?
         try {
             state.createParentDirectories()
             state.writeLines(result.values.map { it.toLine() })
