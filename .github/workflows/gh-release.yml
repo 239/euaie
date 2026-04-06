@@ -14,9 +14,10 @@ jobs:
         with:
           distribution: graalvm
           java-version: 25
+      - run: ./gradlew -v
       - run: ./gradlew shadowJar
-      - run: native-image -jar _tui/build/libs/*.jar
-      - run: ls -lh _tui/build/libs/
+      - run: native-image -jar _tui/build/libs/euaie.jar _tui/build/libs/euaie
+      - run: ls -lh _tui/build/libs/ ./
       - run: |
           gh release create "${{ github.ref_name }}" \
             --title "${{ github.ref_name }}" \
