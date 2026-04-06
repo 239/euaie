@@ -13,22 +13,23 @@
 ### usage
 
 ```
-Usage: euaie [-ISVx] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
+Usage: euaie [-IrSVx] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
              [-i[=<s:c:e>...]]... [@<filename>...] <rootL> <rootR>
 simple file synchronization
-      [@<filename>...]       one or more argument files containing options
+      [@<filename>...]         one or more argument files containing options
       <rootL>
       <rootR>
-  -e, --exclude[=<s:c:e>...] pattern syntax: '<starts>:<contains>:<ends>'
-  -i, --include[=<s:c:e>...] pattern syntax: '<starts>:<contains>:<ends>'
-  -s, --symlinks=<policy>    set policy for symbolic links:
-                             FOLLOW, IGNORE, PRESERVE
-  -t, --tolerance=<ms>       set allowed time difference
-  -x, --exit-when-done       exit when both sides are equal
-  -C, --copy-threshold=<MiB> set threshold for interruptable copy mode
-  -I, --ignore-filter-case   use case insensitive filters
-  -S, --stateless            ignore previous state
-  -V, --version              print version and exit
+  -e, --exclude[=<s:c:e>...]   pattern syntax: '<starts>:<contains>:<ends>'
+  -i, --include[=<s:c:e>...]   pattern syntax: '<starts>:<contains>:<ends>'
+  -r, --retain                 keep old files in <root>/.euaie/ (false)
+  -s, --symlinks=<policy>      set policy for symbolic links (PRESERVE)
+                               FOLLOW, IGNORE, PRESERVE
+  -t, --tolerance=<ms>         set allowed time difference (0)
+  -x, --exit                   exit when both sides are equal (false)
+  -C, --copy-threshold=<MiB>   set threshold for interruptable copy mode (512)
+  -I, --insensitive            use case insensitive filters (false)
+  -S, --stateless              ignore previous state (false)
+  -V, --version                print version and exit
 ```
 
 #### examples
