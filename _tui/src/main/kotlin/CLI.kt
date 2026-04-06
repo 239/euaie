@@ -39,11 +39,12 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //1
     @Option(names = ["-r", "--retain"],
-        description = [$$"keep old files in <root>/$$NAME/ (${DEFAULT-VALUE})"])
+        description = [$$"keep old files in <root>/.$$NAME/ (${DEFAULT-VALUE})"])
     var retain: Boolean = Sync.optionRetain
 
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
-        description = [$$"set policy for symbolic links (${DEFAULT-VALUE})", $$"${COMPLETION-CANDIDATES}"])
+        description = [$$"set policy for symbolic links (${DEFAULT-VALUE})",
+            $$"select from: ${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
