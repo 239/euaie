@@ -56,6 +56,7 @@ tasks.nativeCompile {
 tasks.shadowJar {
     archiveBaseName = rootProject.name
     archiveClassifier = ""
+    destinationDirectory = layout.buildDirectory.dir("jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     mergeServiceFiles()
     filesMatching("META-INF/services/**") {
