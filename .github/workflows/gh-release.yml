@@ -9,6 +9,8 @@ jobs:
     permissions:
       contents: write
     steps:
+      - run: sudo apt update
+      - run: sudo apt install -y upx
       - uses: actions/checkout@v6
       - uses: actions/setup-java@v5
         with:
@@ -16,12 +18,14 @@ jobs:
           java-version: 25
       - run: ./gradlew -v
       - run: ./gradlew shadowJar
-      - run: native-image -jar _tui/build/libs/euaie.jar _tui/build/libs/euaie
-      - run: ls -lh _tui/build/libs/ ./
+      - run: ./gradlew nativeCompile
+      - run: ls -lh _tui/build/libs/ _tui/build/native/nativeCompile/
+      - run: upx _tui/build/native/nativeCompile/*
       - run: |
           gh release create "${{ github.ref_name }}" \
             --title "${{ github.ref_name }}" \
             --draft \
-            _tui/build/libs/*
+            _tui/build/libs/* \
+            _tui/build/native/nativeCompile/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
