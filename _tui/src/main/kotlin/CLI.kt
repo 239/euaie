@@ -50,7 +50,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         description = ["set allowed time difference"])
     var tolerance: Long = L0.tolerance
 
-    @Option(names = ["-x", "--exit-when-done"], //TODO just exit/quit or then-exit?
+    @Option(names = ["-x", "--exit"],
         description = ["exit when both sides are equal"])
     var exit: Boolean = TUI.optionExitWhenDone
 
@@ -59,9 +59,9 @@ class CLI : java.util.concurrent.Callable<Int> {
         description = ["set threshold for interruptable copy mode"])
     var threshold: Int = Sync.optionCopyThreshold
 
-    @Option(names = ["-I", "--ignore-filter-case"],
+    @Option(names = ["-I", "--insensitive"],
         description = ["use case insensitive filters"])
-    var ignore: Boolean = Scan.optionIgnoreFilterCase
+    var insensitive: Boolean = Scan.optionInsensitive
 
     @Option(names = ["-S", "--stateless"],
         description = ["ignore previous state"])
@@ -73,7 +73,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     override fun call(): Int {
         L0.tolerance = tolerance.coerceAtLeast(0L)
-        Scan.optionIgnoreFilterCase = ignore
+        Scan.optionInsensitive = insensitive
         Scan.optionSymbolicLink = symlinks
         Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Sync.optionRetain = retain

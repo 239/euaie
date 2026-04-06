@@ -21,7 +21,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         const val D = ':'
         private val slash = File.separatorChar == '/'
         private val sensitive = Path("a") != Path("A")
-        var optionIgnoreFilterCase = !sensitive
+        var optionInsensitive = !sensitive
         var optionSymbolicLink = OptionSymbolicLink.PRESERVE
     }
 
@@ -67,8 +67,8 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 
     private fun match(p: String): Boolean {
         var r = including.isEmpty()
-        r = r || including.any { match(p, it, optionIgnoreFilterCase) } //TODO ignore case broken?
-        r = r && excluding.all { !match(p, it, optionIgnoreFilterCase) }
+        r = r || including.any { match(p, it, optionInsensitive) } //TODO ignore case broken?
+        r = r && excluding.all { !match(p, it, optionInsensitive) }
         if (r) included++ else excluded++
         L.trace { "${if (r) '+' else '-'} $p" }
         return r
