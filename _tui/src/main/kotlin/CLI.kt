@@ -2,7 +2,7 @@ package euaie
 
 import picocli.CommandLine.*
 
-private const val keyVersion = "euaie.version"
+private const val keyVersion = "euaie.version" //TODO use const val?
 val version = java.util.Properties().run {
     load(object {}.javaClass.classLoader.getResourceAsStream("git.properties"))
     val b = getProperty("git.branch").orEmpty()
@@ -39,32 +39,32 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //1
     @Option(names = ["-r", "--retain"],
-        description = ["keep old files in <root>/${Sync.MARK}/"])
+        description = [$$"keep old files in <root>/$${Sync.MARK}/ (${DEFAULT-VALUE})"])
     var retain: Boolean = Sync.optionRetain
 
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
-        description = ["set policy for symbolic links:", $$"${COMPLETION-CANDIDATES}"])
+        description = [$$"set policy for symbolic links (${DEFAULT-VALUE})", $$"${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
-        description = ["set allowed time difference"])
+        description = [$$"set allowed time difference (${DEFAULT-VALUE})"])
     var tolerance: Long = L0.tolerance
 
     @Option(names = ["-x", "--exit"],
-        description = ["exit when both sides are equal"])
+        description = [$$"exit when both sides are equal (${DEFAULT-VALUE})"])
     var exit: Boolean = TUI.optionExitWhenDone
 
     //2
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
-        description = ["set threshold for interruptable copy mode"])
+        description = [$$"set threshold for interruptable copy mode (${DEFAULT-VALUE})"])
     var threshold: Int = Sync.optionCopyThreshold
 
     @Option(names = ["-I", "--insensitive"],
-        description = ["use case insensitive filters"])
+        description = [$$"use case insensitive filters (${DEFAULT-VALUE})"])
     var insensitive: Boolean = Scan.optionInsensitive
 
     @Option(names = ["-S", "--stateless"],
-        description = ["ignore previous state"])
+        description = [$$"ignore previous state (${DEFAULT-VALUE})"])
     var stateless: Boolean = Sync.optionStateless
 
     @Option(names = ["-V", "--version"], versionHelp = true,
@@ -88,6 +88,7 @@ fun main(arguments: Array<String>) {
     System.setProperty(keyVersion, version)
     picocli.CommandLine(CLI())
         .setCaseInsensitiveEnumValuesAllowed(true)
+        .setUsageHelpLongOptionsMaxWidth(32)
         .setUseSimplifiedAtFiles(true)
         .execute(*arguments) //TODO System.exit(code)?
 }
