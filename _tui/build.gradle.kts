@@ -1,9 +1,10 @@
 plugins {
     application
-    alias(libs.plugins.kjvm)
-    alias(libs.plugins.kapt)
-    alias(libs.plugins.shadow)
     alias(libs.plugins.ggp)
+    alias(libs.plugins.kapt)
+    alias(libs.plugins.kjvm)
+    alias(libs.plugins.native)
+    alias(libs.plugins.shadow)
 }
 
 kotlin { jvmToolchain(25) }
@@ -34,6 +35,22 @@ kapt {
 gitProperties {
     dateFormat = "yy.DD"
     keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time")
+}
+
+val platform = "${System.getProperty("os.name").lowercase()}-${System.getProperty("os.arch").lowercase()}"
+
+graalvmNative {
+    binaries {
+        named("main") {
+            imageName.set("${rootProject.name}-$platform")
+            useFatJar.set(false)
+        }
+    }
+}
+
+tasks.nativeCompile {
+    dependsOn(tasks.shadowJar)
+    classpathJar.set(tasks.shadowJar.flatMap { it.archiveFile })
 }
 
 tasks.shadowJar {
