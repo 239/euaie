@@ -19,7 +19,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     companion object {
         const val SLEEP = 239L
-        private const val MARK = ".euaie"
+        const val MARK = ".euaie"
         private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
@@ -53,7 +53,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     fun execute() {
         val map = mutableMapOf<Op, MutableList<L1>>()
-        val dump = "$MARK/dump/${System.currentTimeMillis()}"
+        val dump = "$MARK/${System.currentTimeMillis()}"
         L.info { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
@@ -155,7 +155,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun delete(source: Path) {
         try {
             L.info { "delete $source" }
-            source.deleteExisting() //TODO backup?
+            source.deleteExisting()
         } catch (e: Exception) {
             L.error { "delete: ${e.message}" }
         }
