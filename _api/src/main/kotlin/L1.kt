@@ -33,7 +33,7 @@ private fun unchanged(mx: M0, my: M0): List<L1> = buildList {
 private fun moved(mx: M0, my: M0): List<L1> = buildList {
     val gx = mx.values.groupBy { it.size + if (L0.tolerance > 0) 0 else it.time } //ignore vague time
     val gy = my.values.groupBy { it.size + if (L0.tolerance > 0) 0 else it.time }
-    for (lx in gx.values) for (x in lx) if (x.file) {
+    for (lx in gx.values) for (x in lx) if (x.file) { //TODO files only?
         lx.singleOrNull { it.es(x) && it.et(x) }?.run {
             gy[x.size + if (L0.tolerance > 0) 0 else x.time]
                 ?.singleOrNull { it.es(x) && it.et(x) }

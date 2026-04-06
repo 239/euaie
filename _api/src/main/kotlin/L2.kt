@@ -14,7 +14,7 @@ fun link(bp: List<L1>, pq: List<L1>, qd: List<L1>): List<L2> {
         mqd[it.x.path] = it
     }
     return pq.map {
-        val ebp = mbp.getOrDefault(it.x.path, L1.fake) //TODO linking to fake items?
+        val ebp = mbp.getOrDefault(it.x.path, L1.fake)
         val eqd = mqd.getOrDefault(it.y.path, L1.fake)
         var epq = it
         if (it.c.a() && ebp.c.r() && eqd.c.u()) epq = L1(it.x, it.y, Ch.R)
