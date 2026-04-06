@@ -2,7 +2,7 @@ package euaie
 
 import picocli.CommandLine.*
 
-private const val keyVersion = "$NAME.version"
+private const val KEY = "$NAME.version"
 val version = java.util.Properties().run {
     load(object {}.javaClass.classLoader.getResourceAsStream("git.properties"))
     val b = getProperty("git.branch").orEmpty()
@@ -19,7 +19,7 @@ val version = java.util.Properties().run {
     showDefaultValues = false,
     sortOptions = false,
     usageHelpAutoWidth = false,
-    version = [$$"${sys:$$keyVersion}"]
+    version = [$$"${sys:$$KEY}"]
 )
 class CLI : java.util.concurrent.Callable<Int> {
     @Parameters(index = "0")
@@ -85,10 +85,10 @@ class CLI : java.util.concurrent.Callable<Int> {
 }
 
 fun main(arguments: Array<String>) {
-    System.setProperty(keyVersion, version)
+    System.setProperty(KEY, version)
     picocli.CommandLine(CLI())
         .setCaseInsensitiveEnumValuesAllowed(true)
-        .setUsageHelpLongOptionsMaxWidth(32)
+        .setUsageHelpLongOptionsMaxWidth(30)
         .setUseSimplifiedAtFiles(true)
         .execute(*arguments) //TODO System.exit(code)?
 }
