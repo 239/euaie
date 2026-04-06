@@ -33,10 +33,10 @@ kapt {
 
 gitProperties {
     dateFormat = "yy.DD"
-    keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time", "git.total.commit.count")
+    keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time")
 }
 
-tasks.shadowJar { //TODO reproducible?
+tasks.shadowJar {
     archiveBaseName = rootProject.name
     archiveClassifier = ""
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
