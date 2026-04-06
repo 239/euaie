@@ -19,11 +19,12 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     companion object {
         const val SLEEP = 239L
-        private const val SUFFIX = "euaie"
+        private const val MARK = ".euaie"
         private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
+        var optionRetain = true
         var optionStateless = false
         var optionCopyThreshold = 512
     }
@@ -51,24 +52,25 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     fun execute() {
-        val m = mutableMapOf<Op, MutableList<L1>>()
+        val map = mutableMapOf<Op, MutableList<L1>>()
+        val dump = "$MARK/dump/${System.currentTimeMillis()}"
         L.info { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
-        for (l in result) m.getOrPut(map(l)) { mutableListOf() }.add(l.l2.pq)
+        for (l in result) map.getOrPut(map(l)) { mutableListOf() }.add(l.l2.pq)
         loop@ for (o in listOf(Op.ML, Op.MR, Op.DL, Op.DR, Op.CL, Op.CR)) when (o) {
-            Op.CL, Op.ML -> m[o]?.sortedBy { it.y.path }
-            Op.CR, Op.MR -> m[o]?.sortedBy { it.x.path }
-            Op.DL        -> m[o]?.sortedByDescending { it.y.path }
-            Op.DR        -> m[o]?.sortedByDescending { it.x.path }
-            else         -> m[o]
+            Op.CL, Op.ML -> map[o]?.sortedBy { it.y.path }
+            Op.CR, Op.MR -> map[o]?.sortedBy { it.x.path }
+            Op.DL        -> map[o]?.sortedByDescending { it.y.path }
+            Op.DR        -> map[o]?.sortedByDescending { it.x.path }
+            else         -> map[o]
         }?.forEach {
 //            Thread.sleep(1000) //debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
             task.done.incrementAndGet()
-            operate(it, o)
+            if (optionRetain) operateRetaining(it, o, dump) else operate(it, o)
         }
         for (t in finish) move(t.first, t.second, t.third)
         L.debug { "finish: ${finish.size}" }
@@ -76,6 +78,31 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         result = emptyList()
         if (task.started()) task.finish()
         if (task.finished()) compare(!optionStateless) //save new state
+    }
+
+    private fun operateRetaining(l: L1, o: Op, dump: String) {
+        L.debug { "${l.x} ${l.y} ${l.c} $o" }
+        when (o) {
+            Op.CL -> {
+                move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
+                copy(Path(rootR, l.y.path), Path(rootL, l.x.path))
+            }
+            Op.CR -> {
+                move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
+                copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
+            }
+            Op.ML -> {
+                move(Path(rootL, l.y.path), Path(rootL, dump, l.y.path), true)
+                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
+            }
+            Op.MR -> {
+                move(Path(rootR, l.x.path), Path(rootR, dump, l.x.path), true)
+                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
+            }
+            Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
+            Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
+            else  -> L.debug { "operate: skip" }
+        }
     }
 
     private fun operate(l: L1, o: Op) {
@@ -94,7 +121,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun copy(source: Path, target: Path) {
         val exists = target.exists()
         val t = if (!exists) target
-        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$SUFFIX")
+        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}$MARK")
         if (exists && source.isDirectory()) return
         try {
             L.info { "copy $source to $t" }
@@ -110,9 +137,10 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     private fun move(source: Path, target: Path, overwrite: Boolean = false) {
+        if (source.notExists()) return
         var t = target
         if (!overwrite && target.exists()) {
-            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$SUFFIX")
+            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}$MARK")
             finish.add(Triple(t, target, false))
         }
         try {
