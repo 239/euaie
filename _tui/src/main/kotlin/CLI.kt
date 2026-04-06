@@ -38,6 +38,10 @@ class CLI : java.util.concurrent.Callable<Int> {
     var include: Set<String> = emptySet()
 
     //1
+    @Option(names = ["-r", "--retain"],
+        description = ["keep old files (root/.euaie/dump)"])
+    var retain: Boolean = Sync.optionRetain
+
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
         description = ["set policy for symbolic links:", $$"${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
@@ -46,7 +50,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         description = ["set allowed time difference"])
     var tolerance: Long = L0.tolerance
 
-    @Option(names = ["-x", "--exit-when-done"],
+    @Option(names = ["-x", "--exit-when-done"], //TODO just exit/quit or then-exit?
         description = ["exit when both sides are equal"])
     var exit: Boolean = TUI.optionExitWhenDone
 
@@ -68,12 +72,13 @@ class CLI : java.util.concurrent.Callable<Int> {
     var version: Boolean = false
 
     override fun call(): Int {
-        Scan.optionSymbolicLink = symlinks
         L0.tolerance = tolerance.coerceAtLeast(0L)
-        TUI.optionExitWhenDone = exit
-        Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Scan.optionIgnoreFilterCase = ignore
+        Scan.optionSymbolicLink = symlinks
+        Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
+        Sync.optionRetain = retain
         Sync.optionStateless = stateless
+        TUI.optionExitWhenDone = exit
         start(rootL, rootR, include, exclude)
         return if (version) 0 else 0 //TODO errors?
     }
