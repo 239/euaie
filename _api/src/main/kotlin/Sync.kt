@@ -19,7 +19,6 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     companion object {
         const val SLEEP = 239L
-        const val MARK = ".euaie"
         private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
@@ -53,7 +52,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     fun execute() {
         val map = mutableMapOf<Op, MutableList<L1>>()
-        val dump = "$MARK/${System.currentTimeMillis()}"
+        val dump = ".$NAME/${System.currentTimeMillis()}"
         L.info { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
@@ -122,7 +121,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun copy(source: Path, target: Path) {
         val exists = target.exists()
         val t = if (!exists) target
-        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}$MARK")
+        else target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$NAME")
         if (exists && source.isDirectory()) return
         try {
             L.info { "copy $source to $t" }
@@ -141,7 +140,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         if (source.notExists()) return
         var t = target
         if (!overwrite && target.exists()) {
-            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}$MARK")
+            t = target.resolveSibling("${target.name}_${System.currentTimeMillis()}.$NAME")
             finish.add(Triple(t, target, false))
         }
         try {

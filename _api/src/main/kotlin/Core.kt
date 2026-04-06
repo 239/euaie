@@ -1,5 +1,7 @@
 package euaie
 
+const val NAME = "euaie"
+
 enum class Ch(val icon: Char, val text: String) {
     A('+', "added"),
     C('*', "changed"),

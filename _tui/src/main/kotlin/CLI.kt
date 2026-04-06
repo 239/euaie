@@ -2,7 +2,7 @@ package euaie
 
 import picocli.CommandLine.*
 
-private const val keyVersion = "euaie.version" //TODO use const val?
+private const val keyVersion = "$NAME.version"
 val version = java.util.Properties().run {
     load(object {}.javaClass.classLoader.getResourceAsStream("git.properties"))
     val b = getProperty("git.branch").orEmpty()
@@ -14,7 +14,7 @@ val version = java.util.Properties().run {
 @Command(
     description = ["simple file synchronization"],
     mixinStandardHelpOptions = false,
-    name = "euaie",
+    name = NAME,
     showAtFileInUsageHelp = true,
     showDefaultValues = false,
     sortOptions = false,
@@ -39,7 +39,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //1
     @Option(names = ["-r", "--retain"],
-        description = [$$"keep old files in <root>/$${Sync.MARK}/ (${DEFAULT-VALUE})"])
+        description = [$$"keep old files in <root>/$$NAME/ (${DEFAULT-VALUE})"])
     var retain: Boolean = Sync.optionRetain
 
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",

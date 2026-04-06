@@ -7,10 +7,10 @@ import org.tinylog.kotlin.Logger as L
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
     private val base = Path(root)
-    private val state = statePath(this::class.java.`package`?.name ?: "euaie").resolve(hash)
+    private val state = statePath(NAME).resolve(hash)
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
-    private val excluding = parse(exclude.plus(Sync.MARK))
+    private val excluding = parse(exclude.plus(".$NAME"))
     private var included = 0L
     private var excluded = 0L
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
