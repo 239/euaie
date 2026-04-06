@@ -24,7 +24,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
-        var optionRetain = true
+        var optionRetain = false //opt-in
         var optionStateless = false
         var optionCopyThreshold = 512
     }

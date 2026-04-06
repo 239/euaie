@@ -83,7 +83,7 @@ each filter is a string-triple, all three parts have to match a path or can be e
 examples:
 
 - `.config/::.toml` matches all **.toml** files anywhere in **root/.config/**
-- `:.git/:` matches all **.git/** directories in any location
+- `:.git/:` matches all **.git** directories in any location
 - `:2026:.flac` matches all **.flac** files with '2026' in their paths
 - `path/to/::/file` matches **root/path/to/some/file** but not **root/path/to/file.old**
 

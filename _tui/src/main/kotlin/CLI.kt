@@ -39,7 +39,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //1
     @Option(names = ["-r", "--retain"],
-        description = ["keep old files (root/.euaie/dump)"])
+        description = ["keep old files in <root>/${Sync.MARK}/"])
     var retain: Boolean = Sync.optionRetain
 
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
