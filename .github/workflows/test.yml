@@ -7,6 +7,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: ls -al
-      - run: rename -V
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: cd _tui
+      - run: ls -al
+      - run: find --version
