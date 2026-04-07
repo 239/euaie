@@ -30,11 +30,11 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //0
     @Option(names = ["-e", "--exclude"], arity = "*", paramLabel = "<s:c:e>",
-        description = ["pattern syntax: '<starts>:<contains>:<ends>'"])
+        description = ["filter syntax: '<starts>:<contains>:<ends>'"])
     var exclude: Set<String> = emptySet()
 
     @Option(names = ["-i", "--include"], arity = "*", paramLabel = "<s:c:e>",
-        description = ["pattern syntax: '<starts>:<contains>:<ends>'"])
+        description = ["filter syntax: '<starts>:<contains>:<ends>'"])
     var include: Set<String> = emptySet()
 
     //1

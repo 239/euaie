@@ -19,8 +19,8 @@ simple file synchronization
       [@<filename>...]         one or more argument files containing options
       <rootL>
       <rootR>
-  -e, --exclude[=<s:c:e>...]   pattern syntax: '<starts>:<contains>:<ends>'
-  -i, --include[=<s:c:e>...]   pattern syntax: '<starts>:<contains>:<ends>'
+  -e, --exclude[=<s:c:e>...]   filter syntax: '<starts>:<contains>:<ends>'
+  -i, --include[=<s:c:e>...]   filter syntax: '<starts>:<contains>:<ends>'
   -r, --retain                 keep old files in <root>/.euaie/ (false)
   -s, --symlinks=<policy>      set policy for symbolic links (PRESERVE)
                                FOLLOW, IGNORE, PRESERVE
