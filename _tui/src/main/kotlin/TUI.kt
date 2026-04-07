@@ -373,10 +373,11 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
-            if (max(current.x.size, current.x.size) < 8388608L) section { //TODO limit?
-                underline { textLine(spread("diff", "$drop/${result.size}", width)) } //TODO head!
+            if (max(current.x.size, current.x.size) < 8388608L) section { //TODO 8 MiB limit?
+                val line = if (head) "head" else "tail"
+                underline { textLine(spread("diff ", "$line | $drop/${result.size}", width)) }
                 val w = if (head) width else -width
-                result.drop(drop).take(max(height - 3, 1)).forEach { //TODO - 3?
+                result.drop(drop).take(max(height - 2, 1)).forEach {
                     when (it.first()) {
                         '<'  -> red { textLine(cut(it, w)) }
                         '>'  -> green { textLine(cut(it, w)) }
@@ -391,7 +392,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.End   -> drop = result.size
                         Keys.Up    -> drop = max(drop - 1, 0)
                         Keys.Down  -> drop = min(drop + 1, result.size)
-                        Keys.Left  -> head = true
+                        Keys.Left -> head = true //TODO scroll horizontally?
                         Keys.Right -> head = false
                     }
                 }
