@@ -35,15 +35,13 @@ simple file synchronization
 #### examples
 
 dotfiles:  
-`euaie ~/ ~/cloud/dotfiles/ -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
+`euaie ~/ ~/cloud/dotfiles/ -r -x -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
-`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000`
-
-#### configuration
+`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -x`
 
 all options can be provided by arguments and argument files:  
-`euaie @path/to/arguments.txt --exit-when-done`
+`euaie @path/to/arguments.txt --exit`
 
 `arguments.txt`:
 ```
@@ -53,8 +51,9 @@ all options can be provided by arguments and argument files:
 /home/user/
 /home/user/Cloud/Home/
 
--s=IGNORE
---ignore-filter-case
+--retain
+--insensitive
+--symlinks=IGNORE
 
 #include in one line
 --include=.config/
@@ -93,8 +92,8 @@ examples:
 cross-platform jar:  
 `./gradlew shadowJar`
 
-native executable:  
-`native-image -jar euaie.jar`
+native executable with Gradle:  
+`./gradlew nativeCompile`
 
 native executable with Podman/Docker:  
 `podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25 -jar euaie.jar`
