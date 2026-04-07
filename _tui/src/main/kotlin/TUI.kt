@@ -11,6 +11,7 @@ import com.varabyte.kotter.terminal.system.*
 import com.varabyte.kotterx.grid.*
 import com.varabyte.kotterx.util.collections.*
 import kotlin.concurrent.*
+import kotlin.io.path.*
 import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
@@ -31,7 +32,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     TUI.terminal ?: SystemTerminal()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
-    val empty = kotlin.io.path.createTempFile().toString()
+    val empty = createTempFile("$NAME-")
     var current = L1.fake
     var active = true //exit flag
     var action = Action.SCAN
@@ -398,8 +399,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
                 aside { textLine() }
                 result = try {
-                    val x = if (current.x.real) "${sync.pathL}/${current.x.path}" else empty
-                    val y = if (current.y.real) "${sync.pathR}/${current.y.path}" else empty
+                    val x = if (current.x.real) "${sync.pathL}/${current.x.path}" else "$empty"
+                    val y = if (current.y.real) "${sync.pathR}/${current.y.path}" else "$empty"
                     ProcessBuilder("diff", x, y).redirectErrorStream(true)
                         .start().inputStream.bufferedReader().readLines()
                 } catch (e: Exception) {
@@ -467,6 +468,9 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.EXIT -> section {}.run { active = false } //TODO save settings? | delete empty!
+        Action.EXIT -> section {}.run { //TODO save settings?
+            empty.deleteIfExists()
+            active = false
+        }
     }
 }
