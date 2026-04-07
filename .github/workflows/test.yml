@@ -1,0 +1,12 @@
+name: Test
+on:
+  workflow_dispatch
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: ls -al
+      - run: rename -V
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
