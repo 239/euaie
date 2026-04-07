@@ -18,7 +18,7 @@ jobs:
       - run: ./gradlew shadowJar
       - run: ./gradlew nativeCompile
       - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
-      - run: find _tui/build/native/nativeCompile/ -execdir upx -o {}-upx {} \;
+      - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
       - run: file _tui/build/native/nativeCompile/*
       - run: |
           gh release create "${{ github.ref_name }}" \
