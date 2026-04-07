@@ -7,6 +7,5 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - run: ls -al
-      - run: cd _tui
-      - run: ls -al
+      - run: upx
       - run: find --version
