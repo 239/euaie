@@ -31,6 +31,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     TUI.terminal ?: SystemTerminal()) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
+    val empty = kotlin.io.path.createTempFile().toString()
     var current = L1.fake
     var active = true //exit flag
     var action = Action.SCAN
@@ -248,7 +249,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     "[Tab] help [Q] quit"
                 if (!TUI.optionExitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
                     if (showMore) textLine(cut(more, width * sign))
-                    text(spread(keysL, keysR, width * sign))
+                    text(spread(keysL, keysR, width * sign)) //TODO hide when switching sections?
                 }
             }.runUntilSignal {
                 onKeyPressed {
@@ -295,7 +296,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     }
                     action = when (a) {
                         Action.SYNC -> if (confirm) Action.SURE else a
-                        Action.DIFF -> if (current.x.real && current.y.real) a else Action.MAIN
+                        Action.DIFF -> if (current.x.file && current.y.file) a else Action.MAIN
                         else        -> a
                     }
                     index = max(min(i, limit), 0)
@@ -372,10 +373,10 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
-            if (current.x.real && current.y.real && max(current.x.size, current.x.size) < 8388608L) section {
-                underline { textLine(spread("diff", "$drop/${result.size}", width)) }
+            if (max(current.x.size, current.x.size) < 8388608L) section { //TODO limit?
+                underline { textLine(spread("diff", "$drop/${result.size}", width)) } //TODO head!
                 val w = if (head) width else -width
-                result.drop(drop).take(max(height - 3, 1)).forEach {
+                result.drop(drop).take(max(height - 3, 1)).forEach { //TODO - 3?
                     when (it.first()) {
                         '<'  -> red { textLine(cut(it, w)) }
                         '>'  -> green { textLine(cut(it, w)) }
@@ -396,8 +397,9 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
                 aside { textLine() }
                 result = try {
-                    val command = "diff ${sync.pathL}/${current.x.path} ${sync.pathR}/${current.y.path}"
-                    ProcessBuilder(command.split(" ")).redirectErrorStream(true)
+                    val x = if (current.x.real) "${sync.pathL}/${current.x.path}" else empty
+                    val y = if (current.y.real) "${sync.pathR}/${current.y.path}" else empty
+                    ProcessBuilder("diff", x, y).redirectErrorStream(true)
                         .start().inputStream.bufferedReader().readLines()
                 } catch (e: Exception) {
                     listOf(e.localizedMessage)
@@ -464,6 +466,6 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.EXIT -> section {}.run { active = false } //TODO save settings?
+        Action.EXIT -> section {}.run { active = false } //TODO save settings? | delete empty!
     }
 }
