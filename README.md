@@ -7,8 +7,8 @@
 - runs in terminals on Linux, macOS and Windows
 - native executables built with GraalVM Native Image
 
-![](web/main.png)
-![](web/help.png)
+![main](web/main.png)
+![help](web/help.png)
 
 ### usage
 
@@ -97,6 +97,9 @@ native executable with Gradle:
 
 native executable with Podman/Docker:  
 `podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25 -jar euaie.jar`
+
+static native executable with Podman/Docker: ⚠️ broken UI and poor performance ⚠️  
+`podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25-muslib --static --libc=musl -jar euaie.jar`
 
 ### dependencies
 
