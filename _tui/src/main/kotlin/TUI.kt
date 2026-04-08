@@ -42,11 +42,12 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     var filter by liveVarOf("")
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
+    var sortBySize by liveVarOf(false)
     var showBoth by liveVarOf(false)
     var showName by liveVarOf(false)
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
-    var sortBySize by liveVarOf(false)
+    var showCPS by liveVarOf(false)
     //val printLog: MainRenderScope.(String, String) -> Unit = { topL, topR ->
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
@@ -97,11 +98,16 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         }
 //-------------------------------------------------------------------------------------------------
         Action.MAIN -> run {
-            val space = "\t"
             var limit = 0
             var range = 0
             var confirm = false
+            var cycle by liveVarOf(0)
+            val start = System.currentTimeMillis()
             section {
+                val cps = if (showCPS) { //TODO wrong cps value when toggling!
+                    Thread.sleep(1)
+                    cycle++ * 1000 / (System.currentTimeMillis() - start)
+                } else 0
                 val list = sync.list()
                 val totalCh = LongArray(Ch.entries.size)
                 val totalDi = LongArray(Di.entries.size + 1) //also count revised
@@ -123,8 +129,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     } else this
                 }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
                 limit = sector.size - 1 //can be negative!
-                range = max(height - static, 0) //static lines for top and bottom
-                index = max(min(index, limit), 0) //liveVarOf: update only once!
+                range = max(height - static, 0) //fixed top and bottom lines
+                index = max(min(index, limit), 0) //LiveVar: update only once!
                 shift = max(min(shift, limit - range + 1), 0) //scroll back but...
                 shift = max(min(shift, index), index - range + 1) //follow index
                 val item = sector.getOrNull(index)
@@ -150,26 +156,30 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     bytes[2] += y
                 }
                 confirm = totalOp.sum() - totalOp[Op.NO.ordinal] > totalOp[Op.NO.ordinal]
-//overview------ //TODO use grid?
+//overview------
                 val sort = if (sortBySize) "size" else "path"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
-                val topR = "$sort | $path | $line | $width x $height"
+                val topR = "$sort | $path | $line | " + if (cps > 0) "$cps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
+//                grid(Cols { fit(); fit() },
+//                    maxCellHeight = 1, paddingLeftRight = 1,
+//                    characters = GridCharacters.INVISIBLE,
+//                    horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 TUI.orderCh.forEach {
                     scopedState {
                         if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
                             if (it == Ch.U) blue(ColorLayer.BG) else invert()
                         text("${totalCh[it.ordinal]}${it.icon}")
-                    }; text(" $space")
+                    }; text(" \t")
                 }; textLine()
                 TUI.orderDi.forEach {
                     scopedState {
                         if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
                         if (it == Di.U && totalDi[it.ordinal] > 0) red()
                         text("${totalDi[it.ordinal]}${it.icon}")
-                    }; text(" $space")
+                    }; text(" \t")
                 }
                 scopedState {
                     if (filterCh == Ch.U && filterDi == Di.N) invert()
@@ -178,7 +188,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }; textLine()
                 scopedState {
                     if (confirm) yellow()
-                    textLine(TUI.orderOp.joinToString(space) { "${totalOp[it.ordinal]}$it" }) //cut fails with tabs!
+                    textLine(TUI.orderOp.joinToString("\t") { "${totalOp[it.ordinal]}$it" }) //cut fails with tabs!
                 }
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width)) }
                 bytes.map { formatSize(it) }.let {
@@ -274,6 +284,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.Left, Keys.H         -> o = Di.L
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
+                        Keys.Digit0 -> showCPS = !showCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
@@ -414,7 +425,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         Action.HELP -> section {
             val credits = " made with Kotter + picocli + tinylog + ♥"
             underline { textLine(spread(version.substringBefore('-'), credits, width)) }
-            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) },
+            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use just text()?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
                 horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
@@ -437,7 +448,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
                 cell { text("${Di.R.icon}") }; cell { text("to the right") }
                 cell { text("${Di.U.icon}") }; cell { text("unclear") }
-                cell { text("!") }; cell { text("revised") }
+                cell { text("!") }; cell { text("revised") } //TODO show only!
             }
             bold { text(cut("[Enter|Esc|Tab] return", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) {
