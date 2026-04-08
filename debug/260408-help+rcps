@@ -1,0 +1,9 @@
+java.util.ConcurrentModificationException
+	at java.base/java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1096)
+	at java.base/java.util.ArrayList$ListItr.previous(ArrayList.java:1123)
+	at com.varabyte.kotter.runtime.render.RendererKt.getFinalTextCommandIsNewline(Renderer.kt:36)
+	at com.varabyte.kotter.runtime.Section.run(Section.kt:362)
+	at com.varabyte.kotter.foundation.SectionKt.runUntilSignal(Section.kt:26)
+	at euaie.TUIKt.start$lambda$0(TUI.kt:265)
+	at com.varabyte.kotter.foundation.SessionKt.session(Session.kt:82)
+	at com.varabyte.kotter.foundation.SessionKt.session$default(Session.kt:67)
