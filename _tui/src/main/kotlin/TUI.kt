@@ -16,7 +16,7 @@ import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST }
+enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO KEYS?
 
 object TUI {
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)

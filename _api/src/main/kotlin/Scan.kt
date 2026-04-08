@@ -13,7 +13,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     private val excluding = parse(exclude.plus(".$NAME"))
     private var included = 0L
     private var excluded = 0L
-    private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
+    private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() } //TODO negation?
         .map { it.replace(File.separatorChar, '/') }.sorted().map { it.split(D) }
         .map { Triple(it.getOrElse(0) { "" }, it.getOrElse(1) { "" }, it.getOrElse(2) { "" }) }.toSet()
 
