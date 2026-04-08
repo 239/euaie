@@ -47,7 +47,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     var showName by liveVarOf(false)
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
-    var showCPS by liveVarOf(false)
+    var showRCPS by liveVarOf(false)
     //val printLog: MainRenderScope.(String, String) -> Unit = { topL, topR ->
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
@@ -98,16 +98,16 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         }
 //-------------------------------------------------------------------------------------------------
         Action.MAIN -> run {
+            var confirm = false
             var limit = 0
             var range = 0
-            var confirm = false
+            var start = 0L
             var cycle by liveVarOf(0)
-            val start = System.currentTimeMillis()
             section {
-                val cps = if (showCPS) { //TODO wrong cps value when toggling!
-                    Thread.sleep(1)
-                    cycle++ * 1000 / (System.currentTimeMillis() - start)
-                } else 0
+                if (showRCPS) Thread.sleep(1)
+                cycle = if (showRCPS) cycle + 1 else 0
+                start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
+                val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start) else 0
                 val list = sync.list()
                 val totalCh = LongArray(Ch.entries.size)
                 val totalDi = LongArray(Di.entries.size + 1) //also count revised
@@ -161,7 +161,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
-                val topR = "$sort | $path | $line | " + if (cps > 0) "$cps" else "$width x $height"
+                val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
 //                grid(Cols { fit(); fit() },
 //                    maxCellHeight = 1, paddingLeftRight = 1,
@@ -284,7 +284,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.Left, Keys.H         -> o = Di.L
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
-                        Keys.Digit0 -> showCPS = !showCPS
+                        Keys.Digit0 -> showRCPS = !showRCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
