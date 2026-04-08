@@ -250,7 +250,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     "[Tab] help [Q] quit"
                 if (!TUI.optionExitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
                     if (showMore) textLine(cut(more, width * sign))
-                    text(spread(keysL, keysR, width * sign)) //TODO hide when switching sections?
+                    text(spread(keysL, keysR, width * sign))
                 }
             }.runUntilSignal {
                 onKeyPressed {
@@ -414,22 +414,25 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         Action.HELP -> section {
             val credits = " made with Kotter + picocli + tinylog + ♥"
             underline { textLine(spread(version.substringBefore('-'), credits, width)) }
-            grid(Cols { fit(); fit(maxWidth = width - 8) }, //TODO 4 columns?
+            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) },
                 maxCellHeight = 1, paddingLeftRight = 1,
-                characters = GridCharacters.BOX_DOUBLE, //TODO INVISIBLE?
-                horizontalSeparatorIndices = indicesOf(5, 10)) {
+                characters = GridCharacters.INVISIBLE,
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
-                cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
-                cell { text("${Ch.M.icon}") }; cell { text("${Ch.M.text} / move") }
-                cell { text("${Ch.C.icon}") }; cell { text("${Ch.C.text} ") }
-                cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
-                //
                 cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
+                cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
                 cell { invert { text("${Ch.R.icon}") } }; cell { text("show only removed") }
+                cell { text("${Ch.M.icon}") }; cell { text("${Ch.M.text} / move") }
                 cell { invert { text("${Ch.M.icon}") } }; cell { text("show only moved") }
+                cell { text("${Ch.C.icon}") }; cell { text("${Ch.C.text} ") }
                 cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
+                cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
                 cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
-                //
+            }
+            grid(Cols { fit(); fit() },
+                maxCellHeight = 1, paddingLeftRight = 1,
+                characters = GridCharacters.INVISIBLE,
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Di.N.icon}") }; cell { text("neutral") }
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
                 cell { text("${Di.R.icon}") }; cell { text("to the right") }
