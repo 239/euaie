@@ -1,10 +1,6 @@
 recipes:
     just -l
 
-agent +arguments:
-    java -agentlib:native-image-agent=config-merge-dir=_tui/src/main/resources/META-INF/native-image/euaie/ \
-        -jar _tui/build/jar/euaie.jar {{ arguments }}
-
 build-jar:
     ./gradlew shadowJar
 
@@ -24,3 +20,7 @@ build-native-image-podman-static: build-jar
 
 clean:
     ./gradlew clean
+
+native-image-agent +arguments: build-jar
+    java -agentlib:native-image-agent=config-merge-dir=_tui/src/main/resources/META-INF/native-image/euaie/ \
+        -jar _tui/build/jar/euaie.jar {{ arguments }}
