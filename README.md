@@ -2,7 +2,7 @@
 
 - local file synchronization with a functional TUI
 - flexible but minimal and easy configuration
-- plain but effective filter syntax (no glob or regex)
+- plain and effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
 - runs in terminals on Linux, macOS and Windows
 - native executables built with GraalVM Native Image
@@ -97,9 +97,6 @@ native executable with Gradle:
 
 native executable with Podman/Docker:  
 `podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25 -jar euaie.jar`
-
-static native executable with Podman/Docker: ⚠️ broken UI and poor performance ⚠️  
-`podman run --rm --volume .:/app ghcr.io/graalvm/native-image-community:25-muslib --static --libc=musl -jar euaie.jar`
 
 ### dependencies
 
