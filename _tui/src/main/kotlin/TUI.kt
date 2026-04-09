@@ -16,7 +16,7 @@ import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO KEYS?
+enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO KEYS | AUTO?
 
 object TUI {
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
@@ -29,8 +29,7 @@ object TUI {
 }
 
 fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(
-    TUI.terminal ?: SystemTerminal()
-) {
+    TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     val empty = createTempFile("$NAME-")
@@ -165,8 +164,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
-                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None
-                ) {
+                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
                         cell {
                             scopedState {
@@ -194,8 +192,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     }
                 }
                 grid(Cols { repeat(7) { star() } }, width - 8, GridCharacters.INVISIBLE,
-                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None
-                ) {
+                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderOp.forEach {
                         cell {
                             scopedState {
@@ -205,7 +202,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         }
                     }
                 }
-                if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width)) }
+                if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width * sign)) }
                 bytes.map { formatSize(it) }.let {
                     val sL = "${it[0]} (${it[1]} | ${it[2]}) "
                     val sR = "${index + 1} / ${limit + 1}"
@@ -419,8 +416,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.End   -> drop = result.size
                         Keys.Up    -> drop = max(drop - 1, 0)
                         Keys.Down  -> drop = min(drop + 1, result.size)
-                        Keys.Left -> head = true //TODO scroll horizontally?
-                        Keys.Right -> head = false
+                        Keys.Left  -> head = true
+                        Keys.Right -> head = false //TODO scroll horizontally?
                     }
                 }
                 aside { textLine() }
@@ -443,8 +440,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use just text()?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None
-            ) {
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
                 cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
                 cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
@@ -459,8 +455,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             grid(Cols { fit(); fit() },
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None
-            ) {
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Di.N.icon}") }; cell { text("neutral") }
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
                 cell { text("${Di.R.icon}") }; cell { text("to the right") }
