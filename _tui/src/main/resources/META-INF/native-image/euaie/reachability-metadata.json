@@ -13,10 +13,13 @@
           "name": "exit"
         },
         {
-          "name": "ignore"
+          "name": "include"
         },
         {
-          "name": "include"
+          "name": "insensitive"
+        },
+        {
+          "name": "retain"
         },
         {
           "name": "rootL"
@@ -25,10 +28,19 @@
           "name": "rootR"
         },
         {
+          "name": "stateless"
+        },
+        {
           "name": "symlinks"
         },
         {
+          "name": "threshold"
+        },
+        {
           "name": "tolerance"
+        },
+        {
+          "name": "version"
         }
       ]
     },
@@ -45,6 +57,15 @@
     },
     {
       "type": "groovy.lang.Closure"
+    },
+    {
+      "type": "java.io.Console",
+      "methods": [
+        {
+          "name": "isTerminal",
+          "parameterTypes": []
+        }
+      ]
     },
     {
       "type": "java.lang.Boolean",
@@ -75,6 +96,15 @@
       "methods": [
         {
           "name": "current",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.System",
+      "methods": [
+        {
+          "name": "console",
           "parameterTypes": []
         }
       ]
@@ -146,9 +176,6 @@
       "type": "java.util.concurrent.ScheduledThreadPoolExecutor"
     },
     {
-      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl"
-    },
-    {
       "type": "kotlinx.coroutines.CancellableContinuationImpl"
     },
     {
@@ -189,9 +216,6 @@
     },
     {
       "type": "kotlinx.coroutines.internal.Segment"
-    },
-    {
-      "type": "kotlinx.coroutines.internal.ThreadSafeHeap"
     },
     {
       "type": "kotlinx.coroutines.scheduling.CoroutineScheduler"
@@ -276,17 +300,6 @@
       ]
     },
     {
-      "type": "picocli.CommandLine$AutoHelpMixin",
-      "fields": [
-        {
-          "name": "helpRequested"
-        },
-        {
-          "name": "versionRequested"
-        }
-      ]
-    },
-    {
       "type": "sun.management.VMManagementImpl",
       "jniAccessible": true,
       "fields": [
@@ -339,6 +352,17 @@
       "fields": [
         {
           "name": "SIG_DFL"
+        }
+      ]
+    },
+    {
+      "type": "sun.security.provider.NativePRNG",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.security.SecureRandomParameters"
+          ]
         }
       ]
     },
