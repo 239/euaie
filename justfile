@@ -6,5 +6,6 @@ recipes:
 path:
     echo $PATH
 
-#agent:
-#    java -agentlib:native-image-agent=config-merge-dir=nia -jar euaie.jar rootL/ rootR/
+agent +arguments:
+    java -agentlib:native-image-agent=config-merge-dir=_tui/src/main/resources/META-INF/native-image/euaie/ \
+        -jar _tui/build/jar/euaie.jar {{ arguments }}
