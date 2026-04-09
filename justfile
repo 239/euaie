@@ -24,3 +24,6 @@ clean:
 native-image-agent +arguments: build-jar
     java -agentlib:native-image-agent=config-merge-dir=_tui/src/main/resources/META-INF/native-image/euaie/ \
         -jar _tui/build/jar/euaie.jar {{ arguments }}
+
+upx:
+    upx _tui/build/native/nativeCompile/*
