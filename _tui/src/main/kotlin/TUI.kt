@@ -165,7 +165,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
-                    0, Justification.RIGHT, 1, HorizontalSeparatorIndices.None
+                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None
                 ) {
                     TUI.orderCh.forEach {
                         cell {
@@ -194,7 +194,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     }
                 }
                 grid(Cols { repeat(7) { star() } }, width - 8, GridCharacters.INVISIBLE,
-                    0, Justification.RIGHT, 1, HorizontalSeparatorIndices.None
+                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None
                 ) {
                     TUI.orderOp.forEach {
                         cell {
