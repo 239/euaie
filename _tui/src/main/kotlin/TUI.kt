@@ -9,7 +9,7 @@ import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
 import com.varabyte.kotterx.grid.*
-import com.varabyte.kotterx.util.collections.*
+import com.varabyte.kotterx.text.*
 import kotlin.concurrent.*
 import kotlin.io.path.*
 import kotlin.math.*
@@ -29,7 +29,8 @@ object TUI {
 }
 
 fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(
-    TUI.terminal ?: SystemTerminal()) {
+    TUI.terminal ?: SystemTerminal()
+) {
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     val empty = createTempFile("$NAME-")
@@ -163,32 +164,46 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
-//                grid(Cols { fit(); fit() },
-//                    maxCellHeight = 1, paddingLeftRight = 1,
-//                    characters = GridCharacters.INVISIBLE,
-//                    horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
-                TUI.orderCh.forEach {
-                    scopedState {
-                        if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
-                            if (it == Ch.U) blue(ColorLayer.BG) else invert()
-                        text("${totalCh[it.ordinal]}${it.icon}")
-                    }; text(" \t")
-                }; textLine()
-                TUI.orderDi.forEach {
-                    scopedState {
-                        if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
-                        if (it == Di.U && totalDi[it.ordinal] > 0) red()
-                        text("${totalDi[it.ordinal]}${it.icon}")
-                    }; text(" \t")
+                grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
+                    0, Justification.RIGHT, 1, HorizontalSeparatorIndices.None
+                ) {
+                    TUI.orderCh.forEach {
+                        cell {
+                            scopedState {
+                                if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
+                                    if (it == Ch.U) blue(ColorLayer.BG) else invert()
+                                text("${totalCh[it.ordinal]}${it.icon}")
+                            }
+                        }
+                    }
+                    TUI.orderDi.forEach {
+                        cell {
+                            scopedState {
+                                if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
+                                if (it == Di.U && totalDi[it.ordinal] > 0) red()
+                                text("${totalDi[it.ordinal]}${it.icon}")
+                            }
+                        }
+                    }
+                    cell {
+                        scopedState {
+                            if (filterCh == Ch.U && filterDi == Di.N) invert()
+                            if (totalDi.last() > 0) green()
+                            text("${totalDi.last()}!")
+                        }
+                    }
                 }
-                scopedState {
-                    if (filterCh == Ch.U && filterDi == Di.N) invert()
-                    if (totalDi.last() > 0) green()
-                    text("${totalDi.last()}!")
-                }; textLine()
-                scopedState {
-                    if (confirm) yellow()
-                    textLine(TUI.orderOp.joinToString("\t") { "${totalOp[it.ordinal]}$it" }) //cut fails with tabs!
+                grid(Cols { repeat(7) { star() } }, width - 8, GridCharacters.INVISIBLE,
+                    0, Justification.RIGHT, 1, HorizontalSeparatorIndices.None
+                ) {
+                    TUI.orderOp.forEach {
+                        cell {
+                            scopedState {
+                                if (confirm) yellow()
+                                text("${totalOp[it.ordinal]}$it")
+                            }
+                        }
+                    }
                 }
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width)) }
                 bytes.map { formatSize(it) }.let {
@@ -428,7 +443,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use just text()?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None
+            ) {
                 cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
                 cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
                 cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
@@ -443,7 +459,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             grid(Cols { fit(); fit() },
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.None
+            ) {
                 cell { text("${Di.N.icon}") }; cell { text("neutral") }
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
                 cell { text("${Di.R.icon}") }; cell { text("to the right") }
