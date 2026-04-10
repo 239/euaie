@@ -162,7 +162,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val line = if (showTail) "tail" else "head"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
-                underline { textLine(spread(topL, topR, width)) }
+                underline { textLine(spread(topL, topR, width)) } //TODO align count with two columns?
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
                     0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
@@ -437,19 +437,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         Action.HELP -> section {
             val credits = " made with Kotter + picocli + tinylog + ♥"
             underline { textLine(spread(version.substringBefore('-'), credits, width)) }
-            text(" ${Ch.U.icon} ${Ch.U.text} / skip  ") //hard to cut!
-            blue(ColorLayer.BG) { text("${Ch.U.icon}") }; textLine(" hide unchanged")
-            text(" ${Ch.R.icon} ${Ch.R.text} / delete  ")
-            invert { text("${Ch.R.icon}") }; textLine(" show only removed")
-            text(" ${Ch.M.icon} ${Ch.M.text} / move      ")
-            invert { text("${Ch.M.icon}") }; textLine(" show only moved")
-            text(" ${Ch.C.icon} ${Ch.C.text}           ")
-            invert { text("${Ch.C.icon}") }; textLine(" show only changed")
-            text(" ${Ch.A.icon} ${Ch.A.text} / copy      ")
-            invert { text("${Ch.A.icon}") }; textLine(" show only added")
-            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use star()?
-                maxCellHeight = 1, paddingLeftRight = 1,
-                characters = GridCharacters.INVISIBLE,
+            grid(Cols { fit(); fit(maxWidth = max(width - 16, 1)); fit(); fit(maxWidth = max(width - 31, 1)) },
+                maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
                 horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
                 cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
@@ -462,9 +451,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
                 cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
             }
-            grid(Cols { fit(); fit() },
-                maxCellHeight = 1, paddingLeftRight = 1,
-                characters = GridCharacters.INVISIBLE,
+            grid(Cols { fit(); fit(maxWidth = max(width - 16, 1)) },
+                maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
                 horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Di.N.icon}") }; cell { text("neutral") }
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
