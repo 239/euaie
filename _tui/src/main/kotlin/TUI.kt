@@ -439,7 +439,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             underline { textLine(spread(version.substringBefore('-'), credits, width)) }
             grid(Cols { fit(); fit(maxWidth = max(width - 16, 1)); fit(); fit(maxWidth = max(width - 31, 1)) },
                 maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
+                horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
                 cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
                 cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
                 cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
@@ -450,15 +450,16 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
                 cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
                 cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
-            }
-            grid(Cols { fit(); fit(maxWidth = max(width - 16, 1)) },
-                maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
                 cell { text("${Di.N.icon}") }; cell { text("neutral") }
+                cell { invert { text("${Di.N.icon}") } }; cell { text("show only unchanged") }
                 cell { text("${Di.L.icon}") }; cell { text("to the left") }
+                cell { invert { text("${Di.L.icon}") } }; cell { text("show only left side") }
                 cell { text("${Di.R.icon}") }; cell { text("to the right") }
+                cell { invert { text("${Di.R.icon}") } }; cell { text("show only right side") }
                 cell { text("${Di.U.icon}") }; cell { text("unclear") }
-                cell { text("!") }; cell { text("revised") } //TODO show only!
+                cell { invert { red { text("${Di.U.icon}") } } }; cell { text("show only unclear") }
+                cell { text("!") }; cell { text("revised") }
+                cell { invert { green { text("!") } } }; cell { text("show only revised") }
             }
             bold { text(cut("[Enter|Esc|Tab] return", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) {
