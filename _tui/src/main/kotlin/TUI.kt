@@ -174,7 +174,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                             }
                         }
                     }
-                    TUI.orderDi.forEach { //TODO totalDi.forEach?
+                    TUI.orderDi.forEach {
                         cell {
                             scopedState {
                                 if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
@@ -437,7 +437,17 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         Action.HELP -> section {
             val credits = " made with Kotter + picocli + tinylog + ♥"
             underline { textLine(spread(version.substringBefore('-'), credits, width)) }
-            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use just text()?
+            text(" ${Ch.U.icon} ${Ch.U.text} / skip  ") //hard to cut!
+            blue(ColorLayer.BG) { text("${Ch.U.icon}") }; textLine(" hide unchanged")
+            text(" ${Ch.R.icon} ${Ch.R.text} / delete  ")
+            invert { text("${Ch.R.icon}") }; textLine(" show only removed")
+            text(" ${Ch.M.icon} ${Ch.M.text} / move      ")
+            invert { text("${Ch.M.icon}") }; textLine(" show only moved")
+            text(" ${Ch.C.icon} ${Ch.C.text}           ")
+            invert { text("${Ch.C.icon}") }; textLine(" show only changed")
+            text(" ${Ch.A.icon} ${Ch.A.text} / copy      ")
+            invert { text("${Ch.A.icon}") }; textLine(" show only added")
+            grid(Cols { fit(); fit(); fit(); fit(maxWidth = width - 31) }, //TODO use star()?
                 maxCellHeight = 1, paddingLeftRight = 1,
                 characters = GridCharacters.INVISIBLE,
                 horizontalSeparatorIndices = HorizontalSeparatorIndices.None) {
