@@ -174,7 +174,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                             }
                         }
                     }
-                    TUI.orderDi.forEach {
+                    TUI.orderDi.forEach { //TODO totalDi.forEach?
                         cell {
                             scopedState {
                                 if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
@@ -261,7 +261,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
 //keys----------
-                val more = "[V] view [F] find [S] sort [D] diff [N] $path [,] $line [${TUI.keysF}] filter"
+                val more = "[V] view [F] find [S] sort [D] diff [P] path [,] line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
                 else
@@ -296,13 +296,13 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.Left, Keys.H         -> o = Di.L
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
-                        Keys.Digit0 -> showRCPS = !showRCPS
+                        Keys.Digit0    -> showRCPS = !showRCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
-                        Keys.N, Keys.P            -> showName = !showName
+                        Keys.P, Keys.N -> showName = !showName
+                        Keys.Comma     -> showTail = !showTail
                         Keys.Period               -> showMore = !showMore
-                        Keys.Comma                -> showTail = !showTail
                         Keys.S                    -> sortBySize = !sortBySize
                         Keys.Plus                 -> filterCh = if (filterCh == Ch.A) Ch.U else Ch.A
                         Keys.Star                 -> filterCh = if (filterCh == Ch.C) Ch.U else Ch.C
