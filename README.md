@@ -26,7 +26,7 @@ simple file synchronization
                                FOLLOW, IGNORE, PRESERVE
   -t, --tolerance=<ms>         set allowed time difference (0)
   -x, --exit                   exit when both sides are equal (false)
-  -C, --copy-threshold=<MiB>   set threshold for interruptable copy mode (512)
+  -C, --copy-threshold=<MiB>   set threshold for interruptable copy (512)
   -I, --insensitive            use case insensitive filters (false)
   -S, --stateless              ignore previous state (false)
   -V, --version                print version and exit

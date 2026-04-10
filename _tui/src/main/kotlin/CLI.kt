@@ -57,7 +57,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     //2
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
-        description = [$$"set threshold for interruptable copy mode (${DEFAULT-VALUE})"])
+        description = [$$"set threshold for interruptable copy (${DEFAULT-VALUE})"])
     var threshold: Int = Sync.optionCopyThreshold
 
     @Option(names = ["-I", "--insensitive"],
