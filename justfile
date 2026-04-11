@@ -12,9 +12,14 @@ build-native-image-podman: build-jar
     podman run --rm --volume ./_tui/build/jar:/app \
         ghcr.io/graalvm/native-image-community:25 -jar euaie.jar
 
+[linux]
+build-native-image-podman-static-nolibc: build-jar
+    podman run --rm --volume ./_tui/build/jar:/app \
+        ghcr.io/graalvm/native-image-community:25 --static-nolibc -jar euaie.jar
+
 # ⚠️ broken UI and poor performance ⚠️
 [linux]
-build-native-image-podman-static: build-jar
+build-native-image-podman-static-musl: build-jar
     podman run --rm --volume ./_tui/build/jar:/app \
         ghcr.io/graalvm/native-image-community:25-muslib --static --libc=musl -jar euaie.jar
 
