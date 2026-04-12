@@ -43,6 +43,7 @@ graalvmNative {
     binaries {
         named("main") {
 //            imageName.set("${rootProject.name}-$platform") //TODO ?
+            imageName.set(rootProject.name)
             useFatJar.set(false)
         }
     }
