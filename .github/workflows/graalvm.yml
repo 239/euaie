@@ -22,10 +22,10 @@ jobs:
       #- run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
       #- run: file _tui/build/native/nativeCompile/*
       - run: |
-          gh release create "test" \
-            --title "test" \
-            --draft \
-            _tui/build/jar/* \
+          gh release create "test" `
+            --title "test" `
+            --draft `
+            _tui/build/jar/* `
             _tui/build/native/nativeCompile/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
