@@ -1,9 +1,11 @@
-name: GraalVM build
+name: Release (Linux)
 on:
-  workflow_dispatch
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
@@ -13,21 +15,20 @@ jobs:
           java-version: 25
           distribution: graalvm-community # liberica?
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-musl: false
           native-image-job-reports: true
       - run: ./gradlew -v
       - run: ./gradlew shadowJar
       - run: ./gradlew nativeCompile
       #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
-      #- run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
-      - shell: bash
-        run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
-      - shell: bash
-        run: file _tui/build/native/nativeCompile/*
+      - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
+      - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
+      - run: file _tui/build/native/nativeCompile/*
       - run: |
-          gh release create "test" `
-            --title "test" `
-            --draft `
-            _tui/build/jar/* `
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
+            --draft \
+            _tui/build/jar/* \
             _tui/build/native/nativeCompile/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
