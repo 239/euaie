@@ -17,7 +17,7 @@ jobs:
       - run: ./gradlew -v
       - run: ./gradlew shadowJar
       - run: ./gradlew nativeCompile
-      - run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
+      #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
       - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
       - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
       - run: file _tui/build/native/nativeCompile/*
