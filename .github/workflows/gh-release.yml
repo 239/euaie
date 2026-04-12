@@ -15,6 +15,8 @@ jobs:
           java-version: 25
           distribution: graalvm-community # liberica?
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          native-image-musl: false
+          native-image-job-reports: true
       - run: ./gradlew -v
       - run: ./gradlew shadowJar
       - run: ./gradlew nativeCompile
