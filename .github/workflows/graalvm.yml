@@ -1,0 +1,29 @@
+name: GraalVM build
+on:
+  workflow_dispatch
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+      - uses: graalvm/setup-graalvm@v1
+        with:
+          distribution: graalvm
+          java-version: 25
+      - run: gradlew -v
+      - run: gradlew shadowJar
+      - run: gradlew nativeCompile
+      #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
+      - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
+      - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
+      - run: file _tui/build/native/nativeCompile/*
+      - run: |
+          gh release create "test" \
+            --title "test" \
+            --draft \
+            _tui/build/jar/* \
+            _tui/build/native/nativeCompile/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
