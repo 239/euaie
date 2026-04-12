@@ -42,7 +42,7 @@ val platform = "${System.getProperty("os.name").lowercase()}-${System.getPropert
 graalvmNative {
     binaries {
         named("main") {
-            imageName.set("${rootProject.name}-$platform")
+//            imageName.set("${rootProject.name}-$platform") //TODO ?
             useFatJar.set(false)
         }
     }
