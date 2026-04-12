@@ -10,11 +10,11 @@ jobs:
       - uses: actions/checkout@v6
       - uses: graalvm/setup-graalvm@v1
         with:
-          distribution: graalvm
+          distribution: graalvm-community # liberica?
           java-version: 25
-      - run: gradlew -v
-      - run: gradlew shadowJar
-      - run: gradlew nativeCompile
+      - run: ./gradlew -v
+      - run: ./gradlew shadowJar
+      - run: ./gradlew nativeCompile
       #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
       - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
       - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
