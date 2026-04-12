@@ -25,15 +25,15 @@ allprojects {
     }
 
     //reproducible
-    tasks.withType<AbstractArchiveTask>().configureEach {
-        isPreserveFileTimestamps = false
-        isReproducibleFileOrder = true
-        eachFile {
-            permissions {
-                val exe = Files.getPosixFilePermissions(file.toPath()).contains(PosixFilePermission.OWNER_EXECUTE)
-                unix(if (exe) "755" else "644")
-            }
-        }
-        dirPermissions { unix("755") }
-    }
+//    tasks.withType<AbstractArchiveTask>().configureEach {
+//        isPreserveFileTimestamps = false
+//        isReproducibleFileOrder = true
+//        eachFile {
+//            permissions {
+//                val exe = Files.getPosixFilePermissions(file.toPath()).contains(PosixFilePermission.OWNER_EXECUTE)
+//                unix(if (exe) "755" else "644")
+//            }
+//        }
+//        dirPermissions { unix("755") }
+//    }
 }
