@@ -37,7 +37,7 @@ gitProperties {
     keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time")
 }
 
-val platform = {
+val platform = run {
     val name = System.getProperty("os.name").lowercase()
     val arch = System.getProperty("os.arch").lowercase()
     val system = when {
