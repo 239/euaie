@@ -68,9 +68,9 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //            Thread.sleep(1000) //debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
-            task.done.incrementAndGet()
             if (optionRetain && it.x.file && it.y.file)
                 operateRetaining(it, o, dump) else operate(it, o)
+            task.done.incrementAndGet()
         }
         for (t in finish) move(t.first, t.second, t.third)
         L.debug { "finish: ${finish.size}" }
