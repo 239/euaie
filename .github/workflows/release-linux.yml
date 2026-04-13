@@ -1,8 +1,6 @@
 name: release-linux
 on:
-  push:
-    tags:
-      - '[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -13,14 +11,13 @@ jobs:
       - uses: graalvm/setup-graalvm@v1
         with:
           java-version: 25
-          distribution: graalvm-community # liberica?
+          distribution: graalvm-community
           github-token: ${{ secrets.GITHUB_TOKEN }}
           native-image-musl: false
           native-image-job-reports: true
       - run: ./gradlew -v
       - run: ./gradlew shadowJar
       - run: ./gradlew nativeCompile
-      #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
       - run: ls -lh _tui/build/jar/ _tui/build/native/nativeCompile/
       - run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
       - run: file _tui/build/native/nativeCompile/*
