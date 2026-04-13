@@ -1,4 +1,4 @@
-name: Release (Linux)
+name: release-linux
 on:
   push:
     tags:
