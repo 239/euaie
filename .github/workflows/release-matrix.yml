@@ -21,19 +21,20 @@ jobs:
           native-image-job-reports: true
       - run: ./gradlew -v
       #- run: ./gradlew shadowJar
-      - run: ./gradlew nativeCompile
+      #- run: ./gradlew nativeCompile
       #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
       - uses: actions/upload-artifact@v7
         with:
           name: euaie-${{ matrix.os }}
-          path: _tui/build/native/nativeCompile/*
+          path: _tui/build.gradle.kts
+          #path: _tui/build/native/nativeCompile/*
   release:
     needs: build
     runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      #      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6
       - uses: actions/download-artifact@v8
         with:
           path: artifacts
@@ -41,8 +42,8 @@ jobs:
       #- run: find _tui/build/native/nativeCompile/ -type f -execdir upx -o {}-upx {} \;
       #- run: file _tui/build/native/nativeCompile/*
       - run: |
-          gh release create "test" \
-            --title "test" \
+          gh release create "${{ github.ref_name }}" \
+            --title "${{ github.ref_name }}" \
             --draft \
             artifacts/*
         env:
