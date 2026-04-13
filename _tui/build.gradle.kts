@@ -37,18 +37,6 @@ gitProperties {
     keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time")
 }
 
-val platform = run {
-    val name = System.getProperty("os.name").lowercase()
-    val arch = System.getProperty("os.arch").lowercase()
-    val system = when {
-        "linux" in name   -> "linux"
-        "mac" in name     -> "macos"
-        "windows" in name -> "windows"
-        else              -> name
-    }
-    "$system-$arch"
-}
-
 graalvmNative {
     agent {
         enabled.set(false) //TODO add to run?
@@ -57,6 +45,7 @@ graalvmNative {
         named("main") {
             imageName.set("${rootProject.name}-$platform")
             useFatJar.set(false)
+//            buildArgs.add("--static-nolibc")
         }
     }
 }
@@ -78,3 +67,15 @@ tasks.shadowJar {
 }
 
 tasks.test { outputs.upToDateWhen { false } }
+
+val platform = run {
+    val name = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    val system = when {
+        "linux" in name   -> "linux"
+        "mac" in name     -> "macos"
+        "windows" in name -> "windows"
+        else              -> name
+    }
+    "$system-$arch"
+}
