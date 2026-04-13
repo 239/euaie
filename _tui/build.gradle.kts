@@ -37,13 +37,25 @@ gitProperties {
     keys = listOf("git.branch", "git.commit.id.abbrev", "git.commit.time")
 }
 
-val platform = "${System.getProperty("os.name").lowercase()}-${System.getProperty("os.arch").lowercase()}"
+val platform = {
+    val name = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    val system = when {
+        "linux" in name   -> "linux"
+        "mac" in name     -> "macos"
+        "windows" in name -> "windows"
+        else              -> name
+    }
+    "$system-$arch"
+}
 
 graalvmNative {
+    agent {
+        enabled.set(false) //TODO add to run?
+    }
     binaries {
         named("main") {
-//            imageName.set("${rootProject.name}-$platform") //TODO ?
-            imageName.set(rootProject.name)
+            imageName.set("${rootProject.name}-$platform")
             useFatJar.set(false)
         }
     }
