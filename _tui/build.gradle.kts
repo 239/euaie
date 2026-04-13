@@ -43,7 +43,7 @@ graalvmNative {
     }
     binaries {
         named("main") {
-            imageName.set("${rootProject.name}-$platform")
+            imageName.set("${rootProject.name}-${platform()}")
             useFatJar.set(false)
 //            buildArgs.add("--static-nolibc")
         }
@@ -68,7 +68,7 @@ tasks.shadowJar {
 
 tasks.test { outputs.upToDateWhen { false } }
 
-val platform = run {
+fun platform(): String {
     val name = System.getProperty("os.name").lowercase()
     val arch = System.getProperty("os.arch").lowercase()
     val system = when {
@@ -77,5 +77,5 @@ val platform = run {
         "windows" in name -> "windows"
         else              -> name
     }
-    "$system-$arch"
+    return "$system-$arch"
 }
