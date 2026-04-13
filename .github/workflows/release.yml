@@ -1,4 +1,4 @@
-name: Release
+name: release
 on:
   workflow_dispatch:
   push:
@@ -25,10 +25,10 @@ jobs:
       #- run: native-image --static-nolibc -jar _tui/build/jar/euaie.jar _tui/build/jar/euaie-static-nolibc
       - uses: actions/upload-artifact@v7
         with:
-          name: euaie-${{ matrix.os }}
+          name: ${{ matrix.os }}
           path: _tui/build.gradle.kts
           #path: _tui/build/native/nativeCompile/*
-  release:
+  create:
     needs: build
     runs-on: ubuntu-latest
     permissions:
