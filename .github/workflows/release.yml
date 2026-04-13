@@ -27,11 +27,13 @@ jobs:
         with:
           name: ${{ matrix.os }}
           path: _tui/build/native/nativeCompile/*
+          archive: false
       - uses: actions/upload-artifact@v7
         if: matrix.os == 'ubuntu-latest'
         with:
           name: jar
           path: _tui/build/jar/*
+          archive: false
   create:
     needs: build
     runs-on: ubuntu-latest
