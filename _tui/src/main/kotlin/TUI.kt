@@ -162,7 +162,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val line = if (showTail) "tail" else "head"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
-                underline { textLine(spread(topL, topR, width)) } //TODO align count with two columns?
+                underline { textLine(spread(topL, topR, width)) } //TODO view indicator (1/2)?
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
                     0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
