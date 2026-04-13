@@ -105,12 +105,19 @@ native executable with Podman/Docker:
 - [tinylog](https://github.com/tinylog-org/tinylog)
 - [JLine](https://github.com/jline/jline3)
 - [Shadow](https://github.com/GradleUp/shadow)
-- [Truthish](https://github.com/varabyte/truthish)
 
 ### related recommendations
 
-- [rclone](https://github.com/rclone/rclone)
 - [Unison](https://github.com/bcpierce00/unison)
+- [FreeFileSync](https://freefilesync.org/)
 - [Mutagen](https://github.com/mutagen-io/mutagen)
 - [Syncthing](https://github.com/syncthing/syncthing)
-- [FreeFileSync](https://freefilesync.org/)
+- [rclone](https://github.com/rclone/rclone)
+
+### comparison
+
+|            | euaie  | FreeFileSync | Unison |
+|------------|--------|--------------|--------|
+| Language   | Kotlin | C++          | OCaml  |
+| LOC (cloc) | 1228   | 49238        | 40463  |
+| UI ratio   | 59%    | 47%          | 26%    |
