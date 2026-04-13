@@ -46,6 +46,7 @@ jobs:
           path: artifacts
           merge-multiple: true
       - run: ls -R artifacts/
+      - run: chmod +x artifacts/*
       - run: find artifacts/ -type f -execdir upx -o {}-upx {} \;
       - run: file artifacts/*
       - run: |
