@@ -479,7 +479,6 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     textLine("+$i:|${cutC(s, +i)}|")
                 for (i in 0..9)
                     textLine("-$i:|${cutC(s, -i)}|")
-                textLine(w1252.aliases().joinToString())
             }.runUntilKeyPressed(Keys.Escape) {
                 println("runUntilKeyPressed")
                 onKeyPressed {
