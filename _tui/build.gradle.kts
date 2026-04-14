@@ -38,26 +38,24 @@ gitProperties {
 }
 
 graalvmNative {
-    val platform = run {
-        val name = System.getProperty("os.name").lowercase()
-        val arch = System.getProperty("os.arch").lowercase()
-        val system = when {
-            "linux" in name   -> "linux"
-            "mac" in name     -> "macos"
-            "windows" in name -> "windows"
-            else              -> name
-        }
-        "$system-$arch"
-    }
-    agent {
-        enabled.set(false) //TODO add to run?
+    val name = System.getProperty("os.name").lowercase()
+    val arch = System.getProperty("os.arch").lowercase()
+    val type = when {
+        "linux" in name   -> "linux"
+        "mac" in name     -> "macos"
+        "windows" in name -> "windows"
+        else              -> name
     }
     binaries {
         named("main") {
-            imageName.set("${rootProject.name}-$platform")
+            imageName.set("${rootProject.name}-$type-$arch")
             useFatJar.set(false)
-            if ("windows" in platform) buildArgs.add("-H:+AddAllCharsets") //windows-1252 missing
+            if (type == "windows")
+                buildArgs.add("-H:+AddAllCharsets") //UnsupportedCharsetException: Cp1252
         }
+    }
+    agent {
+        enabled.set(false) //TODO add to run?
     }
 }
 
