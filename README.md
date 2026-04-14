@@ -118,6 +118,7 @@ native executable with Podman/Docker:
 
 |            | euaie  | FreeFileSync | Unison |
 |------------|--------|--------------|--------|
-| Language   | Kotlin | C++          | OCaml  |
+| language   | Kotlin | C++          | OCaml  |
+| version    | 0.26.5 | 14.9         | 2.53.8 |
 | LOC (cloc) | 1228   | 49238        | 40463  |
 | UI ratio   | 59%    | 47%          | 26%    |
