@@ -470,20 +470,37 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         Action.TEST -> run {
             println("run")
             var last by liveVarOf<Key>(Keys.Space)
+            val task = Task()
+            task.done.set(0)
+            task.goal.set(123456)
+            var d by liveVarOf("")
+            var t by liveVarOf("")
+            var p by liveVarOf(0.0)
             section {
                 println("section")
                 textLine("${System.currentTimeMillis()}")
                 textLine("[$last]")
-                val s = "a:b：c？"
-                for (i in 0..9)
-                    textLine("+$i:|${cutC(s, +i)}|")
-                for (i in 0..9)
-                    textLine("-$i:|${cutC(s, -i)}|")
+                textLine(d)
+                textLine(t)
+                textLine("$p")
             }.runUntilKeyPressed(Keys.Escape) {
                 println("runUntilKeyPressed")
                 onKeyPressed {
                     println("onKeyPressed")
                     last = key
+                    when (key) {
+                        Keys.Home     -> task.done.set(0)
+                        Keys.End      -> task.done.set(task.goal.get())
+                        Keys.Left     -> task.done.set(task.done.get() - 1)
+                        Keys.Right    -> task.done.set(task.done.get() + 1)
+                        Keys.Down     -> task.done.set(task.done.get() - 10)
+                        Keys.Up       -> task.done.set(task.done.get() + 10)
+                        Keys.PageDown -> task.done.set(task.done.get() - 100)
+                        Keys.PageUp   -> task.done.set(task.done.get() + 100)
+                    }
+                    d = formatSize(task.done.get())
+                    t = task.textual()
+                    p = task.progress()
                 }
                 aside {
                     println("aside")
