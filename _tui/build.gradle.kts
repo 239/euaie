@@ -38,14 +38,25 @@ gitProperties {
 }
 
 graalvmNative {
+    val platform = run {
+        val name = System.getProperty("os.name").lowercase()
+        val arch = System.getProperty("os.arch").lowercase()
+        val system = when {
+            "linux" in name   -> "linux"
+            "mac" in name     -> "macos"
+            "windows" in name -> "windows"
+            else              -> name
+        }
+        "$system-$arch"
+    }
     agent {
         enabled.set(false) //TODO add to run?
     }
     binaries {
         named("main") {
-            imageName.set("${rootProject.name}-${platform()}")
+            imageName.set("${rootProject.name}-$platform")
             useFatJar.set(false)
-//            buildArgs.add("--static-nolibc") //use native-image.properties?
+            if ("windows" in platform) buildArgs.add("-H:+AddAllCharsets") //windows-1252 missing
         }
     }
 }
@@ -67,15 +78,3 @@ tasks.shadowJar {
 }
 
 tasks.test { outputs.upToDateWhen { false } }
-
-fun platform(): String {
-    val name = System.getProperty("os.name").lowercase()
-    val arch = System.getProperty("os.arch").lowercase()
-    val system = when {
-        "linux" in name   -> "linux"
-        "mac" in name     -> "macos"
-        "windows" in name -> "windows"
-        else              -> name
-    }
-    return "$system-$arch"
-}
