@@ -86,7 +86,8 @@ class CLI : java.util.concurrent.Callable<Int> {
 }
 
 fun main(arguments: Array<String>) {
-    loadCharsets()
+    println(w1252.displayName())
+    loadCharsets().forEach { println(it.displayName()) }
     System.setProperty(KEY, version)
     picocli.CommandLine(CLI())
         .setCaseInsensitiveEnumValuesAllowed(true)
@@ -95,13 +96,12 @@ fun main(arguments: Array<String>) {
         .execute(*arguments) //TODO System.exit(code)?
 }
 
-fun loadCharsets() {
-    listOf(
-        "windows-1250",
-        "windows-1251",
-        "windows-1252", //Windows Latin-1
-        "windows-1253",
-        "windows-1254",
-        "windows-1257"
-    ).map { java.nio.charset.Charset.forName(it) }.size
-}
+val w1252: java.nio.charset.Charset = java.nio.charset.Charset.forName("windows-1252")
+fun loadCharsets() = listOf(
+    "windows-1250",
+    "windows-1251",
+    "windows-1252", //Windows Latin-1
+    "windows-1253",
+    "windows-1254",
+    "windows-1257"
+).map { java.nio.charset.Charset.forName(it) }
