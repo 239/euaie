@@ -45,7 +45,7 @@ graalvmNative {
         named("main") {
             imageName.set("${rootProject.name}-${platform()}")
             useFatJar.set(false)
-//            buildArgs.add("--static-nolibc")
+//            buildArgs.add("--static-nolibc") //use native-image.properties?
         }
     }
 }
