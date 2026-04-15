@@ -12,7 +12,8 @@ data class L0(val path: String, val size: Long, val time: Long) {
     fun e(a: L0) = ep(a) && es(a) && et(a)
     fun ep(a: L0) = path == a.path
     fun es(a: L0) = size == a.size
-    fun et(a: L0) = if (tolerance == 0L) time == a.time else abs(time - a.time) <= tolerance //TODO +/-3600000
+    fun et(a: L0) = if (tolerance == 0L) time == a.time else
+        abs(time - a.time).let { it <= tolerance || it == 3600000L }
     fun link() = time == LINK
     fun toLine() = "$path$D$size$D$time"
     fun toWord() = if (real) if (file) if (link()) "link" else "file" else "folder" else " "
