@@ -81,7 +81,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync.optionStateless = stateless
         TUI.optionExitWhenDone = exit
         start(rootL, rootR, include, exclude)
-        return if (version) 0 else 0 //TODO errors?
+        return if (version) 1 else 0 //avoiding 'never used' warning
     }
 }
 
@@ -91,5 +91,5 @@ fun main(arguments: Array<String>) {
         .setCaseInsensitiveEnumValuesAllowed(true)
         .setUsageHelpLongOptionsMaxWidth(30)
         .setUseSimplifiedAtFiles(true)
-        .execute(*arguments) //TODO System.exit(code)?
+        .execute(*arguments)
 }

@@ -65,7 +65,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         }
     }
 
-    private fun match(p: String): Boolean {
+    private fun match(p: String): Boolean { //TODO add tests!
         var r = including.isEmpty()
         r = r || including.any { match(p, it, optionInsensitive) } //TODO ignore case broken?
         r = r && excluding.all { !match(p, it, optionInsensitive) }
