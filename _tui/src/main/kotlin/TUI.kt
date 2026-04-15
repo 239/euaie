@@ -262,7 +262,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
 //keys----------
-                val more = "[V] view [F] find [S] sort [D] diff [P] path [,] line [${TUI.keysF}] filter"
+                val more = "[S] sort [D] diff [F] find [V] view [P] path [,] line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
                 else
