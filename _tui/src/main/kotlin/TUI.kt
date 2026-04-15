@@ -157,12 +157,13 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
                 confirm = totalOp.sum() - totalOp[Op.NO.ordinal] > totalOp[Op.NO.ordinal]
 //overview------
-                val sort = if (sortBySize) "size" else "path"
+                val view = if (showBoth) "2" else "1"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
+                val sort = if (sortBySize) "size" else "path"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
-                val topR = "$sort | $path | $line | " + if (rcps > 0) "$rcps" else "$width x $height"
-                underline { textLine(spread(topL, topR, width)) } //TODO view indicator (1/2)?
+                val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
+                underline { textLine(spread(topL, topR, width)) }
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
                     0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
@@ -214,7 +215,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     val ch = "${l.l2.pq.c.icon} ${l.l2.bp.c.icon}${l.l2.qd.c.icon} "
                     val di = "${l.proposed.icon} "
                     val op = "${map(l)} "
-                    val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•' //TODO '?' in nis!
+                    val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•'
                     val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path
                     val py = if (showName) l.l2.pq.y.name else l.l2.pq.y.path
                     val p2 = if (l.l2.pq.c.m()) " | $py" else ""
@@ -417,7 +418,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.Up    -> drop = max(drop - 1, 0)
                         Keys.Down  -> drop = min(drop + 1, result.size)
                         Keys.Left  -> head = true
-                        Keys.Right -> head = false //TODO scroll horizontally?
+                        Keys.Right -> head = false
                     }
                 }
                 aside { textLine() }
