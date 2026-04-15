@@ -206,7 +206,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width * sign)) }
                 bytes.map { formatSize(it) }.let {
                     val sL = "${it[0]} (${it[1]} | ${it[2]}) "
-                    val sR = "${index + 1} / ${limit + 1}"
+                    val sR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}"
                     underline { textLine(spread(sL, sR, width * sign)) }
                 }
 //list----------
