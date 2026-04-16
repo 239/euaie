@@ -15,8 +15,9 @@ import kotlin.io.path.*
 import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
+import kotlin.enums.enumEntries
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO AUTO?
+enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO LIST | AUTO?
 
 object TUI {
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
@@ -163,7 +164,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val sort = if (sortBySize) "size" else "path"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
-                underline { textLine(spread(topL, topR, width)) }
+                underline { textLine(spread(topL, topR, width)) } //TODO show tolerance?
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
                     0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
@@ -205,9 +206,9 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width * sign)) }
                 bytes.map { formatSize(it) }.let {
-                    val sL = "${it[0]} (${it[1]} | ${it[2]}) "
-                    val sR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}"
-                    underline { textLine(spread(sL, sR, width * sign)) }
+                    val sizeL = "${it[0]} (${it[1]} | ${it[2]}) "
+                    val sizeR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}"
+                    underline { textLine(spread(sizeL, sizeR, width * sign)) }
                 }
 //list----------
                 for (i in shift until minOf(shift + range, sector.size)) {
@@ -435,37 +436,59 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             action = Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
-        Action.HELP -> section {
-            val credits = " made with Kotter + picocli + tinylog + ♥"
-            underline { textLine(spread(version.substringBefore('-'), credits, width)) }
-            grid(Cols { fit(); fit(maxWidth = max(width - 16, 1)); fit(); fit(maxWidth = max(width - 31, 1)) },
-                maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
-                horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
-                cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
-                cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
-                cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
-                cell { invert { text("${Ch.R.icon}") } }; cell { text("show only removed") }
-                cell { text("${Ch.M.icon}") }; cell { text("${Ch.M.text} / move") }
-                cell { invert { text("${Ch.M.icon}") } }; cell { text("show only moved") }
-                cell { text("${Ch.C.icon}") }; cell { text("${Ch.C.text} ") }
-                cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
-                cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
-                cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
-                cell { text("${Di.N.icon}") }; cell { text("neutral") }
-                cell { invert { text("${Di.N.icon}") } }; cell { text("show only unchanged") }
-                cell { text("${Di.L.icon}") }; cell { text("to the left") }
-                cell { invert { text("${Di.L.icon}") } }; cell { text("show only left side") }
-                cell { text("${Di.R.icon}") }; cell { text("to the right") }
-                cell { invert { text("${Di.R.icon}") } }; cell { text("show only right side") }
-                cell { text("${Di.U.icon}") }; cell { text("unclear") }
-                cell { invert { red { text("${Di.U.icon}") } } }; cell { text("show only unclear") }
-                cell { text("!") }; cell { text("revised") }
-                cell { invert { green { text("!") } } }; cell { text("show only revised") }
+        Action.HELP -> run {
+            val views = listOf("symbols", "options") //TODO operations/keys?
+            var index by liveVarOf(0)
+            section {
+                val topL = version.substringBefore('-')
+                val topR = " made with Kotter + picocli + tinylog + ♥"
+                underline { textLine(spread(topL, topR, width)) }
+                views.forEachIndexed { i, s -> if (i == index) invert { text(" $s ") } else text(" $s ") }
+                textLine()
+                if (index == 0) grid(
+                    Cols { fit(); fit(maxWidth = max(width - 16, 1)); fit(); fit(maxWidth = max(width - 31, 1)) },
+                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
+                    horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
+                    cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
+                    cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
+                    cell { text("${Ch.R.icon}") }; cell { text("${Ch.R.text} / delete") }
+                    cell { invert { text("${Ch.R.icon}") } }; cell { text("show only removed") }
+                    cell { text("${Ch.M.icon}") }; cell { text("${Ch.M.text} / move") }
+                    cell { invert { text("${Ch.M.icon}") } }; cell { text("show only moved") }
+                    cell { text("${Ch.C.icon}") }; cell { text("${Ch.C.text} ") }
+                    cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
+                    cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
+                    cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
+                    cell { text("${Di.N.icon}") }; cell { text("neutral") }
+                    cell { invert { text("${Di.N.icon}") } }; cell { text("show only unchanged") }
+                    cell { text("${Di.L.icon}") }; cell { text("to the left") }
+                    cell { invert { text("${Di.L.icon}") } }; cell { text("show only left side") }
+                    cell { text("${Di.R.icon}") }; cell { text("to the right") }
+                    cell { invert { text("${Di.R.icon}") } }; cell { text("show only right side") }
+                    cell { text("${Di.U.icon}") }; cell { text("unclear") }
+                    cell { invert { red { text("${Di.U.icon}") } } }; cell { text("show only unclear") }
+                    cell { text("!") }; cell { text("revised") }
+                    cell { invert { green { text("!") } } }; cell { text("show only revised") }
+                }
+                if (index == 1) grid(Cols { fit(); fit() },
+                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
+                    horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
+                    cell { text("exclude") }; cell { text("${exclude.size} filters") }
+                    cell { text("include") }; cell { text("${include.size} filters") }
+                    cell { text("retain") }; cell { text("${Sync.optionRetain}") }
+                    cell { text("symlinks") }; cell { text("${Scan.optionSymbolicLink}") }
+                    cell { text("tolerance") }; cell { text("${L0.tolerance} ms") }
+                    cell { text("exit") }; cell { text("${TUI.optionExitWhenDone}") }
+                    cell { text("copy-threshold") }; cell { text("${Sync.optionCopyThreshold} MiB") }
+                    cell { text("insensitive") }; cell { text("${Scan.optionInsensitive}") }
+                    cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
+                }
+                bold { text(cut("[Enter|Esc|Space] return [Tab] switch", width)) }
+            }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Space) {
+                onKeyPressed { if (key == Keys.Tab) index = (index + 1) % views.size }
+                aside { textLine() }
+                action = Action.MAIN
             }
-            bold { text(cut("[Enter|Esc|Tab] return", width)) }
-        }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Tab) {
-            aside { textLine() }
-            action = Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
         Action.TEST -> run {
