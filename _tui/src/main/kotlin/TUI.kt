@@ -15,9 +15,8 @@ import kotlin.io.path.*
 import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
-import kotlin.enums.enumEntries
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO LIST | AUTO?
+enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO AUTO?
 
 object TUI {
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
@@ -33,7 +32,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
-    val empty = createTempFile("$NAME-")
+    val empty = createTempFile("$NAME-") //for one-sided diff
     var current = L1.fake
     var active = true //exit flag
     var action = Action.SCAN
@@ -72,7 +71,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             if (compare && sync.scan.finished() || !compare && sync.task.finished()) "$d" else "canceled"
         }
         render.cancel()
-        rerender() //ensure latest state is shown
+        rerender() //ensure that final state is visible
         action = Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
     }
@@ -333,7 +332,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
                     action = Action.EXIT
                     signal()
-                }
+                } //TODO timer for rerender every 1-5 s?
             }
         }
 //-------------------------------------------------------------------------------------------------
@@ -492,7 +491,6 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         }
 //-------------------------------------------------------------------------------------------------
         Action.TEST -> run {
-            println("run")
             var last by liveVarOf<Key>(Keys.Space)
             val task = Task()
             task.done.set(0)
@@ -501,16 +499,13 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             var t by liveVarOf("")
             var p by liveVarOf(0.0)
             section {
-                println("section")
                 textLine("${System.currentTimeMillis()}")
                 textLine("[$last]")
                 textLine(d)
                 textLine(t)
                 textLine("$p")
             }.runUntilKeyPressed(Keys.Escape) {
-                println("runUntilKeyPressed")
                 onKeyPressed {
-                    println("onKeyPressed")
                     last = key
                     when (key) {
                         Keys.Home     -> task.done.set(0)
@@ -526,10 +521,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     t = task.textual()
                     p = task.progress()
                 }
-                aside {
-                    println("aside")
-                    textLine()
-                }
+                aside { textLine() }
                 action = Action.EXIT
             }
         }
