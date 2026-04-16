@@ -13,7 +13,7 @@ data class L0(val path: String, val size: Long, val time: Long) {
     fun ep(a: L0) = path == a.path
     fun es(a: L0) = size == a.size
     fun et(a: L0) = if (tolerance == 0L) time == a.time else
-        abs(time - a.time).let { it <= tolerance || it == 3600000L || it == 7200000L }
+        abs(time - a.time).let { it <= tolerance || shifts.any { x -> x == it } }
     fun link() = time == LINK
     fun toLine() = "$path$D$size$D$time"
     fun toWord() = if (real) if (file) if (link()) "link" else "file" else "folder" else " "
@@ -24,6 +24,7 @@ data class L0(val path: String, val size: Long, val time: Long) {
         const val LINK = 239L
         val fake = L0("", 0, -1)
         var tolerance = 0L
+        var shifts = setOf(1, 2).map { it * 3600000L } //TODO set via option?
         fun fromLine(line: String): L0? {
             val l = line.split(D)
             val p = l.getOrNull(0)
