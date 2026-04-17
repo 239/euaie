@@ -55,7 +55,12 @@ graalvmNative {
         }
     }
     agent {
-        enabled.set(false) //TODO add to run?
+        enabled.set(true)
+        metadataCopy {
+            inputTaskNames.add("run") //TODO TUI does not start via Gradle
+            outputDirectories.add("src/main/resources/META-INF/native-image/${rootProject.name}")
+            mergeWithExisting.set(true)
+        }
     }
 }
 
