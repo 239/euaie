@@ -176,6 +176,9 @@
       "type": "java.util.concurrent.ScheduledThreadPoolExecutor"
     },
     {
+      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl"
+    },
+    {
       "type": "kotlinx.coroutines.CancellableContinuationImpl"
     },
     {
