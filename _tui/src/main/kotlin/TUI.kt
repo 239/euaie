@@ -33,9 +33,9 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     val sync = Sync(rootL, rootR, include, exclude)
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     val empty = createTempFile("$NAME-") //for one-sided diff
-    var current = L1.fake
     var active = true //exit flag
     var action = Action.SCAN
+    var current = L1.fake
     var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
@@ -90,7 +90,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
             }
             aside {
-//                textLine("═".repeat(50)) //─═ //TODO width not available!?
+//                textLine("═".repeat(width)) //─═ //TODO width not available!?
                 textLine()
                 textLine("${sync.pathL} | ${sync.pathR}")
             }
@@ -123,8 +123,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         else filterCh == null || filterCh == it.l2.pq.c) &&
                                 (filterDi == null || filterDi == it.proposed)
                     }
-                }).run { //TODO filter files/folders
-                    if (filter.isNotBlank()) filter {
+                }).run {
+                    if (filter.isNotBlank()) filter { //TODO filter files/folders
                         it.l2.pq.x.path.contains(filter, true) || it.l2.pq.y.path.contains(filter, true)
                     } else this
                 }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
@@ -163,7 +163,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val sort = if (sortBySize) "size" else "path"
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
-                underline { textLine(spread(topL, topR, width)) } //TODO show tolerance?
+                underline { textLine(spread(topL, topR, width)) }
                 grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
                     0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
@@ -206,7 +206,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width * sign)) }
                 bytes.map { formatSize(it) }.let {
                     val sizeL = "${it[0]} (${it[1]} | ${it[2]}) "
-                    val sizeR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}"
+                    val sizeR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}" //TODO find number?
                     underline { textLine(spread(sizeL, sizeR, width * sign)) }
                 }
 //list----------
@@ -332,7 +332,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
                     action = Action.EXIT
                     signal()
-                } //TODO timer for rerender every 1-5 s?
+                }
             }
         }
 //-------------------------------------------------------------------------------------------------
@@ -436,7 +436,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         }
 //-------------------------------------------------------------------------------------------------
         Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO operations/keys?
+            val views = listOf("symbols", "options") //TODO keys?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
