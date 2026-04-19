@@ -57,7 +57,7 @@ graalvmNative {
     agent {
         enabled.set(true)
         metadataCopy {
-            inputTaskNames.add("run") //TODO TUI does not start via Gradle
+            inputTaskNames.add("run") //system terminal does not work via Gradle
             outputDirectories.add("src/main/resources/META-INF/native-image/${rootProject.name}")
             mergeWithExisting.set(true)
         }
