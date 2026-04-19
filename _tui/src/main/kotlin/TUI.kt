@@ -39,7 +39,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
-    var filter by liveVarOf("")
+    var filter by liveVarOf("") //find
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
     var sortBySize by liveVarOf(false)
@@ -203,11 +203,13 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         }
                     }
                 }
-                if (filter.isNotBlank()) magenta { textLine(cut("find: '$filter'", width * sign)) }
-                bytes.map { formatSize(it) }.let {
-                    val sizeL = "${it[0]} (${it[1]} | ${it[2]}) "
-                    val sizeR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}" //TODO find number?
-                    underline { textLine(spread(sizeL, sizeR, width * sign)) }
+                val size = bytes.map { formatSize(it) }
+                val find = if (filter.isNotBlank()) " | '$filter'" else ""
+                val lineL = "${size[0]} (${size[1]} | ${size[2]}) "
+                val lineR = "${if (limit < 0) 0 else index + 1} / ${limit + 1}$find"
+                scopedState {
+                    if (filter.isNotBlank()) magenta()
+                    underline { textLine(spread(lineL, lineR, width * sign)) }
                 }
 //list----------
                 for (i in shift until minOf(shift + range, sector.size)) {
