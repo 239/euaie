@@ -114,7 +114,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val totalOp = LongArray(Op.entries.size)
                 val bytes = LongArray(3)
                 val sign = if (showTail) -1 else 1
-                val static = 11 + arrayOf(filter.isNotBlank(), showMore).count { it } //fixed lines
+                val static = 11 + arrayOf(showMore).count { it } //fixed lines
                 val sector = (if (filterCh == Ch.U && filterDi == Di.N)
                     list.filter { it.proposed != it.actual } //dynamic
                 else cache.getOrPut(filterCh to filterDi) {
