@@ -164,8 +164,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
-                grid(Cols { repeat(5) { star() } }, width - 6, GridCharacters.INVISIBLE,
-                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
+                grid(Cols { repeat(TUI.orderCh.size) { star() } }, width - 6,
+                    GridCharacters.INVISIBLE, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
                         cell {
                             scopedState {
@@ -192,8 +192,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         }
                     }
                 }
-                grid(Cols { repeat(7) { star() } }, width - 8, GridCharacters.INVISIBLE,
-                    0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
+                grid(Cols { repeat(TUI.orderOp.size) { star() } }, width - 8,
+                    GridCharacters.INVISIBLE, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderOp.forEach {
                         cell {
                             scopedState {
