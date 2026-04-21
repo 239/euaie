@@ -233,6 +233,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                             val cg = if (l.l2.pq.y.real) " ".repeat(gapC(c1, "", cw + 2)) else ""
                             text(c0); text(c1); text(cg); textLine(c2)
                         } else textLine(c0 + cutC("$px$p2", (width - c0.length) * sign))
+//                        } else textLine(c0 + textMetrics.truncateToWidth("$px$p2", (width - c0.length), "…"))
                     }
                 }
 //details-------
@@ -498,7 +499,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             val e0 = "\uD83C\uDF44".repeat(9)
             val e1 = "\uD83C\uDE32".repeat(9)
             val e2 = "\uD83C\uDFF4\u200D☠\uFE0F".repeat(9)
-            val text = runCatching { Path("../LICENSE").readLines() }.getOrElse { emptyList() } + t0 + e0 + e1 + e2
+            val text = runCatching { Path("../LICENSE").readLines() }
+                .getOrElse { emptyList() } + t0 + e0 + e1 + e2
             var w by liveVarOf(0)
             section {
                 if (w == 0) w = width
