@@ -122,3 +122,8 @@ native executable with Podman/Docker:
 | version      | 0.26.5 | 14.9         | 2.53.8 |
 | LOC (cloc)   | 1228   | 49238        | 40463  |
 | LOC UI ratio | 59%    | 47%          | 26%    |
+
+### license
+
+copyright 2026 239
+licensed under the Apache License 2.0 - see "LICENSE" file for details
