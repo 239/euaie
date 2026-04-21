@@ -1,13 +1,14 @@
 package euaie
 
-import java.util.*
 import kotlin.math.*
 import kotlin.time.*
 import org.jline.utils.*
 
-fun formatSize(bytes: Long, sign: Boolean = false, locale: Locale = Locale.getDefault()): String =
+private val ds = java.text.DecimalFormatSymbols().decimalSeparator
+
+fun formatSize(bytes: Long, sign: Boolean = false): String =
     when {
-        bytes < 0L    -> "-${formatSize(-bytes, false, locale)}"
+        bytes < 0L    -> "-${formatSize(-bytes, false)}"
         bytes == 0L   -> "${if (sign) "=" else ""}0 B"
         bytes < 1024L -> "${if (sign) "+" else ""}$bytes B"
         else          -> {
@@ -15,7 +16,7 @@ fun formatSize(bytes: Long, sign: Boolean = false, locale: Locale = Locale.getDe
             val x = bytes * 10 / (1L shl (z * 10)) //overflow at 1.6 EiB
             val i = x / 10
             val f = x % 10
-            "${if (sign) "+" else ""}$i.$f %siB".format(locale, " KMGTPE"[z])
+            "${if (sign) "+" else ""}$i$ds$f %siB".format(" KMGTPE"[z])
         }
     }
 
@@ -69,7 +70,7 @@ fun spreadC(left: String, right: String, width: Int, cutBoth: Boolean = false, f
 fun cutC2(text: String, length: Int): String {
     val t = AttributedString(text)
     if (t.columnLength() <= abs(length)) return text
-    val bi = java.text.BreakIterator.getCharacterInstance(Locale.ROOT)
+    val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
     val parts = ArrayDeque<String>()
     var width = 0
     bi.setText(text)
