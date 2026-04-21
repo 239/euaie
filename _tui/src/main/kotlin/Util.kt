@@ -12,8 +12,10 @@ fun formatSize(bytes: Long, sign: Boolean = false, locale: Locale = Locale.getDe
         bytes < 1024L -> "${if (sign) "+" else ""}$bytes B"
         else          -> {
             val z = (63 - bytes.countLeadingZeroBits()) / 10
-            val r = bytes.toDouble() / (1L shl z * 10)
-            "${if (sign) "+" else ""}%.1f %siB".format(locale, r, " KMGTPE"[z])
+            val x = bytes * 10 / (1L shl (z * 10)) //overflow at 1.6 EiB
+            val i = x / 10
+            val f = x % 10
+            "${if (sign) "+" else ""}$i.$f %siB".format(locale, " KMGTPE"[z])
         }
     }
 
