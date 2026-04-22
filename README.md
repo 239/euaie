@@ -10,6 +10,7 @@
 ![main](web/main.png)
 ![help](web/help.png)
 
+
 ### usage
 
 ```
@@ -125,5 +126,4 @@ native executable with Podman/Docker:
 
 ### license
 
-copyright 2026 239
-licensed under the Apache License 2.0 - see "LICENSE" file for details
+copyright 2026 239 - licensed under the [Apache License 2.0](LICENSE)
