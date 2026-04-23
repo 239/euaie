@@ -16,15 +16,15 @@ import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
 
-enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST } //TODO move into TUI?
-
 object TUI {
+    enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST }
+
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
     val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
     val keysF = orderCh.joinToString("|") { "${it.icon}" } +
             "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
-    var optionExitWhenDone = false
+    var optionExitWhenDone = false //TODO shorten
     var terminal: Terminal? = null
 }
 
@@ -34,7 +34,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     val empty = createTempFile("$NAME-") //for one-sided diff
     var active = true //exit flag
-    var action = Action.SCAN
+    var action = TUI.Action.SCAN
     var current = L1.fake
     var shift = 0
     var index by liveVarOf(0)
@@ -72,12 +72,12 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
         }
         render.cancel()
         rerender() //ensure that final state is visible
-        action = Action.MAIN
+        action = TUI.Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
     }
     while (active) when (action) {
 //-------------------------------------------------------------------------------------------------
-        Action.SCAN -> section {
+        TUI.Action.SCAN -> section {
             printLog("${sync.scan.textual()} ", "${sync.scan.duration().inWholeSeconds} s")
             if (sync.scan.started())
                 bold { text(cut("[Delete|Space] cancel", width)) }
@@ -97,7 +97,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             runSync(true)
         }
 //-------------------------------------------------------------------------------------------------
-        Action.MAIN -> run {
+        TUI.Action.MAIN -> run {
             var confirm = false
             var limit = 0
             var range = 0
@@ -284,13 +284,13 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     var i = index
                     var o = Di.U
                     when (key) {
-                        Keys.Enter, Keys.E        -> a = Action.SYNC
-                        Keys.Backspace, Keys.C    -> a = Action.SCAN
-                        Keys.Tab                  -> a = Action.HELP
-                        Keys.Escape, Keys.Q       -> a = Action.EXIT
-                        Keys.F                    -> a = Action.FIND
-                        Keys.D                    -> a = Action.DIFF
-                        Keys.Dollar               -> a = Action.TEST
+                        Keys.Enter, Keys.E     -> a = TUI.Action.SYNC
+                        Keys.Backspace, Keys.C -> a = TUI.Action.SCAN
+                        Keys.Tab               -> a = TUI.Action.HELP
+                        Keys.Escape, Keys.Q    -> a = TUI.Action.EXIT
+                        Keys.F                 -> a = TUI.Action.FIND
+                        Keys.D                 -> a = TUI.Action.DIFF
+                        Keys.Dollar            -> a = TUI.Action.TEST
                         Keys.Home, Keys.Y, Keys.Z -> i = 0
                         Keys.End, Keys.O          -> i = limit
                         Keys.PageUp, Keys.I       -> i = index - range + 1
@@ -300,12 +300,12 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         Keys.Left, Keys.H         -> o = Di.L
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
-                        Keys.Digit0    -> showRCPS = !showRCPS
+                        Keys.Digit0            -> showRCPS = !showRCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
-                        Keys.P, Keys.N -> showName = !showName
-                        Keys.Comma     -> showTail = !showTail
+                        Keys.P, Keys.N         -> showName = !showName
+                        Keys.Comma             -> showTail = !showTail
                         Keys.Period               -> showMore = !showMore
                         Keys.S                    -> sortBySize = !sortBySize
                         Keys.Plus                 -> filterCh = if (filterCh == Ch.A) Ch.U else Ch.A
@@ -323,46 +323,46 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                         }
                     }
                     action = when (a) {
-                        Action.SYNC -> if (confirm) Action.SURE else a
-                        Action.DIFF -> if (current.x.file && current.y.file) a else Action.MAIN
-                        else        -> a
+                        TUI.Action.SYNC -> if (confirm) TUI.Action.SURE else a
+                        TUI.Action.DIFF -> if (current.x.file && current.y.file) a else TUI.Action.MAIN
+                        else            -> a
                     }
                     index = max(min(i, limit), 0)
                     order = o
-                    if (action != Action.MAIN) signal()
+                    if (action != TUI.Action.MAIN) signal()
                 }
                 aside { textLine() }
                 if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
-                    action = Action.EXIT
+                    action = TUI.Action.EXIT
                     signal()
                 }
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.FIND -> section {
+        TUI.Action.FIND -> section {
             magenta { text("find: "); input(initialText = filter) }
             textLine()
             bold { text(cut("[Enter] apply", width)) }
         }.runUntilInputEntered {
             onInputEntered { filter = input }
             aside { textLine() }
-            action = Action.MAIN
+            action = TUI.Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
-        Action.SURE -> section {
+        TUI.Action.SURE -> section {
             yellow { textLine(cut("are you sure?", width)) }
             bold { text(spread("[Space|Y] continue", "[Delete|N] cancel", width, true)) }
         }.runUntilKeyPressed(Keys.Delete, Keys.N, Keys.Space, Keys.Y) {
             onKeyPressed {
                 action = when (key) {
-                    Keys.Space, Keys.Y -> Action.SYNC
-                    else               -> Action.MAIN
+                    Keys.Space, Keys.Y -> TUI.Action.SYNC
+                    else               -> TUI.Action.MAIN
                 }
             }
             aside { textLine() }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.SYNC -> section {
+        TUI.Action.SYNC -> section {
             printLog("${sync.task.textual()} ", "${sync.task.duration().inWholeSeconds} s")
             if (sync.copy.enabled()) {
                 val d = formatSize(sync.copy.done.get())
@@ -397,7 +397,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             runSync(false)
         }
 //-------------------------------------------------------------------------------------------------
-        Action.DIFF -> run {
+        TUI.Action.DIFF -> run {
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
@@ -435,10 +435,10 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 }
                 rerender()
             }
-            action = Action.MAIN
+            action = TUI.Action.MAIN
         }
 //-------------------------------------------------------------------------------------------------
-        Action.HELP -> run {
+        TUI.Action.HELP -> run {
             val views = listOf("symbols", "options") //TODO keys?
             var index by liveVarOf(0)
             section {
@@ -489,11 +489,11 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Space) {
                 onKeyPressed { if (key == Keys.Tab) index = (index + 1) % views.size }
                 aside { textLine() }
-                action = Action.MAIN
+                action = TUI.Action.MAIN
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.TEST -> run {
+        TUI.Action.TEST -> run {
             val t0 =
                 "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、何らかの修正が施されている場合は、その旨を追加記述しなければならない。"
             val e0 = "\uD83C\uDF44".repeat(9)
@@ -518,11 +518,11 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     }
                 }
                 aside { textLine() }
-                action = Action.EXIT
+                action = TUI.Action.EXIT
             }
         }
 //-------------------------------------------------------------------------------------------------
-        Action.EXIT -> section {}.run { //TODO save settings?
+        TUI.Action.EXIT -> section {}.run { //TODO save settings?
             empty.deleteIfExists()
             active = false
         }
