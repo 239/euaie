@@ -104,7 +104,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             var start = 0L
             var cycle by liveVarOf(0)
             section {
-                if (showRCPS) Thread.sleep(1)
+                if (showRCPS) Thread.sleep(1) //1 ms freezes VT
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start) else 0
@@ -165,7 +165,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
                 grid(Cols { repeat(TUI.orderCh.size) { star() } }, width - 6,
-                    GridCharacters.INVISIBLE, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
+                    GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
                         cell {
                             scopedState {
@@ -193,7 +193,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     }
                 }
                 grid(Cols { repeat(TUI.orderOp.size) { star() } }, width - 8,
-                    GridCharacters.INVISIBLE, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
+                    GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderOp.forEach {
                         cell {
                             scopedState {
@@ -449,7 +449,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 textLine()
                 if (index == 0) grid(
                     Cols { fit(); fit(maxWidth = max(width - 16, 1)); fit(); fit(maxWidth = max(width - 31, 1)) },
-                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
+                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
                     cell { text("${Ch.U.icon}") }; cell { text("${Ch.U.text} / skip") }
                     cell { blue(ColorLayer.BG) { text("${Ch.U.icon}") } }; cell { text("hide unchanged") }
@@ -473,7 +473,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                     cell { invert { green { text("!") } } }; cell { text("show only revised") }
                 }
                 if (index == 1) grid(Cols { fit(); fit() },
-                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BOX_THIN,
+                    maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
                     cell { text("exclude") }; cell { text("${exclude.size} filters") }
                     cell { text("include") }; cell { text("${include.size} filters") }
