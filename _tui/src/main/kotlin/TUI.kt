@@ -24,13 +24,11 @@ object TUI {
     val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
     val keysF = orderCh.joinToString("|") { "${it.icon}" } +
             "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
-    var optionExitWhenDone = false //TODO shorten
+    var optionExitWhenDone = false
     var terminal: Terminal? = null
 }
 
-fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<String>) = session(
-    TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
-    val sync = Sync(rootL, rootR, include, exclude)
+fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     val empty = createTempFile("$NAME-") //for one-sided diff
     var active = true //exit flag
@@ -475,8 +473,8 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
                 if (index == 1) grid(Cols { fit(); fit() },
                     maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
-                    cell { text("exclude") }; cell { text("${exclude.size} filters") }
-                    cell { text("include") }; cell { text("${include.size} filters") }
+                    cell { text("exclude") }; cell { text("${sync.exclude.size} filters") }
+                    cell { text("include") }; cell { text("${sync.include.size} filters") }
                     cell { text("retain") }; cell { text("${Sync.optionRetain}") }
                     cell { text("symlinks") }; cell { text("${Scan.optionSymbolicLink}") }
                     cell { text("tolerance") }; cell { text("${L0.tolerance} ms") }

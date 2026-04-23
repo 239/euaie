@@ -80,7 +80,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync.optionRetain = retain
         Sync.optionStateless = stateless
         TUI.optionExitWhenDone = exit
-        start(rootL, rootR, include, exclude)
+        start(Sync(rootL, rootR, include, exclude))
         return if (version) 1 else 0 //avoiding 'never used' warning
     }
 }
