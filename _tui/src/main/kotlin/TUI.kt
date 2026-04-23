@@ -104,7 +104,7 @@ fun start(rootL: String, rootR: String, include: Set<String>, exclude: Set<Strin
             var start = 0L
             var cycle by liveVarOf(0)
             section {
-                if (showRCPS) Thread.sleep(1) //1 ms freezes VT
+                if (showRCPS) Thread.sleep(5) //1 ms freezes VT
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start) else 0
