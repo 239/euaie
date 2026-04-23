@@ -162,7 +162,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
-                grid(Cols { repeat(TUI.orderCh.size) { star() } }, width - 6,
+                grid(Cols { repeat(TUI.orderCh.size) { star() } }, width - TUI.orderCh.size - 1,
                     GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
                         cell {
@@ -190,7 +190,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         }
                     }
                 }
-                grid(Cols { repeat(TUI.orderOp.size) { star() } }, width - 8,
+                grid(Cols { repeat(TUI.orderOp.size) { star() } }, width - TUI.orderOp.size - 1,
                     GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderOp.forEach {
                         cell {
