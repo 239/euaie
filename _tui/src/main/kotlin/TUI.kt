@@ -8,6 +8,7 @@ import com.varabyte.kotter.foundation.text.*
 import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
+import com.varabyte.kotterx.decorations.*
 import com.varabyte.kotterx.grid.*
 import com.varabyte.kotterx.text.*
 import kotlin.concurrent.*
@@ -262,7 +263,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     textLine(cut("$sd ($sx | $sy) [$wx | $wy]", width * sign))
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
-//keys----------
+//keys---------- //TODO bordered when height > x?
                 val more = "[S] sort [D] diff [F] find [V] view [P] path [,] line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
@@ -494,20 +495,23 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         TUI.Action.TEST -> run {
             val t0 =
                 "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、何らかの修正が施されている場合は、その旨を追加記述しなければならない。"
-            val e0 = "\uD83C\uDF44".repeat(9)
-            val e1 = "\uD83C\uDE32".repeat(9)
-            val e2 = "\uD83C\uDFF4\u200D☠\uFE0F".repeat(9)
+            val e0 = " \uD83D\uDC4D".repeat(6)
+            val e1 = " \uD83D\uDC4C\uD83C\uDFFE".repeat(7)
+            val e2 = " \uD83E\uDDD1\u200D\uD83D\uDCBB".repeat(8)
+            val e3 = " \uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBB".repeat(9)
             val text = runCatching { Path("../LICENSE").readLines() }
-                .getOrElse { emptyList() } + t0 + e0 + e1 + e2
+                .getOrElse { emptyList() } + t0 + e0 + e1 + e2 + e3
             var w by liveVarOf(0)
             section {
                 if (w == 0) w = width
-                text.forEachIndexed { index, line ->
-                    val l = "$index: $line"
-                    textLine(textMetrics.truncateToWidth(l, w, "…"))
-                    textLine(cutC(l, w))
+                bordered {
+                    text.forEachIndexed { index, line ->
+                        val l = "$index: $line"
+                        bordered { textLine(textMetrics.truncateToWidth(l, w, "…")) }
+//                        bordered { textLine(cutC(l, w)) }
+                    }
+                    bordered { text("$w") }
                 }
-                text("$w")
             }.runUntilKeyPressed(Keys.Escape) {
                 onKeyPressed {
                     when (key) {
