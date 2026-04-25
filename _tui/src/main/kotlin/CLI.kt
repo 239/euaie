@@ -1,5 +1,6 @@
 package euaie
 
+import kotlin.io.path.*
 import picocli.CommandLine.*
 
 private const val KEY = "$NAME.version"
@@ -86,6 +87,19 @@ class CLI : java.util.concurrent.Callable<Int> {
 }
 
 fun main(arguments: Array<String>) {
+    if (arguments.size == 1) {
+        val path = Path(arguments[0])
+        if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
+        if (path.isDirectory()) {
+            val files = path.listDirectoryEntries().filter { it.isRegularFile() }.sorted()
+            files.forEachIndexed { i, f -> println("${i + 1}: ${f.fileName}") }
+            print("select index: ")
+            val index = readlnOrNull()?.toIntOrNull() ?: 0
+            val file = files.getOrNull(index - 1)
+            if (file != null) arguments[0] = "@${file}"
+        }
+        println(arguments[0])
+    }
     System.setProperty(KEY, version)
     picocli.CommandLine(CLI())
         .setCaseInsensitiveEnumValuesAllowed(true)
