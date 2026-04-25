@@ -5,6 +5,7 @@ import kotlin.time.*
 import org.jline.utils.*
 
 private val ds = java.text.DecimalFormatSymbols().decimalSeparator
+private val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
 
 fun formatSize(bytes: Long, sign: Boolean = false): String =
     when {
@@ -70,7 +71,6 @@ fun spreadC(left: String, right: String, width: Int, cutBoth: Boolean = false, f
 fun cutC2(text: String, length: Int): String {
     val t = AttributedString(text)
     if (t.columnLength() <= abs(length)) return text
-    val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
     val parts = ArrayDeque<String>()
     var width = 0
     bi.setText(text)
