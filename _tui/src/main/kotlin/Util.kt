@@ -47,7 +47,7 @@ fun spread(left: String, right: String, width: Int, cutBoth: Boolean = false, fi
         "$l${filler.toString().repeat(gap(l, r, width))}$r"
     } else cut("$left${filler.toString().repeat(gap(left, right, width))}$right", width)
 
-fun cutC(text: String, length: Int): String {
+fun cutC(text: String, length: Int): String { //TODO textMetrics.truncateToWidth?
     val t = AttributedString(text)
     val l = t.columnLength()
     return if (l <= abs(length)) text
