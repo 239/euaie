@@ -18,14 +18,14 @@ import kotlin.time.*
 import org.tinylog.*
 
 object TUI {
-    enum class Action { DIFF, EXIT, FIND, HELP, MAIN, SCAN, SURE, SYNC, TEST }
+    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST }
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
     val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
     val keysF = orderCh.joinToString("|") { "${it.icon}" } +
             "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
-    var optionExitWhenDone = false
+    var optionQuitWhenDone = false
     var terminal: Terminal? = null
 }
 
@@ -232,7 +232,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                             val cg = if (l.l2.pq.y.real) " ".repeat(gapC(c1, "", cw + 2)) else ""
                             text(c0); text(c1); text(cg); textLine(c2)
                         } else textLine(c0 + cutC("$px$p2", (width - c0.length) * sign))
-//                        } else textLine(c0 + textMetrics.truncateToWidth("$px$p2", (width - c0.length), "…"))
                     }
                 }
 //details-------
@@ -263,7 +262,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     textLine(cut("$sd ($sx | $sy) [$wx | $wy]", width * sign))
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
-//keys---------- //TODO bordered when height > x?
+//keys----------
                 val more = "[S] sort [D] diff [F] find [V] view [P] path [,] line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
@@ -273,7 +272,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     "[.] more [Esc] quit"
                 else
                     "[Tab] help [Q] quit"
-                if (!TUI.optionExitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
+                if (!TUI.optionQuitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
                     if (showMore) textLine(cut(more, width * sign))
                     text(spread(keysL, keysR, width * sign))
                 }
@@ -286,7 +285,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         Keys.Enter, Keys.E     -> a = TUI.Action.SYNC
                         Keys.Backspace, Keys.C -> a = TUI.Action.SCAN
                         Keys.Tab               -> a = TUI.Action.HELP
-                        Keys.Escape, Keys.Q    -> a = TUI.Action.EXIT
+                        Keys.Escape, Keys.Q    -> a = TUI.Action.QUIT
                         Keys.F                 -> a = TUI.Action.FIND
                         Keys.D                 -> a = TUI.Action.DIFF
                         Keys.Dollar            -> a = TUI.Action.TEST
@@ -331,8 +330,8 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     if (action != TUI.Action.MAIN) signal()
                 }
                 aside { textLine() }
-                if (TUI.optionExitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
-                    action = TUI.Action.EXIT
+                if (TUI.optionQuitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
+                    action = TUI.Action.QUIT
                     signal()
                 }
             }
@@ -479,7 +478,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     cell { text("retain") }; cell { text("${Sync.optionRetain}") }
                     cell { text("symlinks") }; cell { text("${Scan.optionSymbolicLink}") }
                     cell { text("tolerance") }; cell { text("${L0.tolerance} ms") }
-                    cell { text("exit") }; cell { text("${TUI.optionExitWhenDone}") }
+                    cell { text("quit") }; cell { text("${TUI.optionQuitWhenDone}") }
                     cell { text("copy-threshold") }; cell { text("${Sync.optionCopyThreshold} MiB") }
                     cell { text("insensitive") }; cell { text("${Scan.optionInsensitive}") }
                     cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
@@ -493,8 +492,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.TEST -> run {
-            val t0 =
-                "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、何らかの修正が施されている場合は、その旨を追加記述しなければならない。"
+            val t0 = "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、..."
             val e0 = " \uD83D\uDC4D".repeat(6)
             val e1 = " \uD83D\uDC4C\uD83C\uDFFE".repeat(7)
             val e2 = " \uD83E\uDDD1\u200D\uD83D\uDCBB".repeat(8)
@@ -508,7 +506,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     text.forEachIndexed { index, line ->
                         val l = "$index: $line"
                         bordered { textLine(textMetrics.truncateToWidth(l, w, "…")) }
-//                        bordered { textLine(cutC(l, w)) }
                     }
                     bordered { text("$w") }
                 }
@@ -520,11 +517,11 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     }
                 }
                 aside { textLine() }
-                action = TUI.Action.EXIT
+                action = TUI.Action.QUIT
             }
         }
 //-------------------------------------------------------------------------------------------------
-        TUI.Action.EXIT -> section {}.run { //TODO save settings?
+        TUI.Action.QUIT -> section {}.run { //TODO save settings?
             empty.deleteIfExists()
             active = false
         }
