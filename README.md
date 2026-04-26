@@ -4,7 +4,7 @@
 - flexible but minimal and easy configuration
 - plain and effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
-- runs in terminals on Linux, macOS and Windows
+- runs in all terminals on Linux, macOS and Windows
 - native executables built with GraalVM Native Image
 
 ![main](web/main.png)
@@ -14,7 +14,7 @@
 ### usage
 
 ```
-Usage: euaie [-IrSVx] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
+Usage: euaie [-IQrSV] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
              [-i[=<s:c:e>...]]... [@<filename>...] <rootL> <rootR>
 simple file synchronization
       [@<filename>...]         one or more argument files containing options
@@ -24,11 +24,11 @@ simple file synchronization
   -i, --include[=<s:c:e>...]   filter syntax: '<starts>:<contains>:<ends>'
   -r, --retain                 keep old files in <root>/.euaie/ (false)
   -s, --symlinks=<policy>      set policy for symbolic links (PRESERVE)
-                               FOLLOW, IGNORE, PRESERVE
+                               policies: FOLLOW, IGNORE, PRESERVE
   -t, --tolerance=<ms>         set allowed time difference (0)
-  -x, --exit                   exit when both sides are equal (false)
   -C, --copy-threshold=<MiB>   set threshold for interruptable copy (512)
   -I, --insensitive            use case insensitive filters (false)
+  -Q, --quit                   exit when both sides are equal (false)
   -S, --stateless              ignore previous state (false)
   -V, --version                print version and exit
 ```
@@ -36,7 +36,7 @@ simple file synchronization
 #### examples
 
 dotfiles:  
-`euaie ~/ ~/cloud/dotfiles/ -r -x -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
+`euaie ~/ ~/sync/ -r -x -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
 `euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -x`
@@ -50,7 +50,7 @@ all options can be provided by arguments and argument files:
 
 #roots first
 /home/user/
-/home/user/Cloud/Home/
+/home/user/Cloud/Sync/
 
 --retain
 --insensitive
@@ -107,7 +107,7 @@ native executable with Podman/Docker:
 - [JLine](https://github.com/jline/jline3)
 - [Shadow](https://github.com/GradleUp/shadow)
 
-### related recommendations
+### related
 
 - [Unison](https://github.com/bcpierce00/unison)
 - [FreeFileSync](https://freefilesync.org/)
