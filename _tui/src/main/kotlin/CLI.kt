@@ -29,7 +29,7 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Parameters(index = "1")
     lateinit var rootR: String
 
-    //0
+    //1
     @Option(names = ["-e", "--exclude"], arity = "*", paramLabel = "<s:c:e>",
         description = ["filter syntax: '<starts>:<contains>:<ends>'"])
     var exclude: Set<String> = emptySet()
@@ -38,23 +38,18 @@ class CLI : java.util.concurrent.Callable<Int> {
         description = ["filter syntax: '<starts>:<contains>:<ends>'"])
     var include: Set<String> = emptySet()
 
-    //1
     @Option(names = ["-r", "--retain"],
         description = [$$"keep old files in <root>/.$$NAME/ (${DEFAULT-VALUE})"])
     var retain: Boolean = Sync.optionRetain
 
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
         description = [$$"set policy for symbolic links (${DEFAULT-VALUE})",
-            $$"select from: ${COMPLETION-CANDIDATES}"])
+            $$"policies: ${COMPLETION-CANDIDATES}"])
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
         description = [$$"set allowed time difference (${DEFAULT-VALUE})"])
     var tolerance: Long = L0.tolerance
-
-    @Option(names = ["-x", "--exit"],
-        description = [$$"exit when both sides are equal (${DEFAULT-VALUE})"])
-    var exit: Boolean = TUI.optionExitWhenDone
 
     //2
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
@@ -64,6 +59,10 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Option(names = ["-I", "--insensitive"],
         description = [$$"use case insensitive filters (${DEFAULT-VALUE})"])
     var insensitive: Boolean = Scan.optionInsensitive
+
+    @Option(names = ["-Q", "--quit"],
+        description = [$$"exit when both sides are equal (${DEFAULT-VALUE})"])
+    var quit: Boolean = TUI.optionQuitWhenDone
 
     @Option(names = ["-S", "--stateless"],
         description = [$$"ignore previous state (${DEFAULT-VALUE})"])
@@ -80,7 +79,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
         Sync.optionRetain = retain
         Sync.optionStateless = stateless
-        TUI.optionExitWhenDone = exit
+        TUI.optionQuitWhenDone = quit
         start(Sync(rootL, rootR, include, exclude))
         return if (version) 1 else 0 //avoiding 'never used' warning
     }
