@@ -36,13 +36,13 @@ simple file synchronization
 #### examples
 
 dotfiles:  
-`euaie ~/ ~/sync/ -r -x -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
+`euaie ~/ ~/sync/ -Q -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
-`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -x`
+`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -Q`
 
 all options can be provided by arguments and argument files:  
-`euaie @path/to/arguments.txt --exit`
+`euaie @path/to/arguments.txt --quit`
 
 `arguments.txt`:
 ```
