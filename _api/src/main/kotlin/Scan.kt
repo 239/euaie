@@ -55,7 +55,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         return r
     }
 
-    private fun save() { //TODO compression?
+    private fun save() { //TODO java.util.zip.*?
         try {
             state.createParentDirectories()
             state.writeLines(result.values.map { it.toLine() })
@@ -67,7 +67,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 
     private fun match(p: String): Boolean {
         var r = including.isEmpty()
-        r = r || including.any { match(p, it, optionInsensitive) } //TODO ignore case broken?
+        r = r || including.any { match(p, it, optionInsensitive) }
         r = r && excluding.all { !match(p, it, optionInsensitive) }
         if (r) included++ else excluded++
         L.trace { "${if (r) '+' else '-'} $p" }
@@ -89,8 +89,10 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
                 result[path] = L0(path, size, time)
                 task.done.incrementAndGet()
                 FileVisitResult.CONTINUE
-            } else if (including.any { it.first.startsWith(path) } || including.any { path.startsWith(it.first) })
-                FileVisitResult.CONTINUE else FileVisitResult.SKIP_SUBTREE
+            } else if (
+                including.any { it.first.startsWith(path, optionInsensitive) } || //TODO unnecessary?
+                including.any { path.startsWith(it.first, optionInsensitive) }
+            ) FileVisitResult.CONTINUE else FileVisitResult.SKIP_SUBTREE
         }
         onPostVisitDirectory { _, e ->
             if (e != null)
@@ -122,10 +124,10 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 }
 
 fun statePath(name: String): Path = when {
-    System.getProperty("os.name").startsWith("Windows") ->
+    System.getProperty("os.name").startsWith("Windows", true) ->
         Paths.get(System.getenv("LocalAppData"), name, "state")
-    System.getProperty("os.name").startsWith("Mac")     ->
+    System.getProperty("os.name").startsWith("Mac", true)     ->
         Paths.get(System.getProperty("user.home"), "Library", "Application Support", name, "state")
-    else                                                ->
+    else                                                      ->
         Paths.get(System.getenv("XDG_STATE_HOME") ?: "${System.getProperty("user.home")}/.local/state", name)
 }
