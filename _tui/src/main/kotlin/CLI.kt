@@ -96,8 +96,8 @@ fun main(arguments: Array<String>) {
             val index = readlnOrNull()?.toIntOrNull() ?: 0
             val file = files.getOrNull(index - 1)
             if (file != null) arguments[0] = "@${file}"
+            println(arguments[0])
         }
-        println(arguments[0])
     }
     System.setProperty(KEY, version)
     picocli.CommandLine(CLI())
