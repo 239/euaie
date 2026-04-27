@@ -1,6 +1,7 @@
 # euaie
 
 - local file synchronization with a functional TUI
+- scalable and tiling window friendly layout
 - flexible but minimal and easy configuration
 - plain and effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
@@ -9,7 +10,6 @@
 
 ![main](web/main.png)
 ![help](web/help.png)
-
 
 ### usage
 
@@ -36,7 +36,7 @@ simple file synchronization
 #### examples
 
 dotfiles:  
-`euaie ~/ ~/sync/ -Q -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
+`euaie ~/ ~/sync/ -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
 `euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -Q`
