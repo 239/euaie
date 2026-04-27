@@ -470,17 +470,19 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     cell { text("!") }; cell { text("revised") }
                     cell { invert { green { text("!") } } }; cell { text("show only revised") }
                 }
-                if (index == 1) grid(Cols { fit(); fit() },
+                if (index == 1) grid(Cols { fit(); fit(maxWidth = max(width - 22, 1)) },
                     maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
-                    cell { text("exclude") }; cell { text("${sync.exclude.size} filters") }
-                    cell { text("include") }; cell { text("${sync.include.size} filters") }
-                    cell { text("retain") }; cell { text("${Sync.optionRetain}") }
+                    val exclude = sync.exclude.joinToString("|", "[", "]")
+                    val include = sync.include.joinToString("|", "[", "]")
+                    cell { text("exclude filters") }; cell { text("${sync.exclude.size}: $exclude") }
+                    cell { text("include filters") }; cell { text("${sync.include.size}: $include") }
+                    cell { text("retain files") }; cell { text("${Sync.optionRetain}") }
                     cell { text("symlinks") }; cell { text("${Scan.optionSymbolicLink}") }
-                    cell { text("tolerance") }; cell { text("${L0.tolerance} ms") }
-                    cell { text("quit") }; cell { text("${TUI.optionQuitWhenDone}") }
+                    cell { text("time tolerance") }; cell { text("${L0.tolerance} ms") }
                     cell { text("copy-threshold") }; cell { text("${Sync.optionCopyThreshold} MiB") }
                     cell { text("insensitive") }; cell { text("${Scan.optionInsensitive}") }
+                    cell { text("quit when done") }; cell { text("${TUI.optionQuitWhenDone}") }
                     cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
                 }
                 bold { text(cut("[Enter|Esc|Space] return [Tab] switch", width)) }
