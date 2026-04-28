@@ -34,7 +34,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     val empty = createTempFile("$NAME-") //for one-sided diff
     var active = true //exit flag
     var action = TUI.Action.SCAN
-    var current = L1.fake
     var shift = 0 //TODO move into MAIN?
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
@@ -47,6 +46,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
     var showRCPS by liveVarOf(false)
+    var diff = L1.fake
     //val printLog: MainRenderScope.(String, String) -> Unit = { topL, topR ->
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
@@ -134,9 +134,9 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 index = max(min(index, limit), 0) //LiveVar: update only once!
                 shift = max(min(shift, limit - range + 1), 0) //scroll back but...
                 shift = max(min(shift, index), index - range + 1) //follow index
-                val item = sector.getOrNull(index) //TODO rename?
-                current = item?.l2?.pq ?: L1.fake
+                val item = sector.getOrNull(index)
                 previous = index to item
+                diff = item?.l2?.pq ?: L1.fake
                 if (order != Di.U && item != null) {
                     if (item.proposed != Di.N) item.actual = order
                     if (!item.l2.pq.x.file) list.filter { it.l2.pq.x.path.startsWith(item.l2.pq.x.path) }
@@ -325,7 +325,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     }
                     action = when (a) {
                         TUI.Action.SYNC -> if (confirm) TUI.Action.SURE else a
-                        TUI.Action.DIFF -> if (current.x.file && current.y.file) a else TUI.Action.MAIN
+                        TUI.Action.DIFF -> if (diff.x.file && diff.y.file) a else TUI.Action.MAIN
                         else            -> a
                     }
                     index = max(min(i, limit), 0)
@@ -402,7 +402,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
-            if (max(current.x.size, current.x.size) < 8388608L) section { //TODO 8 MiB limit?
+            if (max(diff.x.size, diff.y.size) < 8388608L) section { //TODO 8 MiB limit?
                 val line = if (head) "head" else "tail"
                 underline { textLine(spread("diff ", "$line | $drop/${result.size}", width)) }
                 val w = if (head) width else -width
@@ -427,8 +427,8 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 }
                 aside { textLine() }
                 result = try {
-                    val x = if (current.x.real) "${sync.pathL}/${current.x.path}" else "$empty"
-                    val y = if (current.y.real) "${sync.pathR}/${current.y.path}" else "$empty"
+                    val x = if (diff.x.real) "${sync.pathL}/${diff.x.path}" else "$empty"
+                    val y = if (diff.y.real) "${sync.pathR}/${diff.y.path}" else "$empty"
                     ProcessBuilder("diff", x, y).redirectErrorStream(true)
                         .start().inputStream.bufferedReader().readLines()
                 } catch (e: Exception) {
