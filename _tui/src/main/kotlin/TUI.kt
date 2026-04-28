@@ -31,10 +31,9 @@ object TUI {
 
 fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
-    val empty = createTempFile("$NAME-") //for one-sided diff
-    var active = true //exit flag
     var action = TUI.Action.SCAN
-    var shift = 0 //TODO move into MAIN?
+    var active = true //exit flag
+    var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
     var filter by liveVarOf("") //find
@@ -46,8 +45,8 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
     var showRCPS by liveVarOf(false)
-    var diff = L1.fake
-    //val printLog: MainRenderScope.(String, String) -> Unit = { topL, topR ->
+    val empty = createTempFile("$NAME-") //for one-sided diff
+    var diff = L1.fake //short-cut
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
         MainWriter.log.forEach {
@@ -60,7 +59,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
             yellow { text("${MainWriter.total(Level.WARN)}") }; textLine()
         }
     }
-    //val runSync: RunScope.(Boolean) -> Unit = { compare ->
     val runSync = fun RunScope.(compare: Boolean): Unit {
         cache.clear()
         MainWriter.clear()
@@ -328,7 +326,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         TUI.Action.DIFF -> if (diff.x.file && diff.y.file) a else TUI.Action.MAIN
                         else            -> a
                     }
-                    index = max(min(i, limit), 0)
+                    index = max(min(i, limit), 0) //avoiding second update on rerender
                     order = o
                     if (action != TUI.Action.MAIN) signal()
                 }
@@ -402,7 +400,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
-            if (max(diff.x.size, diff.y.size) < 8388608L) section { //TODO 8 MiB limit?
+            if (max(diff.x.size, diff.y.size) < 8388608L) section { //8 MiB limit
                 val line = if (head) "head" else "tail"
                 underline { textLine(spread("diff ", "$line | $drop/${result.size}", width)) }
                 val w = if (head) width else -width
@@ -440,7 +438,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO keys?
+            val views = listOf("symbols", "options") //TODO keys / paths?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
