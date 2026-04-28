@@ -35,7 +35,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     var active = true //exit flag
     var action = TUI.Action.SCAN
     var current = L1.fake
-    var shift = 0
+    var shift = 0 //TODO move into MAIN?
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
     var filter by liveVarOf("") //find
@@ -89,7 +89,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 }
             }
             aside {
-//                textLine("═".repeat(width)) //─═ //TODO width not available!?
                 textLine()
                 textLine("${sync.pathL} | ${sync.pathR}")
             }
@@ -102,6 +101,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
             var range = 0
             var start = 0L
             var cycle by liveVarOf(0)
+            var previous = Pair<Int, L3?>(index, null)
             section {
                 if (showRCPS) Thread.sleep(5) //1 ms freezes VT
                 cycle = if (showRCPS) cycle + 1 else 0
@@ -119,7 +119,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 else cache.getOrPut(filterCh to filterDi) {
                     list.filter { // static
                         (if (filterCh == Ch.U) it.l2.pq.c != Ch.U //exclude unchanged
-                        else filterCh == null || filterCh == it.l2.pq.c) &&
+                        else filterCh == null || filterCh == it.l2.pq.c) && //all or filter only
                                 (filterDi == null || filterDi == it.proposed)
                     }
                 }).run {
@@ -127,13 +127,16 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         it.l2.pq.x.path.contains(filter, true) || it.l2.pq.y.path.contains(filter, true)
                     } else this
                 }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
+                if (previous.first == index && previous.second !== sector.getOrNull(index)) //list changed
+                    sector.indexOf(previous.second).let { if (it >= 0) index = it } //try to find old item
                 limit = sector.size - 1 //can be negative!
                 range = max(height - static, 0) //fixed top and bottom lines
                 index = max(min(index, limit), 0) //LiveVar: update only once!
                 shift = max(min(shift, limit - range + 1), 0) //scroll back but...
                 shift = max(min(shift, index), index - range + 1) //follow index
-                val item = sector.getOrNull(index)
+                val item = sector.getOrNull(index) //TODO rename?
                 current = item?.l2?.pq ?: L1.fake
+                previous = index to item
                 if (order != Di.U && item != null) {
                     if (item.proposed != Di.N) item.actual = order
                     if (!item.l2.pq.x.file) list.filter { it.l2.pq.x.path.startsWith(item.l2.pq.x.path) }
