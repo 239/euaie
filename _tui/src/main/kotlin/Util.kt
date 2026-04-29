@@ -2,10 +2,10 @@ package euaie
 
 import kotlin.math.*
 import kotlin.time.*
-import org.jline.utils.*
 
 private val ds = java.text.DecimalFormatSymbols().decimalSeparator
 private val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
+private val tm = com.varabyte.kotter.runtime.terminal.TextMetrics()
 
 fun formatSize(bytes: Long, sign: Boolean = false): String =
     when {
@@ -47,30 +47,22 @@ fun spread(left: String, right: String, width: Int, cutBoth: Boolean = false, fi
         "$l${filler.toString().repeat(gap(l, r, width))}$r"
     } else cut("$left${filler.toString().repeat(gap(left, right, width))}$right", width)
 
-fun cutC(text: String, length: Int): String { //TODO textMetrics.truncateToWidth?
-    val t = AttributedString(text)
-    val l = t.columnLength()
-    return if (l <= abs(length)) text
-    else if (length < 0)
-        "…${t.columnSubSequence(l + length + 1, l).let { if (it.columnLength() >= -length) it.drop(1) else it }}"
-    else if (length > 0)
-        "${t.columnSubSequence(0, length - 1)}…"
-    else ""
-}
+//fun cutC(text: String, length: Int): String {
+//    val t = AttributedString(text)
+//    val l = t.columnLength()
+//    return if (l <= abs(length)) text
+//    else if (length < 0)
+//        "…${t.columnSubSequence(l + length + 1, l).let { if (it.columnLength() >= -length) it.drop(1) else it }}"
+//    else if (length > 0)
+//        "${t.columnSubSequence(0, length - 1)}…"
+//    else ""
+//}
 
-fun gapC(left: String, right: String, width: Int): Int =
-    max(abs(width) - AttributedString(left).columnLength() - AttributedString(right).columnLength(), 0)
+//fun gapC(left: String, right: String, width: Int): Int =
+//    max(abs(width) - AttributedString(left).columnLength() - AttributedString(right).columnLength(), 0)
 
-fun spreadC(left: String, right: String, width: Int, cutBoth: Boolean = false, filler: Char = ' '): String =
-    if (cutBoth) {
-        val l = cutC(left, width / 2 - width.sign)
-        val r = cutC(right, width / 2 - width.sign)
-        "$l${filler.toString().repeat(gapC(l, r, width))}$r"
-    } else cutC("$left${filler.toString().repeat(gapC(left, right, width))}$right", width)
-
-fun cutC2(text: String, length: Int): String {
-    val t = AttributedString(text)
-    if (t.columnLength() <= abs(length)) return text
+fun cutC(text: String, length: Int): String {
+    if (tm.renderWidthOf(text) <= abs(length)) return text
     val parts = ArrayDeque<String>()
     var width = 0
     bi.setText(text)
@@ -79,26 +71,36 @@ fun cutC2(text: String, length: Int): String {
         var start = bi.previous()
         while (start != java.text.BreakIterator.DONE) {
             val part = text.substring(start, end)
-            val cl = AttributedString(part).columnLength()
-            if (width + cl >= -length) break
+            val w = tm.renderWidthOf(part)
+            if (width + w >= -length) break
             parts.addFirst(part)
-            width += cl
+            width += w
             end = start
             start = bi.previous()
         }
         "…${parts.joinToString("")}"
-    } else if (length > 0) {
+    } else if (length > 0) { //TODO TextMetrics.truncateToWidth?
         var start = bi.first()
         var end = bi.next()
         while (end != java.text.BreakIterator.DONE) {
             val part = text.substring(start, end)
-            val cl = AttributedString(part).columnLength()
-            if (width + cl >= length) break
+            val w = tm.renderWidthOf(part)
+            if (width + w >= length) break
             parts.addLast(part)
-            width += cl
+            width += w
             start = end
             end = bi.next()
         }
         "${parts.joinToString("")}…"
     } else ""
 }
+
+fun gapC(left: String, right: String, width: Int): Int =
+    max(abs(width) - tm.renderWidthOf(left) - tm.renderWidthOf(right), 0)
+
+fun spreadC(left: String, right: String, width: Int, cutBoth: Boolean = false, filler: Char = ' '): String =
+    if (cutBoth) {
+        val l = cutC(left, width / 2 - width.sign)
+        val r = cutC(right, width / 2 - width.sign)
+        "$l${filler.toString().repeat(gapC(l, r, width))}$r"
+    } else cutC("$left${filler.toString().repeat(gapC(left, right, width))}$right", width)
