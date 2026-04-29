@@ -15,7 +15,7 @@ application {
 
 dependencies {
     implementation(project(":_api"))
-    implementation(libs.jline)
+//    implementation(libs.jline)
     implementation(libs.kotter.jvm)
     implementation(libs.picocli)
     implementation(libs.tinylog.api.kotlin)
