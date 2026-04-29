@@ -46,7 +46,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     var showTail by liveVarOf(false)
     var showRCPS by liveVarOf(false)
     val empty = createTempFile("$NAME-") //for one-sided diff
-    var diff = L1.fake //short-cut
+    var diff = L1.fake //short-cut to current selection
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
         MainWriter.log.forEach {
@@ -121,7 +121,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                                 (filterDi == null || filterDi == it.proposed)
                     }
                 }).run {
-                    if (filter.isNotBlank()) filter { //TODO filter files/folders
+                    if (filter.isNotBlank()) filter {
                         it.l2.pq.x.path.contains(filter, true) || it.l2.pq.y.path.contains(filter, true)
                     } else this
                 }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
@@ -438,7 +438,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO keys / paths?
+            val views = listOf("symbols", "options") //TODO keys / paths (state)?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')

@@ -7,11 +7,11 @@ import org.tinylog.kotlin.Logger as L
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
     private val base = Path(root)
-    private val state = statePath(NAME).resolve(hash)
+    private val state = statePath(NAME).resolve(hash) //TODO public?
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
     private val excluding = parse(exclude.plus(".$NAME"))
-    private var included = 0L
+    private var included = 0L  //TODO public?
     private var excluded = 0L
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
         .map { it.replace(File.separatorChar, '/') }.sorted().map { it.split(D) }
@@ -21,7 +21,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         const val D = ':'
         private val slash = File.separatorChar == '/'
         private val sensitive = Path("a") != Path("A")
-        var optionInsensitive = !sensitive
+        var optionInsensitive = !sensitive //use system default
         var optionSymbolicLink = OptionSymbolicLink.PRESERVE
     }
 
@@ -90,7 +90,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
                 task.done.incrementAndGet()
                 FileVisitResult.CONTINUE
             } else if (
-                including.any { it.first.startsWith(path, optionInsensitive) } || //TODO unnecessary?
+                including.any { it.first.startsWith(path, optionInsensitive) } ||
                 including.any { path.startsWith(it.first, optionInsensitive) }
             ) FileVisitResult.CONTINUE else FileVisitResult.SKIP_SUBTREE
         }
