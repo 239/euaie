@@ -15,16 +15,17 @@ allprojects {
         maven("https://central.sonatype.com/repository/maven-snapshots/") { //TODO !
             mavenContent {
                 includeGroup("com.varabyte.kotter")
+                includeGroup("com.varabyte.kotterx")
                 snapshotsOnly()
             }
         }
     }
 
     configurations.configureEach {
-        resolutionStrategy.cacheChangingModulesFor(3, "hours")
+        resolutionStrategy.cacheChangingModulesFor(1, "hours")
     }
 
-    //reproducible
+    //reproducible //TODO enable again?
 //    tasks.withType<AbstractArchiveTask>().configureEach {
 //        isPreserveFileTimestamps = false
 //        isReproducibleFileOrder = true
