@@ -167,7 +167,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 grid(Cols { repeat(TUI.orderCh.size) { star() } }, width - TUI.orderCh.size - 1,
                     GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderCh.forEach {
-                        cell {
+                        cell { _ ->
                             scopedState {
                                 if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
                                     if (it == Ch.U) blue(ColorLayer.BG) else invert()
@@ -176,7 +176,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         }
                     }
                     TUI.orderDi.forEach {
-                        cell {
+                        cell { _ ->
                             scopedState {
                                 if (it == filterDi && (filterCh != Ch.U || filterDi != Di.N)) invert()
                                 if (it == Di.U && totalDi[it.ordinal] > 0) red()
@@ -195,7 +195,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 grid(Cols { repeat(TUI.orderOp.size) { star() } }, width - TUI.orderOp.size - 1,
                     GridCharacters.Invisible, 0, Justification.LEFT, 1, HorizontalSeparatorIndices.None) {
                     TUI.orderOp.forEach {
-                        cell {
+                        cell { _ ->
                             scopedState {
                                 if (confirm) yellow()
                                 text("${totalOp[it.ordinal]}$it")
@@ -228,11 +228,11 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         if (l.proposed != l.actual) green()
                         if (showBoth) {
                             val cw = max((width - c0.length) / 2 - 1, 1)
-                            val c1 = if (l.l2.pq.x.real) cutC(px, cw * sign) else ""
-                            val c2 = if (l.l2.pq.y.real) cutC(py, cw * sign) else ""
-                            val cg = if (l.l2.pq.y.real) " ".repeat(gapC(c1, "", cw + 2)) else ""
+                            val c1 = if (l.l2.pq.x.real) cutW(px, cw * sign) else ""
+                            val c2 = if (l.l2.pq.y.real) cutW(py, cw * sign) else ""
+                            val cg = if (l.l2.pq.y.real) " ".repeat(gapW(c1, "", cw + 2)) else ""
                             text(c0); text(c1); text(cg); textLine(c2)
-                        } else textLine(c0 + cutC("$px$p2", (width - c0.length) * sign))
+                        } else textLine(c0 + cutW("$px$p2", (width - c0.length) * sign))
                     }
                 }
 //details-------
@@ -257,8 +257,8 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     val td = formatTime(abs(pq.x.time) - abs(pq.y.time), true)
                     val tx = formatTime(if (pq.x.time > 0) abs(pq.x.time) else 0)
                     val ty = formatTime(if (pq.y.time > 0) abs(pq.y.time) else 0)
-                    textLine(spreadC("$px ", " $py", width * sign, true, co))
-                    invert { textLine(spreadC("$nx ", " $ny", width * sign, true, cd)) }
+                    textLine(spreadW("$px ", " $py", width * sign, true, co))
+                    invert { textLine(spreadW("$nx ", " $ny", width * sign, true, cd)) }
                     textLine(cut("$tm ($tl | $tr) [$tp] $to", width * sign))
                     textLine(cut("$sd ($sx | $sy) [$wx | $wy]", width * sign))
                     textLine(cut("$td ($tx | $ty)", width * sign))
@@ -471,7 +471,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     cell { text("!") }; cell { text("revised") }
                     cell { invert { green { text("!") } } }; cell { text("show only revised") }
                 }
-                if (index == 1) grid(Cols { fit(); fit(maxWidth = max(width - 22, 1)) },
+                if (index == 1) grid(Cols { fit(); fit(maxWidth = max(width - 22, 1)) }, //TODO cellMetrics?
                     maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
                     val exclude = sync.exclude.joinToString("|", "[", "]")
@@ -495,22 +495,22 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.TEST -> run {
-            val t0 = "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、..."
-            val e0 = " \uD83D\uDC4D".repeat(6)
-            val e1 = " \uD83D\uDC4C\uD83C\uDFFE".repeat(7)
-            val e2 = " \uD83E\uDDD1\u200D\uD83D\uDCBB".repeat(8)
-            val e3 = " \uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBB".repeat(9)
-            val text = runCatching { Path("../LICENSE").readLines() }
-                .getOrElse { emptyList() } + t0 + e0 + e1 + e2 + e3
-            var w by liveVarOf(0)
+            val text = runCatching { Path("../LICENSE").readLines() }.getOrElse { emptyList() } + listOf(
+                "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、…",
+                "\uD83D\uDC4D".repeat(6),
+                "\uD83D\uDC4C\uD83C\uDFFE".repeat(7),
+                "\uD83E\uDDD1\u200D\uD83D\uDCBB".repeat(8),
+                "\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBB".repeat(9),
+            )
+            var w by liveVarOf(5)
             section {
-                if (w == 0) w = width
+                w = w.coerceIn(0, width)
                 bordered {
                     text.forEachIndexed { index, line ->
                         val l = "$index: $line"
-                        bordered { textLine(textMetrics.truncateToWidth(l, w, "…")) }
+                        bordered { textLine(textMetrics.truncateToWidth(l, w)) }
                     }
-                    bordered { text("$w") }
+                    bordered { text("$w / $width") }
                 }
             }.runUntilKeyPressed(Keys.Escape) {
                 onKeyPressed {
