@@ -1,11 +1,12 @@
 package euaie
 
+import com.varabyte.kotter.runtime.terminal.*
 import kotlin.math.*
 import kotlin.time.*
 
+//private val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
 private val ds = java.text.DecimalFormatSymbols().decimalSeparator
-private val bi = java.text.BreakIterator.getCharacterInstance(java.util.Locale.ROOT)
-private val tm = com.varabyte.kotter.runtime.terminal.TextMetrics()
+private val tm = TextMetrics()
 
 fun formatSize(bytes: Long, sign: Boolean = false): String =
     when {
@@ -47,6 +48,20 @@ fun spread(left: String, right: String, width: Int, cutBoth: Boolean = false, fi
         "$l${filler.toString().repeat(gap(l, r, width))}$r"
     } else cut("$left${filler.toString().repeat(gap(left, right, width))}$right", width)
 
+fun cutW(text: String, width: Int): String =
+    if (width > 0) tm.truncateToWidth(text, width, TruncateAt.END, EllipsisPresets.SYMBOL)
+    else tm.truncateToWidth(text, -width, TruncateAt.START, EllipsisPresets.SYMBOL)
+
+fun gapW(left: String, right: String, width: Int): Int =
+    max(abs(width) - tm.renderWidthOf(left) - tm.renderWidthOf(right), 0)
+
+fun spreadW(left: String, right: String, width: Int, cutBoth: Boolean = false, filler: Char = ' '): String =
+    if (cutBoth) {
+        val l = cutW(left, width / 2 - width.sign)
+        val r = cutW(right, width / 2 - width.sign)
+        "$l${filler.toString().repeat(gapW(l, r, width))}$r"
+    } else cutW("$left${filler.toString().repeat(gapW(left, right, width))}$right", width)
+
 //fun cutC(text: String, length: Int): String {
 //    val t = AttributedString(text)
 //    val l = t.columnLength()
@@ -61,46 +76,36 @@ fun spread(left: String, right: String, width: Int, cutBoth: Boolean = false, fi
 //fun gapC(left: String, right: String, width: Int): Int =
 //    max(abs(width) - AttributedString(left).columnLength() - AttributedString(right).columnLength(), 0)
 
-fun cutC(text: String, length: Int): String {
-    if (tm.renderWidthOf(text) <= abs(length)) return text
-    val parts = ArrayDeque<String>()
-    var width = 0
-    bi.setText(text)
-    return if (length < 0) {
-        var end = bi.last()
-        var start = bi.previous()
-        while (start != java.text.BreakIterator.DONE) {
-            val part = text.substring(start, end)
-            val w = tm.renderWidthOf(part)
-            if (width + w >= -length) break
-            parts.addFirst(part)
-            width += w
-            end = start
-            start = bi.previous()
-        }
-        "…${parts.joinToString("")}"
-    } else if (length > 0) { //TODO TextMetrics.truncateToWidth?
-        var start = bi.first()
-        var end = bi.next()
-        while (end != java.text.BreakIterator.DONE) {
-            val part = text.substring(start, end)
-            val w = tm.renderWidthOf(part)
-            if (width + w >= length) break
-            parts.addLast(part)
-            width += w
-            start = end
-            end = bi.next()
-        }
-        "${parts.joinToString("")}…"
-    } else ""
-}
-
-fun gapC(left: String, right: String, width: Int): Int =
-    max(abs(width) - tm.renderWidthOf(left) - tm.renderWidthOf(right), 0)
-
-fun spreadC(left: String, right: String, width: Int, cutBoth: Boolean = false, filler: Char = ' '): String =
-    if (cutBoth) {
-        val l = cutC(left, width / 2 - width.sign)
-        val r = cutC(right, width / 2 - width.sign)
-        "$l${filler.toString().repeat(gapC(l, r, width))}$r"
-    } else cutC("$left${filler.toString().repeat(gapC(left, right, width))}$right", width)
+//fun cutC(text: String, length: Int): String {
+//    if (tm.renderWidthOf(text) <= abs(length)) return text
+//    val parts = ArrayDeque<String>()
+//    var width = 0
+//    bi.setText(text)
+//    return if (length < 0) {
+//        var end = bi.last()
+//        var start = bi.previous()
+//        while (start != java.text.BreakIterator.DONE) {
+//            val part = text.substring(start, end)
+//            val w = tm.renderWidthOf(part)
+//            if (width + w >= -length) break
+//            parts.addFirst(part)
+//            width += w
+//            end = start
+//            start = bi.previous()
+//        }
+//        "…${parts.joinToString("")}"
+//    } else if (length > 0) {
+//        var start = bi.first()
+//        var end = bi.next()
+//        while (end != java.text.BreakIterator.DONE) {
+//            val part = text.substring(start, end)
+//            val w = tm.renderWidthOf(part)
+//            if (width + w >= length) break
+//            parts.addLast(part)
+//            width += w
+//            start = end
+//            end = bi.next()
+//        }
+//        "${parts.joinToString("")}…"
+//    } else ""
+//}
