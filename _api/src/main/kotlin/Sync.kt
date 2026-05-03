@@ -28,7 +28,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         var optionCopyThreshold = 512
     }
 
-    fun list(): List<L3> = result
+    fun result(): List<L3> = result
 
     fun compare(save: Boolean = false) {
         L.info { "-----------------------compare" }

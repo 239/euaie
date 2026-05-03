@@ -105,7 +105,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start) else 0
-                val list = sync.list()
+                val list = sync.result()
                 val totalCh = LongArray(Ch.entries.size)
                 val totalDi = LongArray(Di.entries.size + 1) //also count revised
                 val totalOp = LongArray(Op.entries.size)
@@ -331,7 +331,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     if (action != TUI.Action.MAIN) signal()
                 }
                 aside { textLine() }
-                if (TUI.optionQuitWhenDone && sync.list().all { it.l2.pq.c.u() }) {
+                if (TUI.optionQuitWhenDone && sync.result().all { it.l2.pq.c.u() }) {
                     action = TUI.Action.QUIT
                     signal()
                 }
