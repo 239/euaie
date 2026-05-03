@@ -11,7 +11,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
     private val excluding = parse(exclude.plus(".$NAME"))
-    private var included = 0L  //TODO public?
+    private var included = 0L
     private var excluded = 0L
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
         .map { it.replace(File.separatorChar, '/') }.sorted().map { it.split(D) }
@@ -125,9 +125,9 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 
 fun statePath(name: String): Path = when {
     System.getProperty("os.name").startsWith("Windows", true) ->
-        Paths.get(System.getenv("LocalAppData"), name, "state")
+        Path(System.getenv("LocalAppData"), name, "state")
     System.getProperty("os.name").startsWith("Mac", true)     ->
-        Paths.get(System.getProperty("user.home"), "Library", "Application Support", name, "state")
+        Path(System.getProperty("user.home"), "Library", "Application Support", name, "state")
     else                                                      ->
-        Paths.get(System.getenv("XDG_STATE_HOME") ?: "${System.getProperty("user.home")}/.local/state", name)
+        Path(System.getenv("XDG_STATE_HOME") ?: "${System.getProperty("user.home")}/.local/state", name)
 }
