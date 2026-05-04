@@ -22,8 +22,8 @@ dependencies {
     implementation(libs.tinylog.impl)
     kapt(libs.picocli.codegen)
     testImplementation(kotlin("test"))
+    testImplementation(libs.kotterx.twemoji)
     testImplementation(libs.truthish)
-    testImplementation("com.varabyte.kotterx:twemoji:1.3.0-SNAPSHOT") //TODO move to libs
 }
 
 kapt {

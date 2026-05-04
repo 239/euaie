@@ -21,6 +21,7 @@ versions = { id = "com.github.ben-manes.versions", version.ref = "versions" }
 [libraries]
 #jline = { module = "org.jline:jline", version.ref = "jline" }
 kotter-jvm = { module = "com.varabyte.kotter:kotter-jvm", version.ref = "kotter" }
+kotterx-twemoji = { module = "com.varabyte.kotterx:twemoji", version.ref = "kotter" }
 picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
 picocli-codegen = { module = "info.picocli:picocli-codegen", version.ref = "picocli" }
 tinylog-api-kotlin = { module = "org.tinylog:tinylog-api-kotlin", version.ref = "tinylog" }
