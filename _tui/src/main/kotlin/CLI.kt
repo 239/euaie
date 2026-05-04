@@ -9,7 +9,8 @@ val version = java.util.Properties().run {
     val b = getProperty("git.branch").orEmpty()
     val i = getProperty("git.commit.id.abbrev").orEmpty()
     val t = getProperty("git.commit.time").orEmpty()
-    if (b.matches("""\d+\.\d+\.\d+""".toRegex())) "$b-$i" else "$t-$i-$b"
+    if (b.matches("""\d+\.\d+\.\d+""".toRegex()))
+        "$b-$i" else "$t-$i-$b"
 }
 
 @Command(
@@ -85,15 +86,15 @@ class CLI : java.util.concurrent.Callable<Int> {
     }
 }
 
-fun main(arguments: Array<String>) {
-    if (arguments.size == 1) {
+fun main(arguments: Array<String>) { //TODO auto-scan-sync-exit?
+    if (arguments.size == 1) { //TODO --edit?
         val path = Path(arguments[0])
         if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
         if (path.isDirectory()) {
             val files = path.listDirectoryEntries().filter { it.isRegularFile() }.sorted()
             files.forEachIndexed { i, f -> println("${i + 1}: ${f.fileName}") }
             print("select index: ")
-            val index = readlnOrNull()?.toIntOrNull() ?: 0
+            val index = readlnOrNull()?.toIntOrNull() ?: 0 //TODO while?
             val file = files.getOrNull(index - 1)
             if (file != null) arguments[0] = "@${file}"
             println(arguments[0])

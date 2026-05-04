@@ -18,7 +18,7 @@ import kotlin.time.*
 import org.tinylog.*
 
 object TUI {
-    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST }
+    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST } //TODO EDIT?
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
@@ -184,7 +184,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                             }
                         }
                     }
-                    cell {
+                    cell { _ ->
                         scopedState {
                             if (filterCh == Ch.U && filterDi == Di.N) invert()
                             if (totalDi.last() > 0) green()
@@ -226,7 +226,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                         if (l === item) invert()
                         if (l.proposed == Di.U) red()
                         if (l.proposed != l.actual) green()
-                        if (showBoth) {
+                        if (showBoth) { //TODO grid + cellMetrics?
                             val cw = max((width - c0.length) / 2 - 1, 1)
                             val c1 = if (l.l2.pq.x.real) cutW(px, cw * sign) else ""
                             val c2 = if (l.l2.pq.y.real) cutW(py, cw * sign) else ""
@@ -438,7 +438,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO keys / paths (state)?
+            val views = listOf("symbols", "options") //TODO about | keys | paths (state)?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
@@ -504,7 +504,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
             )
             var w by liveVarOf(5)
             section {
-                w = w.coerceIn(0, width)
+                w = w.coerceIn(0, width - 4)
                 bordered {
                     text.forEachIndexed { index, line ->
                         val l = "$index: $line"

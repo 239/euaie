@@ -30,6 +30,8 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     fun result(): List<L3> = result
 
+//    fun states() = scanL.state.pathString to scanR.state.pathString
+
     fun compare(save: Boolean = false) {
         L.info { "-----------------------compare" }
         L.debug { "$rootL $rootR +$include -$exclude" }
