@@ -6,8 +6,8 @@ import kotlin.io.path.*
 import org.tinylog.kotlin.Logger as L
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
-    private val base = Path(root)
-    private val state = statePath(NAME).resolve(hash) //TODO public?
+    val base = Path(root)
+    val state = Path(statePath(NAME).pathString, hash)
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
     private val excluding = parse(exclude.plus(".$NAME"))
