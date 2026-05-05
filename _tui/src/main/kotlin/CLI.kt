@@ -93,10 +93,12 @@ fun main(arguments: Array<String>) { //TODO auto-scan-sync-exit?
         if (path.isDirectory()) {
             val files = path.listDirectoryEntries().filter { it.isRegularFile() }.sorted()
             files.forEachIndexed { i, f -> println("${i + 1}: ${f.fileName}") }
-            print("select index: ")
-            val index = readlnOrNull()?.toIntOrNull() ?: 0 //TODO while?
-            val file = files.getOrNull(index - 1)
-            if (file != null) arguments[0] = "@${file}"
+            var index = 0
+            while (index !in 1..files.size) {
+                print("select by index: ")
+                index = readlnOrNull()?.toIntOrNull() ?: 0
+            }
+            files.getOrNull(index - 1)?.let { arguments[0] = "@${it}" }
             println(arguments[0])
         }
     }
