@@ -15,7 +15,7 @@ application {
     //WARNING: java.lang.System::load has been called by org.jline.nativ.JLineNativeLoader in an unnamed module
     //WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
     //WARNING: Restricted methods will be blocked in a future release unless native access is enabled
-    //https://github.com/jline/jline3/issues/1067
+    //https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
     applicationDefaultJvmArgs = listOf(
         "--enable-native-access=ALL-UNNAMED" //TODO ineffective?
     )
