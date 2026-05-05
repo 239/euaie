@@ -11,6 +11,14 @@ kotlin { jvmToolchain(25) }
 
 application {
     mainClass = "euaie.CLIKt"
+    //WARNING: A restricted method in java.lang.System has been called
+    //WARNING: java.lang.System::load has been called by org.jline.nativ.JLineNativeLoader in an unnamed module
+    //WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
+    //WARNING: Restricted methods will be blocked in a future release unless native access is enabled
+    //https://github.com/jline/jline3/issues/1067
+    applicationDefaultJvmArgs = listOf(
+        "--enable-native-access=ALL-UNNAMED" //TODO ineffective?
+    )
 }
 
 dependencies {
