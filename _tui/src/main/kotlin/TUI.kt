@@ -18,7 +18,7 @@ import kotlin.time.*
 import org.tinylog.*
 
 object TUI {
-    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST } //TODO EDIT?
+    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST } //TODO MAIN2?
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
@@ -171,6 +171,10 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                             scopedState {
                                 if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
                                     if (it == Ch.U) blue(ColorLayer.BG) else invert()
+//                                if (it == Ch.U) {
+//                                    blue()
+//                                    invert()
+//                                } else invert()
                                 text("${totalCh[it.ordinal]}${it.icon}")
                             }
                         }
@@ -471,7 +475,7 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                     cell { text("!") }; cell { text("revised") }
                     cell { invert { green { text("!") } } }; cell { text("show only revised") }
                 }
-                if (index == 1) grid(Cols { fit(); fit(maxWidth = max(width - 22, 1)) }, //TODO cellMetrics?
+                if (index == 1) grid(Cols { fit(); fit(maxWidth = max(width - 22, 1)) },
                     maxCellHeight = 1, paddingLeftRight = 1, characters = GridCharacters.BoxThin,
                     horizontalSeparatorIndices = HorizontalSeparatorIndices.TopAndBottom) {
                     val exclude = sync.exclude.joinToString("|", "[", "]")

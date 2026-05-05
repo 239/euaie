@@ -70,7 +70,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //            Thread.sleep(1000) //debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
-            if (optionRetain && it.x.file && it.y.file)
+            if (optionRetain && it.x.file && it.y.file) //TODO check if files are still the same?
                 operateRetaining(it, o, dump) else operate(it, o)
             task.done.incrementAndGet()
         }
