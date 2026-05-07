@@ -1,30 +1,30 @@
 package euaie
 
 import com.varabyte.kotter.foundation.*
-import com.varabyte.kotter.foundation.collections.*
 import com.varabyte.kotter.foundation.input.*
 import com.varabyte.kotter.foundation.render.*
 import com.varabyte.kotter.foundation.text.*
+import com.varabyte.kotter.foundation.timer.*
 import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
 import com.varabyte.kotterx.decorations.*
 import com.varabyte.kotterx.grid.*
 import com.varabyte.kotterx.text.*
-import kotlin.concurrent.*
 import kotlin.io.path.*
 import kotlin.math.*
 import kotlin.time.*
 import org.tinylog.*
 
 object TUI {
-    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST } //TODO MAIN2?
+    enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST }
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
     val orderOp = setOf(Op.NO, Op.DL, Op.ML, Op.CL, Op.DR, Op.MR, Op.CR)
     val keysF = orderCh.joinToString("|") { "${it.icon}" } +
             "|" + orderDi.joinToString("|") { "${it.icon}" } + "|!"
+    val rerender = 100.toDuration(DurationUnit.MILLISECONDS)
     var optionQuitWhenDone = false
     var terminal: Terminal? = null
 }
@@ -45,8 +45,8 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
     var showRCPS by liveVarOf(false)
-    val empty = createTempFile("$NAME-") //for one-sided diff
     var diff = L1.fake //short-cut to current selection
+    val empty = createTempFile("$NAME-") //for one-sided diff
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
         MainWriter.log.forEach {
@@ -62,12 +62,11 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
     val runSync = fun RunScope.(compare: Boolean): Unit {
         cache.clear()
         MainWriter.clear()
-        val render = timer(period = 100) { rerender() }
+        addTimer(TUI.rerender, true) { rerender() }
         val d = measureTime { if (compare) sync.compare() else sync.execute() }
         org.tinylog.kotlin.Logger.info {
             if (compare && sync.scan.finished() || !compare && sync.task.finished()) "$d" else "canceled"
         }
-        render.cancel()
         rerender() //ensure that final state is visible
         action = TUI.Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
@@ -171,10 +170,6 @@ fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO secti
                             scopedState {
                                 if (it == filterCh && (filterCh != Ch.U || filterDi != Di.N))
                                     if (it == Ch.U) blue(ColorLayer.BG) else invert()
-//                                if (it == Ch.U) {
-//                                    blue()
-//                                    invert()
-//                                } else invert()
                                 text("${totalCh[it.ordinal]}${it.icon}")
                             }
                         }
