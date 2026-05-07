@@ -1,9 +1,7 @@
-import java.nio.file.*
-import java.nio.file.attribute.*
+//import java.nio.file.*
+//import java.nio.file.attribute.*
 
 plugins {
-//    embeddedKotlin("jvm") apply false
-//    kotlin("jvm") version "2.3.20" apply false
     alias(libs.plugins.kjvm) apply false
     alias(libs.plugins.kapt) apply false
     alias(libs.plugins.versions)
@@ -12,11 +10,11 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
-        maven("https://central.sonatype.com/repository/maven-snapshots/") { //TODO !
+        maven("https://central.sonatype.com/repository/maven-snapshots/") {
             mavenContent {
+                snapshotsOnly()
                 includeGroup("com.varabyte.kotter")
                 includeGroup("com.varabyte.kotterx")
-                snapshotsOnly()
             }
         }
     }
@@ -25,7 +23,7 @@ allprojects {
         resolutionStrategy.cacheChangingModulesFor(1, "hours")
     }
 
-    //reproducible //TODO enable again?
+    //reproducible //TODO enable again / Unix only?
 //    tasks.withType<AbstractArchiveTask>().configureEach {
 //        isPreserveFileTimestamps = false
 //        isReproducibleFileOrder = true
