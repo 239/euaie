@@ -11,10 +11,6 @@ kotlin { jvmToolchain(25) }
 
 application {
     mainClass = "euaie.CLIKt"
-    //WARNING: A restricted method in java.lang.System has been called
-    //WARNING: java.lang.System::load has been called by org.jline.nativ.JLineNativeLoader in an unnamed module
-    //WARNING: Use --enable-native-access=ALL-UNNAMED to avoid a warning for callers in this module
-    //WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     //https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
     applicationDefaultJvmArgs = listOf(
         "--enable-native-access=ALL-UNNAMED" //needed for java -cp ... (distribution builds)
@@ -23,7 +19,6 @@ application {
 
 dependencies {
     implementation(project(":_api"))
-//    implementation(libs.jline)
     implementation(libs.kotter.jvm)
     implementation(libs.picocli)
     implementation(libs.tinylog.api.kotlin)
@@ -66,7 +61,7 @@ graalvmNative {
     agent {
         enabled.set(true)
         metadataCopy {
-            inputTaskNames.add("run") //system terminal does not work via Gradle
+            inputTaskNames.add("run") //system terminal does not work with 'gradle run'!
             outputDirectories.add("src/main/resources/META-INF/native-image/${rootProject.name}")
             mergeWithExisting.set(true)
         }
