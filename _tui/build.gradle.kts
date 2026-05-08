@@ -17,7 +17,7 @@ application {
     //WARNING: Restricted methods will be blocked in a future release unless native access is enabled
     //https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
     applicationDefaultJvmArgs = listOf(
-        "--enable-native-access=ALL-UNNAMED" //TODO ineffective?
+        "--enable-native-access=ALL-UNNAMED" //needed for java -cp ... (distribution builds)
     )
 }
 
@@ -83,6 +83,9 @@ tasks.shadowJar {
     archiveClassifier = ""
     destinationDirectory = layout.buildDirectory.dir("jar")
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes("Enable-Native-Access" to "ALL-UNNAMED")
+    }
     mergeServiceFiles()
     filesMatching("META-INF/services/**") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
