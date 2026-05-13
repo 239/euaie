@@ -74,7 +74,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
                 operateRetaining(it, o, dump) else operate(it, o)
             task.done.incrementAndGet()
         }
-        for (t in finish) move(t.first, t.second, t.third) //TODO ConcurrentModificationException?
+        for (t in finish) move(t.first, t.second, t.third)
         L.debug { "finish: ${finish.size}" }
         finish.clear()
         result = emptyList()
@@ -123,7 +123,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private fun copy(source: Path, target: Path) {
         val exists = target.exists()
         val t = if (!exists) target
-        else target.resolveSibling("${target.name}_${System.nanoTime()}.$NAME") //TODO just move()?
+        else target.resolveSibling("${target.name}_${System.nanoTime()}.$NAME")
         if (exists && source.isDirectory()) return
         try {
             L.info { "copy $source to $t" }
@@ -132,10 +132,10 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
                 source.copyTo(t, *copyOptions)
             else
                 source.copyTo(t, copy)
+            if (exists) move(t, target, true)
         } catch (e: Exception) {
             L.error { "copy: ${e.message}" }
         }
-        if (exists) move(t, target, true) //TODO check size?
     }
 
     private fun move(source: Path, target: Path, overwrite: Boolean = false) {
