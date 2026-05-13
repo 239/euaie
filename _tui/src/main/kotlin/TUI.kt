@@ -29,7 +29,8 @@ object TUI {
     var terminal: Terminal? = null
 }
 
-fun start(sync: Sync) = session(TUI.terminal ?: SystemTerminal()) { //TODO sectionExceptionHandler?
+fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
+    sectionExceptionHandler = { org.tinylog.kotlin.Logger.error(it, "Kotter") }) {
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     var action = TUI.Action.SCAN
     var active = true //exit flag
