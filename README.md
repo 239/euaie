@@ -14,7 +14,7 @@
 ### usage
 
 ```
-Usage: euaie [-IQrSV] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
+Usage: euaie [-AIQrSV] [-C=<MiB>] [-s=<policy>] [-t=<ms>] [-e[=<s:c:e>...]]...
              [-i[=<s:c:e>...]]... [@<filename>...] <rootL> <rootR>
 simple file synchronization
       [@<filename>...]         one or more argument files containing options
@@ -27,6 +27,7 @@ simple file synchronization
                                policies: FOLLOW, IGNORE, PRESERVE
   -t, --tolerance=<ms>         set tolerated time difference (-1)
                                negative values: detect automatically
+  -A, --automatic              run automatically ignoring unclear items
   -C, --copy-threshold=<MiB>   set threshold for interruptable copy (512)
   -I, --insensitive            use case insensitive filters (false)
   -Q, --quit                   exit when both sides are equal (false)

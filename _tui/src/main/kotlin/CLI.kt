@@ -55,6 +55,10 @@ class CLI : java.util.concurrent.Callable<Int> {
     var tolerance: Long = -1L //L0.tolerance
 
     //2
+    @Option(names = ["-A", "--automatic"],
+        description = ["run automatically ignoring unclear items"])
+    var automatic: Boolean = false
+
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
         description = [$$"set threshold for interruptable copy (${DEFAULT-VALUE})"])
     var threshold: Int = Sync.optionCopyThreshold
@@ -74,7 +78,6 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Option(names = ["-V", "--version"], versionHelp = true,
         description = ["print version and exit"])
     var version: Boolean = false
-    //TODO --tui options?
 
     override fun call(): Int {
         if (tolerance < 0L) try {
@@ -92,12 +95,19 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync.optionRetain = retain
         Sync.optionStateless = stateless
         TUI.optionQuitWhenDone = quit
-        start(Sync(rootL, rootR, include, exclude))
+        Sync(rootL, rootR, include, exclude).run {
+            if (automatic) { //TODO improve!
+                compare()
+                result().apply { println("${size}\t${count { it.l2.pq.c.u() }}=") }
+                execute()
+                result().apply { println("${size}\t${count { it.l2.pq.c.u() }}=") }
+            } else start(this)
+        }
         return if (version) 1 else 0 //avoiding 'never used' warning
     }
 }
 
-fun main(arguments: Array<String>) { //TODO auto-scan-sync-exit?
+fun main(arguments: Array<String>) {
     if (arguments.size == 1) { //TODO --edit?
         val path = Path(arguments[0])
         if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
