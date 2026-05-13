@@ -1,6 +1,7 @@
 package euaie
 
 import kotlin.io.path.*
+import org.tinylog.kotlin.*
 import picocli.CommandLine.*
 
 private const val KEY = "$NAME.version"
@@ -49,8 +50,9 @@ class CLI : java.util.concurrent.Callable<Int> {
     var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
-        description = [$$"set allowed time difference (${DEFAULT-VALUE})"])
-    var tolerance: Long = L0.tolerance
+        description = [$$"set tolerated time difference (${DEFAULT-VALUE})",
+            "negative values: detect automatically"])
+    var tolerance: Long = -1L //L0.tolerance
 
     //2
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
@@ -72,8 +74,17 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Option(names = ["-V", "--version"], versionHelp = true,
         description = ["print version and exit"])
     var version: Boolean = false
+    //TODO --tui options?
 
     override fun call(): Int {
+        if (tolerance < 0L) try {
+            val typeL = Path(rootL).fileStore().type().uppercase()
+            val typeR = Path(rootR).fileStore().type().uppercase()
+            tolerance = if ("FAT" in "$typeL$typeR") 2000 else 0
+            Logger.debug { "$typeL | $typeR" }
+        } catch (e: Exception) {
+            Logger.warn { "call: ${e.message}" }
+        }
         L0.tolerance = tolerance.coerceAtLeast(0L)
         Scan.optionInsensitive = insensitive
         Scan.optionSymbolicLink = symlinks
