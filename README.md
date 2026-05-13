@@ -8,8 +8,8 @@
 - runs in all terminals on Linux, macOS and Windows
 - native executables built with GraalVM Native Image
 
-![main](web/main.png)
-![help](web/help.png)
+![main](media/main.png)
+![help](media/help.png)
 
 ### usage
 
@@ -25,7 +25,8 @@ simple file synchronization
   -r, --retain                 keep old files in <root>/.euaie/ (false)
   -s, --symlinks=<policy>      set policy for symbolic links (PRESERVE)
                                policies: FOLLOW, IGNORE, PRESERVE
-  -t, --tolerance=<ms>         set allowed time difference (0)
+  -t, --tolerance=<ms>         set tolerated time difference (-1)
+                               negative values: detect automatically
   -C, --copy-threshold=<MiB>   set threshold for interruptable copy (512)
   -I, --insensitive            use case insensitive filters (false)
   -Q, --quit                   exit when both sides are equal (false)
@@ -126,4 +127,4 @@ native executable with Podman/Docker:
 
 ### license
 
-copyright 2026 239 - licensed under the [Apache License 2.0](LICENSE)
+copyright 2026 **239** - licensed under the [Apache License 2.0](LICENSE)
