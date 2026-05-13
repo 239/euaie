@@ -26,7 +26,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     }
 
     fun scan(save: Boolean = false): M0 {
-        Logger.info { "-----------------------scan" }
+        Logger.debug { "-----------------------scan" }
         Logger.debug { "scan: $base" }
         Logger.debug { "filesys: '$separator' | $sensitive" }
         Logger.debug { "symlinks: $optionSymbolicLink" }
@@ -38,7 +38,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         excluded = 0
         result.clear()
         base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
-        Logger.info { "$base (included: $included excluded: $excluded)" }
+        Logger.debug { "$base (included: $included excluded: $excluded)" }
         if (save) save()
         return result
     }
@@ -89,7 +89,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             else if (valid(path)) {
                 val size = a.size().let { if (it > 0) -it else -1 }
                 val time = a.lastModifiedTime().toMillis()
-                Logger.info { "•$path" }
+                Logger.debug { "•$path" }
                 result[path] = L0(path, size, time)
                 task.done.incrementAndGet()
                 FileVisitResult.CONTINUE
@@ -108,7 +108,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             if (valid(path)) {
                 val size = a.size()
                 val time = if (a.isSymbolicLink) L0.LINK else a.lastModifiedTime().toMillis()
-                Logger.info { " $path" }
+                Logger.debug { " $path" }
                 if (optionSymbolicLink == OptionSymbolicLink.IGNORE && a.isSymbolicLink)
                     Logger.debug { "skipping symbolic link: $path" }
                 else result[path] = L0(path, size, time)

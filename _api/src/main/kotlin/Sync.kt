@@ -33,7 +33,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //    fun states() = scanL.state.pathString to scanR.state.pathString
 
     fun compare(save: Boolean = false) {
-        Logger.info { "-----------------------compare" }
+        Logger.debug { "-----------------------compare" }
         Logger.debug { "$rootL $rootR +$include -$exclude" }
         scan.start(true)
         if (pathL == pathR) {
@@ -55,7 +55,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     fun execute() {
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        Logger.info { "-----------------------execute" }
+        Logger.debug { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
