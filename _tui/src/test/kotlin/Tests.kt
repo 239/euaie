@@ -8,7 +8,7 @@ import kotlin.test.Test
 class Tests {
     @Test
     fun run() {
-        TUI.terminal = VirtualTerminal.create("Test", TerminalSize(60, 30), hideVerticalScrollbar = true)
+        TUI.terminal = VirtualTerminal.create("Test", TerminalSize(60, 30))
         picocli.CommandLine(CLI())
             .setCaseInsensitiveEnumValuesAllowed(true)
             .setUseSimplifiedAtFiles(true)
