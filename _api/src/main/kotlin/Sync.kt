@@ -13,7 +13,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     val pathR = Path(rootR).absolutePathString()
     private val scanL = Scan(rootL, include, exclude, hash(pathL + L0.D + pathR), scan)
     private val scanR = Scan(rootR, include, exclude, hash(pathR + L0.D + pathL), scan)
-    private val finish = mutableListOf<Triple<Path, Path, Boolean>>()
+    private val finish = mutableListOf<Pair<Path, Path>>()
     private var result = emptyList<L3>()
     private var copyThreshold = 0
 
@@ -70,12 +70,13 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //            Thread.sleep(1000) //debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
-            if (optionRetain && it.x.file && it.y.file) //TODO check if files are still the same?
+            if (optionRetain && it.x.file && it.y.file) //TODO check if files did not change?
                 operateRetaining(it, o, dump) else operate(it, o)
             task.done.incrementAndGet()
         }
-        for (t in finish) move(t.first, t.second, t.third)
-        L.debug { "finish: ${finish.size}" }
+        for (t in finish.toList()) //loop only once safely even when it grows
+            move(t.first, t.second, false)
+        L.debug { "finished: ${finish.size}" } //TODO warn if there are new items?
         finish.clear()
         result = emptyList()
         if (task.started()) task.finish()
@@ -143,7 +144,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         var t = target
         if (!overwrite && target.exists()) {
             t = target.resolveSibling("${target.name}_${System.nanoTime()}.$NAME")
-            finish.add(Triple(t, target, false))
+            finish.add(t to target)
         }
         try {
             L.info { "move $source to $t" }
