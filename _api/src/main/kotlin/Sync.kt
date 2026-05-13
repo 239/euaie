@@ -74,9 +74,10 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
                 operateRetaining(it, o, dump) else operate(it, o)
             task.done.incrementAndGet()
         }
-        for (t in finish.toList()) //loop only once safely even when it grows
-            move(t.first, t.second, false)
-        L.debug { "finished: ${finish.size}" } //TODO warn if there are new items?
+        val mirror = finish.toList()
+        finish.clear()
+        mirror.forEach { move(it.first, it.second, false) }
+        finish.forEach { L.error { "unfinished: ${it.first}" } }
         finish.clear()
         result = emptyList()
         if (task.started()) task.finish()
