@@ -6,7 +6,7 @@
 - plain and effective filter syntax (no glob or regex)
 - tries to minimize complexity of application and codebase
 - runs in all terminals on Linux, macOS and Windows
-- native executables built with GraalVM Native Image
+- native executables built with **GraalVM Native Image**
 
 ![main](media/main.png)
 ![help](media/help.png)
@@ -40,7 +40,7 @@ dotfiles:
 `euaie ~/ ~/sync/ -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
-`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -t=2000 -Q`
+`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -Q`
 
 all options can be provided by arguments and argument files:  
 `euaie @path/to/arguments.txt --quit`
