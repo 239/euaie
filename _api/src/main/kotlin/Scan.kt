@@ -1,6 +1,5 @@
 package euaie
 
-import java.io.*
 import java.nio.file.*
 import kotlin.io.path.*
 import org.tinylog.kotlin.Logger as L
@@ -14,12 +13,13 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     private var included = 0L
     private var excluded = 0L
     private fun parse(s: Set<String>) = s.asSequence().filter { it.isNotBlank() }
-        .map { it.replace(File.separatorChar, '/') }.sorted().map { it.split(D) }
+        .map { it.replace(separator, S) }.sorted().map { it.split(D) }
         .map { Triple(it.getOrElse(0) { "" }, it.getOrElse(1) { "" }, it.getOrElse(2) { "" }) }.toSet()
 
     companion object {
         const val D = ':'
-        private val slash = File.separatorChar == '/'
+        const val S = '/'
+        private val separator = java.io.File.separatorChar
         private val sensitive = Path("a") != Path("A")
         var optionInsensitive = !sensitive //use system default
         var optionSymbolicLink = OptionSymbolicLink.PRESERVE
@@ -28,7 +28,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     fun scan(save: Boolean = false): M0 {
         L.info { "-----------------------scan" }
         L.debug { "scan: $base" }
-        L.debug { "filesys: $slash / $sensitive" }
+        L.debug { "filesys: '$separator' | $sensitive" }
         L.debug { "symlinks: $optionSymbolicLink" }
         if (root.isBlank() || !base.isDirectory()) {
             L.error { "invalid root path '$root'" }
@@ -83,8 +83,8 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 
     private val visitor = fileVisitor {
         onPreVisitDirectory { p, a ->
-            val r = p.relativeTo(base).toString() + '/'
-            val path = if (slash) r else r.replace(File.separatorChar, '/')
+            val r = p.relativeTo(base).toString() + S
+            val path = if (separator == S) r else r.replace(separator, S)
             if (path == "/") FileVisitResult.CONTINUE //p == base
             else if (valid(path)) {
                 val size = a.size().let { if (it > 0) -it else -1 }
@@ -104,7 +104,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         onVisitFile { p, a ->
 //            Thread.sleep(100) //debug slowdown
             val r = p.relativeTo(base).toString()
-            val path = if (slash) r else r.replace(File.separatorChar, '/')
+            val path = if (separator == S) r else r.replace(separator, S)
             if (valid(path)) {
                 val size = a.size()
                 val time = if (a.isSymbolicLink) L0.LINK else a.lastModifiedTime().toMillis()
@@ -117,8 +117,8 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             if (task.canceled()) FileVisitResult.TERMINATE else FileVisitResult.CONTINUE
         }
         onVisitFileFailed { p, e ->
-            val r = p.relativeTo(base).toString() + if (p.isDirectory()) '/' else ""
-            if (valid(if (slash) r else r.replace(File.separatorChar, '/')))
+            val r = p.relativeTo(base).toString() + if (p.isDirectory()) S else ""
+            if (valid(if (separator == S) r else r.replace(separator, S)))
                 L.warn { "visit: ${e.message}" }
             FileVisitResult.CONTINUE
         }
