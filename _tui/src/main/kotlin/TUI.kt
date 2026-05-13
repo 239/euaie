@@ -104,7 +104,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 if (showRCPS) Thread.sleep(5) //1 ms freezes VT
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
-                val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start) else 0
+                val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start + 1) else 0
                 val list = sync.result()
                 val totalCh = LongArray(Ch.entries.size)
                 val totalDi = LongArray(Di.entries.size + 1) //also count revised
