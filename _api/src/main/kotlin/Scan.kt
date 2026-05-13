@@ -65,34 +65,36 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         }
     }
 
-    private fun match(p: String): Boolean {
+    private fun valid(p: String, f: Triple<String, String, String>, i: Boolean): Boolean =
+        p.startsWith(f.first, i) && p.contains(f.second, i) && p.endsWith(f.third, i)
+
+    private fun valid(p: String, i: Boolean = optionInsensitive): Boolean {
         var r = including.isEmpty()
-        r = r || including.any { match(p, it, optionInsensitive) }
-        r = r && excluding.all { !match(p, it, optionInsensitive) }
+        r = r || including.any { valid(p, it, i) }
+        r = r && excluding.all { !valid(p, it, i) }
         if (r) included++ else excluded++
         L.trace { "${if (r) '+' else '-'} $p" }
         return r
     }
 
-    private fun match(s: String, t: Triple<String, String, String>, ignore: Boolean): Boolean =
-        s.startsWith(t.first, ignore) && s.contains(t.second, ignore) && s.endsWith(t.third, ignore)
+    private fun validParent(p: String, i: Boolean = optionInsensitive): Boolean =
+        including.any { it.first.startsWith(p, i) || p.startsWith(it.first, i) }
+                && excluding.all { !valid(p, it, i) }
 
     private val visitor = fileVisitor {
         onPreVisitDirectory { p, a ->
             val r = p.relativeTo(base).toString() + '/'
             val path = if (slash) r else r.replace(File.separatorChar, '/')
             if (path == "/") FileVisitResult.CONTINUE //p == base
-            else if (match(path)) {
+            else if (valid(path)) {
                 val size = a.size().let { if (it > 0) -it else -1 }
                 val time = a.lastModifiedTime().toMillis()
                 L.info { "•$path" }
                 result[path] = L0(path, size, time)
                 task.done.incrementAndGet()
                 FileVisitResult.CONTINUE
-            } else if (
-                including.any { it.first.startsWith(path, optionInsensitive) } ||
-                including.any { path.startsWith(it.first, optionInsensitive) }
-            ) FileVisitResult.CONTINUE else FileVisitResult.SKIP_SUBTREE
+            } else if (validParent(path)) FileVisitResult.CONTINUE
+            else FileVisitResult.SKIP_SUBTREE
         }
         onPostVisitDirectory { _, e ->
             if (e != null)
@@ -103,7 +105,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
 //            Thread.sleep(100) //debug slowdown
             val r = p.relativeTo(base).toString()
             val path = if (slash) r else r.replace(File.separatorChar, '/')
-            if (match(path)) {
+            if (valid(path)) {
                 val size = a.size()
                 val time = if (a.isSymbolicLink) L0.LINK else a.lastModifiedTime().toMillis()
                 L.info { " $path" }
@@ -116,7 +118,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         }
         onVisitFileFailed { p, e ->
             val r = p.relativeTo(base).toString() + if (p.isDirectory()) '/' else ""
-            if (match(if (slash) r else r.replace(File.separatorChar, '/')))
+            if (valid(if (slash) r else r.replace(File.separatorChar, '/')))
                 L.warn { "visit: ${e.message}" }
             FileVisitResult.CONTINUE
         }
