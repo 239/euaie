@@ -3,7 +3,7 @@ package euaie
 import java.nio.file.*
 import java.security.*
 import kotlin.io.path.*
-import org.tinylog.kotlin.Logger as L
+import org.tinylog.kotlin.*
 
 class Sync(val rootL: String, val rootR: String, val include: Set<String>, val exclude: Set<String>) {
     val task = Task()
@@ -33,11 +33,11 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //    fun states() = scanL.state.pathString to scanR.state.pathString
 
     fun compare(save: Boolean = false) {
-        L.info { "-----------------------compare" }
-        L.debug { "$rootL $rootR +$include -$exclude" }
+        Logger.info { "-----------------------compare" }
+        Logger.debug { "$rootL $rootR +$include -$exclude" }
         scan.start(true)
         if (pathL == pathR) {
-            L.error { "identical root paths" }
+            Logger.error { "identical root paths" }
             return
         }
         val sl = scanL.scan(save)
@@ -48,14 +48,14 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         val qd = link(sr, lr)
         val pq = link(sl, sr)
         result = wrap(link(bp, pq, qd).sortedBy { it.pq.x.path })
-        L.debug { "${result.size}" }
+        Logger.debug { "${result.size}" }
         if (scan.started()) scan.finish() else result = emptyList()
     }
 
     fun execute() {
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        L.info { "-----------------------execute" }
+        Logger.info { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
@@ -77,7 +77,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         val mirror = finish.toList()
         finish.clear()
         mirror.forEach { move(it.first, it.second, false) }
-        finish.forEach { L.error { "unfinished: ${it.first}" } }
+        finish.forEach { Logger.error { "unfinished: ${it.first}" } }
         finish.clear()
         result = emptyList()
         if (task.started()) task.finish()
@@ -85,7 +85,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     private fun operateRetaining(l: L1, o: Op, dump: String) {
-        L.debug { "${l.x} ${l.y} ${l.c} $o" }
+        Logger.debug { "${l.x} ${l.y} ${l.c} $o" }
         when (o) {
             Op.CL -> {
                 move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
@@ -105,12 +105,12 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             }
             Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
             Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
-            else  -> L.debug { "operate: skip" }
+            else -> Logger.debug { "operate: skip" }
         }
     }
 
     private fun operate(l: L1, o: Op) {
-        L.debug { "${l.x} ${l.y} ${l.c} $o" }
+        Logger.debug { "${l.x} ${l.y} ${l.c} $o" }
         when (o) {
             Op.CL -> copy(Path(rootR, l.y.path), Path(rootL, l.x.path))
             Op.CR -> copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
@@ -118,7 +118,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             Op.MR -> move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             Op.DL -> delete(Path(rootL, l.x.path))
             Op.DR -> delete(Path(rootR, l.y.path))
-            else  -> L.debug { "operate: skip" }
+            else -> Logger.debug { "operate: skip" }
         }
     }
 
@@ -128,7 +128,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         else target.resolveSibling("${target.name}_${System.nanoTime()}.$NAME")
         if (exists && source.isDirectory()) return
         try {
-            L.info { "copy $source to $t" }
+            Logger.info { "copy $source to $t" }
             t.createParentDirectories()
             if (source.fileSize() < copyThreshold)
                 source.copyTo(t, *copyOptions)
@@ -136,7 +136,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
                 source.copyTo(t, copy)
             if (exists) move(t, target, true)
         } catch (e: Exception) {
-            L.error { "copy: ${e.message}" }
+            Logger.error { "copy: ${e.message}" }
         }
     }
 
@@ -148,20 +148,20 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             finish.add(t to target)
         }
         try {
-            L.info { "move $source to $t" }
+            Logger.info { "move $source to $t" }
             t.createParentDirectories()
             source.moveTo(t, overwrite)
         } catch (e: Exception) {
-            L.error { "move: ${e.message}" }
+            Logger.error { "move: ${e.message}" }
         }
     }
 
     private fun delete(source: Path) {
         try {
-            L.info { "delete $source" }
+            Logger.info { "delete $source" }
             source.deleteExisting()
         } catch (e: Exception) {
-            L.error { "delete: ${e.message}" }
+            Logger.error { "delete: ${e.message}" }
         }
     }
 }

@@ -2,7 +2,7 @@ package euaie
 
 import java.nio.file.*
 import kotlin.io.path.*
-import org.tinylog.kotlin.Logger as L
+import org.tinylog.kotlin.*
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
     val base = Path(root)
@@ -26,19 +26,19 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     }
 
     fun scan(save: Boolean = false): M0 {
-        L.info { "-----------------------scan" }
-        L.debug { "scan: $base" }
-        L.debug { "filesys: '$separator' | $sensitive" }
-        L.debug { "symlinks: $optionSymbolicLink" }
+        Logger.info { "-----------------------scan" }
+        Logger.debug { "scan: $base" }
+        Logger.debug { "filesys: '$separator' | $sensitive" }
+        Logger.debug { "symlinks: $optionSymbolicLink" }
         if (root.isBlank() || !base.isDirectory()) {
-            L.error { "invalid root path '$root'" }
+            Logger.error { "invalid root path '$root'" }
             return emptyMap()
         }
         included = 0
         excluded = 0
         result.clear()
         base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
-        L.info { "$base (included: $included excluded: $excluded)" }
+        Logger.info { "$base (included: $included excluded: $excluded)" }
         if (save) save()
         return result
     }
@@ -47,9 +47,9 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         val r = mutableMapOf<String, L0>()
         if (!stateless) try {
             state.forEachLine { L0.fromLine(it)?.apply { r[this.path] = this } }
-            L.debug { "loaded $state" }
+            Logger.debug { "loaded $state" }
         } catch (e: Exception) {
-            L.warn { "failed to load previous state: ${e.message}" }
+            Logger.warn { "failed to load previous state: ${e.message}" }
         }
         r[""] = L0("", 0, 0) //mark loaded (previous state)
         return r
@@ -59,9 +59,9 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         try {
             state.createParentDirectories()
             state.writeLines(result.values.map { it.toLine() })
-            L.debug { "saved $state" }
+            Logger.debug { "saved $state" }
         } catch (e: Exception) {
-            L.error { "save: ${e.message}" }
+            Logger.error { "save: ${e.message}" }
         }
     }
 
@@ -73,7 +73,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         r = r || including.any { valid(p, it, i) }
         r = r && excluding.all { !valid(p, it, i) }
         if (r) included++ else excluded++
-        L.trace { "${if (r) '+' else '-'} $p" }
+        Logger.trace { "${if (r) '+' else '-'} $p" }
         return r
     }
 
@@ -89,7 +89,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             else if (valid(path)) {
                 val size = a.size().let { if (it > 0) -it else -1 }
                 val time = a.lastModifiedTime().toMillis()
-                L.info { "•$path" }
+                Logger.info { "•$path" }
                 result[path] = L0(path, size, time)
                 task.done.incrementAndGet()
                 FileVisitResult.CONTINUE
@@ -98,7 +98,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         }
         onPostVisitDirectory { _, e ->
             if (e != null)
-                L.warn { "visit: ${e.message}" }
+                Logger.warn { "visit: ${e.message}" }
             FileVisitResult.CONTINUE
         }
         onVisitFile { p, a ->
@@ -108,9 +108,9 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             if (valid(path)) {
                 val size = a.size()
                 val time = if (a.isSymbolicLink) L0.LINK else a.lastModifiedTime().toMillis()
-                L.info { " $path" }
+                Logger.info { " $path" }
                 if (optionSymbolicLink == OptionSymbolicLink.IGNORE && a.isSymbolicLink)
-                    L.debug { "skipping symbolic link: $path" }
+                    Logger.debug { "skipping symbolic link: $path" }
                 else result[path] = L0(path, size, time)
                 task.done.incrementAndGet()
             }
@@ -119,7 +119,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         onVisitFileFailed { p, e ->
             val r = p.relativeTo(base).toString() + if (p.isDirectory()) S else ""
             if (valid(if (separator == S) r else r.replace(separator, S)))
-                L.warn { "visit: ${e.message}" }
+                Logger.warn { "visit: ${e.message}" }
             FileVisitResult.CONTINUE
         }
     }
