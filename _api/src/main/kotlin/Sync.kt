@@ -160,6 +160,8 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         try {
             Logger.info { "delete $source" }
             source.deleteExisting()
+        } catch (_: DirectoryNotEmptyException) {
+            Logger.warn { "delete: $source is not empty" }
         } catch (e: Exception) {
             Logger.error { "delete: ${e.message}" }
         }
