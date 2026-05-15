@@ -405,7 +405,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 underline { textLine(spread("diff ", "$line | $drop/${result.size}", width)) }
                 val w = if (head) width else -width
                 result.drop(drop).take(max(height - 2, 1)).forEach {
-                    when (it.first()) {
+                    when (it.firstOrNull()) {
                         '<'  -> red { textLine(cut(it, w)) }
                         '>'  -> green { textLine(cut(it, w)) }
                         else -> textLine(cut(it, w))
