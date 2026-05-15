@@ -73,7 +73,6 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         action = TUI.Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
     }
-    runCatching { }
     while (active) when (action) {
 //-------------------------------------------------------------------------------------------------
         TUI.Action.SCAN -> section {
@@ -103,6 +102,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var cycle by liveVarOf(0)
             var previous = Pair<Int, L3?>(index, null)
             section {
+                if (!active || action != TUI.Action.MAIN) return@section //prevents IOOBE with RCPS
                 if (showRCPS) Thread.sleep(5) //1 ms freezes VT
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
