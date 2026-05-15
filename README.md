@@ -1,5 +1,9 @@
 # euaie
 
+<p align="center">
+    <img src="media/icon.png" alt="icon" width="256"/>
+</p>
+
 - local file synchronization with a functional TUI
 - scalable and tiling window friendly layout
 - flexible but minimal and easy configuration
@@ -47,6 +51,7 @@ all options can be provided by arguments and argument files:
 `euaie @path/to/arguments.txt --quit`
 
 `arguments.txt`:
+
 ```
 # comments start with #
 
