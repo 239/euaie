@@ -50,11 +50,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     val empty = createTempFile("$NAME-") //for one-sided diff
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
-        MainWriter.log.forEach {
+        val log = synchronized(MainWriter.log) { MainWriter.log.toList() }
+        log.forEach {
             if (it.first.level == Level.ERROR) red { text(it.second) }
             if (it.first.level == Level.WARN) yellow { text(it.second) }
         }
-        textLine(MainWriter.log.lastOrNull()?.first?.message.orEmpty())
+        textLine(log.lastOrNull()?.first?.message.orEmpty())
         if (!MainWriter.normal()) {
             red { text("${MainWriter.total(Level.ERROR)}") }; text(" | ")
             yellow { text("${MainWriter.total(Level.WARN)}") }; textLine()

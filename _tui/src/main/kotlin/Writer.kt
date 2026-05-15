@@ -12,14 +12,16 @@ class MainWriter(properties: MutableMap<String?, String?>?) : AbstractFormatPatt
         fun total(l: Level): Int = total[l.ordinal]
         fun normal(): Boolean = total[Level.WARN.ordinal] + total[Level.ERROR.ordinal] == 0
         fun clear() {
-            log.clear()
+            synchronized(log) { log.clear() }
             total.fill(0)
         }
     }
 
     override fun write(entry: LogEntry) {
-        log.addLast(entry to render(entry))
-        if (log.size > SIZE) log.removeFirstOrNull()
+        synchronized(log) {
+            log.addLast(entry to render(entry))
+            if (log.size > SIZE) log.removeFirstOrNull()
+        }
         total[entry.level.ordinal]++
     }
 
