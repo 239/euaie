@@ -369,9 +369,9 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             if (sync.copy.enabled()) {
                 val d = formatSize(sync.copy.done.get())
                 val t = formatSize(sync.copy.goal.get())
-                val s = formatSize(sync.copy.done.get() / sync.copy.duration().inWholeSeconds)
+                val s = formatSize(sync.copy.done.get() / max(sync.copy.duration().inWholeSeconds, 1))
                 val r = (sync.copy.goal.get() - sync.copy.done.get()) /
-                        (sync.copy.done.get() / sync.copy.duration().inWholeSeconds)
+                        max((sync.copy.done.get() / max(sync.copy.duration().inWholeSeconds, 1)), 1)
                 val n = sync.copy.progress(width.toDouble()).roundToInt()
                 val l = spread("$d / $t ", "$s/s | $r s", width, true)
                 invert { text(l.take(n)) }; textLine(l.drop(n))
