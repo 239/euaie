@@ -218,7 +218,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     val di = "${l.proposed.icon} "
                     val op = "${map(l)} "
                     val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•'
-                    val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path
+                    val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path //TODO indent files?
                     val py = if (showName) l.l2.pq.y.name else l.l2.pq.y.path
                     val p2 = if (l.l2.pq.c.m()) " | $py" else ""
                     val c0 = "$ch$di$op$ff"
@@ -442,7 +442,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
-                val topR = " made with Kotter + picocli + tinylog + ♥"
+                val topR = " made with ♥ + Kotter + picocli + tinylog"
                 underline { textLine(spread(topL, topR, width)) }
                 views.forEachIndexed { i, s -> if (i == index) invert { text(" $s ") } else text(" $s ") }
                 textLine()
