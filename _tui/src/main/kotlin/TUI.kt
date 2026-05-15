@@ -141,6 +141,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         .forEach { if (it.proposed != Di.N) it.actual = order }
                     if (!item.l2.pq.y.file) list.filter { it.l2.pq.y.path.startsWith(item.l2.pq.y.path) }
                         .forEach { if (it.proposed != Di.N) it.actual = order }
+                    order = Di.U
                 }
                 list.forEach {
                     totalCh[it.l2.pq.c.ordinal]++
@@ -326,8 +327,8 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         TUI.Action.DIFF -> if (diff.x.file && diff.y.file) a else TUI.Action.MAIN
                         else            -> a
                     }
-                    index = max(min(i, limit), 0) //avoiding second update on rerender
                     order = o
+                    index = max(min(i, limit), 0) //avoiding second update on rerender
                     if (action != TUI.Action.MAIN) signal()
                 }
                 aside { textLine() }
