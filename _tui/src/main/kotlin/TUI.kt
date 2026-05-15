@@ -103,7 +103,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var previous = Pair<Int, L3?>(index, null)
             section {
                 if (!active || action != TUI.Action.MAIN) return@section //prevents IOOBE with RCPS
-                if (showRCPS) Thread.sleep(5) //1 ms freezes VT
+                if (showRCPS) Thread.sleep(10)
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start + 1) else 0
@@ -405,7 +405,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var head by liveVarOf(true)
             if (max(diff.x.size, diff.y.size) < 8388608L) section { //8 MiB limit
                 val line = if (head) "head" else "tail"
-                underline { textLine(spread("diff ", "$line | $drop/${result.size}", width)) }
+                underline { textLine(spread("diff ", "$line | $drop / ${result.size}", width)) }
                 val w = if (head) width else -width
                 result.drop(drop).take(max(height - 2, 1)).forEach {
                     when (it.firstOrNull()) {
@@ -427,14 +427,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     }
                 }
                 aside { textLine() }
-                result = try { //TODO runCatching?
+                result = runCatching {
                     val x = if (diff.x.real) "${sync.pathL}/${diff.x.path}" else "$empty"
                     val y = if (diff.y.real) "${sync.pathR}/${diff.y.path}" else "$empty"
                     ProcessBuilder("diff", x, y).redirectErrorStream(true)
                         .start().inputStream.bufferedReader().readLines()
-                } catch (e: Exception) {
-                    listOf(e.localizedMessage)
-                }
+                }.getOrElse { listOf(it.localizedMessage) }
                 rerender()
             }
             action = TUI.Action.MAIN

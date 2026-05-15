@@ -80,15 +80,13 @@ class CLI : java.util.concurrent.Callable<Int> {
     var version: Boolean = false
 
     override fun call(): Int {
-        if (tolerance < 0L) try { //TODO runCatching?
+        if (tolerance < 0L) tolerance = runCatching {
             val typeL = Path(rootL).fileStore().type().uppercase()
             val typeR = Path(rootR).fileStore().type().uppercase()
-            tolerance = if ("FAT" in "$typeL$typeR") 2000 else 0
             Logger.debug { "$typeL | $typeR" }
-        } catch (e: Exception) {
-            Logger.warn { "call: ${e.message}" }
-        }
-        L0.tolerance = tolerance.coerceAtLeast(0L)
+            if ("FAT" in "$typeL$typeR") 2000L else 0L
+        }.getOrDefault(0L)
+        L0.tolerance = tolerance
         Scan.optionInsensitive = insensitive
         Scan.optionSymbolicLink = symlinks
         Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
