@@ -98,9 +98,13 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync(rootL, rootR, include, exclude).run {
             if (automatic) { //TODO improve!
                 compare()
-                result().apply { println("${size}\t${count { it.l2.pq.c.u() }}=") }
+                result().groupBy { it.l2.pq.c }.entries.run {
+                    println(joinToString("  ") { "${it.value.size}${it.key.icon}" })
+                }
                 execute()
-                result().apply { println("${size}\t${count { it.l2.pq.c.u() }}=") }
+                result().groupBy { it.actual }.entries.run {
+                    println(joinToString("  ") { "${it.value.size}${it.key.icon}" })
+                }
             } else start(this)
         }
         return if (version) 1 else 0 //avoiding 'never used' warning
@@ -110,7 +114,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 fun main(arguments: Array<String>) {
     if (arguments.size == 1) { //TODO --edit?
         val path = Path(arguments[0])
-        if (path.isRegularFile()) arguments[0] = "@${arguments[0]}" //TODO symlink to dir?
+        if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
         if (path.isDirectory()) {
             val files = path.listDirectoryEntries().filter { it.isRegularFile() }.sorted()
             files.forEachIndexed { i, f -> println("${i + 1}: ${f.fileName}") }
