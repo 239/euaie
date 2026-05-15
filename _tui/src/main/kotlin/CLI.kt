@@ -80,7 +80,7 @@ class CLI : java.util.concurrent.Callable<Int> {
     var version: Boolean = false
 
     override fun call(): Int {
-        if (tolerance < 0L) try {
+        if (tolerance < 0L) try { //TODO runCatching?
             val typeL = Path(rootL).fileStore().type().uppercase()
             val typeR = Path(rootR).fileStore().type().uppercase()
             tolerance = if ("FAT" in "$typeL$typeR") 2000 else 0
@@ -110,14 +110,14 @@ class CLI : java.util.concurrent.Callable<Int> {
 fun main(arguments: Array<String>) {
     if (arguments.size == 1) { //TODO --edit?
         val path = Path(arguments[0])
-        if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
+        if (path.isRegularFile()) arguments[0] = "@${arguments[0]}" //TODO symlink to dir?
         if (path.isDirectory()) {
             val files = path.listDirectoryEntries().filter { it.isRegularFile() }.sorted()
             files.forEachIndexed { i, f -> println("${i + 1}: ${f.fileName}") }
-            var index = 0
-            while (index !in 1..files.size) {
-                print("select by index: ")
-                index = readlnOrNull()?.toIntOrNull() ?: 0
+            var index = -1
+            while (index !in 0..files.size) {
+                print("select by index (0 to cancel): ")
+                index = readlnOrNull()?.toIntOrNull() ?: -1
             }
             files.getOrNull(index - 1)?.let { arguments[0] = "@${it}" }
             println(arguments[0])
