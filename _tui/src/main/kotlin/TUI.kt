@@ -64,7 +64,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     val runSync = fun RunScope.(compare: Boolean): Unit {
         cache.clear()
         MainWriter.clear()
-        addTimer(TUI.rerender, true) { rerender() }
+        addTimer(TUI.rerender, true) { if (active) rerender() }
         val d = measureTime { if (compare) sync.compare() else sync.execute() }
         org.tinylog.kotlin.Logger.info {
             if (compare && sync.scan.finished() || !compare && sync.task.finished()) "$d" else "canceled"
@@ -73,6 +73,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         action = TUI.Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
     }
+    runCatching { }
     while (active) when (action) {
 //-------------------------------------------------------------------------------------------------
         TUI.Action.SCAN -> section {
@@ -426,7 +427,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     }
                 }
                 aside { textLine() }
-                result = try {
+                result = try { //TODO runCatching?
                     val x = if (diff.x.real) "${sync.pathL}/${diff.x.path}" else "$empty"
                     val y = if (diff.y.real) "${sync.pathR}/${diff.y.path}" else "$empty"
                     ProcessBuilder("diff", x, y).redirectErrorStream(true)
