@@ -7,16 +7,19 @@
       "type": "euaie.CLI",
       "fields": [
         {
-          "name": "exclude"
+          "name": "automatic"
         },
         {
-          "name": "exit"
+          "name": "exclude"
         },
         {
           "name": "include"
         },
         {
           "name": "insensitive"
+        },
+        {
+          "name": "quit"
         },
         {
           "name": "retain"
@@ -59,15 +62,6 @@
       "type": "groovy.lang.Closure"
     },
     {
-      "type": "java.io.Console",
-      "methods": [
-        {
-          "name": "isTerminal",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -80,15 +74,6 @@
       ]
     },
     {
-      "type": "java.lang.Module",
-      "methods": [
-        {
-          "name": "isNativeAccessEnabled",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
       "type": "java.lang.Object"
     },
     {
@@ -96,15 +81,6 @@
       "methods": [
         {
           "name": "current",
-          "parameterTypes": []
-        }
-      ]
-    },
-    {
-      "type": "java.lang.System",
-      "methods": [
-        {
-          "name": "console",
           "parameterTypes": []
         }
       ]
@@ -176,9 +152,6 @@
       "type": "java.util.concurrent.ScheduledThreadPoolExecutor"
     },
     {
-      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl"
-    },
-    {
       "type": "kotlinx.coroutines.CancellableContinuationImpl"
     },
     {
@@ -239,16 +212,79 @@
       "type": "kotlinx.coroutines.sync.SemaphoreImpl"
     },
     {
-      "type": "org.jline.terminal.impl.exec.ExecTerminalProvider",
-      "methods": [
+      "type": "org.jline.nativ.CLibrary",
+      "jniAccessible": true,
+      "fields": [
         {
-          "name": "<init>",
-          "parameterTypes": []
+          "name": "TCSADRAIN"
+        },
+        {
+          "name": "TCSAFLUSH"
+        },
+        {
+          "name": "TCSANOW"
+        },
+        {
+          "name": "TIOCGWINSZ"
+        },
+        {
+          "name": "TIOCSWINSZ"
         }
       ]
     },
     {
-      "type": "org.jline.terminal.impl.ffm.FfmTerminalProvider",
+      "type": "org.jline.nativ.CLibrary$Termios",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "SIZEOF"
+        },
+        {
+          "name": "c_cc"
+        },
+        {
+          "name": "c_cflag"
+        },
+        {
+          "name": "c_iflag"
+        },
+        {
+          "name": "c_ispeed"
+        },
+        {
+          "name": "c_lflag"
+        },
+        {
+          "name": "c_oflag"
+        },
+        {
+          "name": "c_ospeed"
+        }
+      ]
+    },
+    {
+      "type": "org.jline.nativ.CLibrary$WinSize",
+      "jniAccessible": true,
+      "fields": [
+        {
+          "name": "SIZEOF"
+        },
+        {
+          "name": "ws_col"
+        },
+        {
+          "name": "ws_row"
+        },
+        {
+          "name": "ws_xpixel"
+        },
+        {
+          "name": "ws_ypixel"
+        }
+      ]
+    },
+    {
+      "type": "org.jline.terminal.impl.exec.ExecTerminalProvider",
       "methods": [
         {
           "name": "<init>",
@@ -285,6 +321,17 @@
     },
     {
       "type": "org.tinylog.writers.ConsoleWriter",
+      "methods": [
+        {
+          "name": "<init>",
+          "parameterTypes": [
+            "java.util.Map"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "org.tinylog.writers.FileWriter",
       "methods": [
         {
           "name": "<init>",
@@ -382,15 +429,6 @@
       ]
     },
     {
-      "type": "sun.text.resources.BreakIteratorInfo"
-    },
-    {
-      "type": "sun.text.resources.BreakIteratorResources"
-    },
-    {
-      "type": "sun.text.resources.BreakIteratorResources_en"
-    },
-    {
       "type": "sun.text.resources.cldr.FormatData"
     },
     {
@@ -406,13 +444,10 @@
   ],
   "resources": [
     {
-      "glob": "META-INF/jline/providers/exec"
+      "glob": "META-INF/maven/org.jline/jline-native/pom.properties"
     },
     {
-      "glob": "META-INF/jline/providers/ffm"
-    },
-    {
-      "glob": "META-INF/jline/providers/jni"
+      "glob": "META-INF/services/java.nio.charset.spi.CharsetProvider"
     },
     {
       "glob": "META-INF/services/java.time.zone.ZoneRulesProvider"
@@ -427,7 +462,25 @@
       "glob": "META-INF/services/org.tinylog.writers.Writer"
     },
     {
+      "glob": "META-INF/services/org/jline/terminal/provider/exec"
+    },
+    {
+      "glob": "META-INF/services/org/jline/terminal/provider/ffm"
+    },
+    {
+      "glob": "META-INF/services/org/jline/terminal/provider/jansi"
+    },
+    {
+      "glob": "META-INF/services/org/jline/terminal/provider/jna"
+    },
+    {
+      "glob": "META-INF/services/org/jline/terminal/provider/jni"
+    },
+    {
       "glob": "git.properties"
+    },
+    {
+      "glob": "org/jline/nativ/Linux/x86_64/libjlinenative.so"
     },
     {
       "glob": "org/jline/utils/capabilities.txt"
@@ -440,10 +493,6 @@
     },
     {
       "glob": "tinylog.properties"
-    },
-    {
-      "module": "java.base",
-      "glob": "sun/text/resources/LineBreakIteratorData"
     }
   ]
 }
