@@ -96,7 +96,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync(rootL, rootR, include, exclude).run {
             if (automatic) {
                 compare()
-                val r = result()
+                val r = result
                 execute()
                 r.groupBy { it.l2.pq.c }.entries.run {
                     println(joinToString("  ") { "${it.value.size}${it.key.icon}" })

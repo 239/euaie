@@ -11,10 +11,11 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     val copy = Task()
     val pathL = Path(rootL).absolutePathString()
     val pathR = Path(rootR).absolutePathString()
+    var result = emptyList<L3>()
+        private set
     private val scanL = Scan(rootL, include, exclude, hash(pathL + L0.D + pathR), scan)
     private val scanR = Scan(rootR, include, exclude, hash(pathR + L0.D + pathL), scan)
     private val finish = mutableListOf<Pair<Path, Path>>()
-    private var result = emptyList<L3>()
     private var copyThreshold = 0
 
     companion object {
@@ -28,15 +29,11 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         var optionCopyThreshold = 512
     }
 
-    fun result(): List<L3> = result
-
-//    fun states() = scanL.state.pathString to scanR.state.pathString
-
     fun compare(save: Boolean = false) {
         Logger.debug { "-----------------------compare" }
         Logger.debug { "$rootL $rootR +$include -$exclude" }
         scan.start(true)
-        if (pathL == pathR) {
+        if (pathL == pathR) { //TODO require?
             Logger.error { "identical root paths" }
             return
         }

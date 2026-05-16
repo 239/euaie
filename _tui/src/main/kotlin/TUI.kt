@@ -107,7 +107,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start + 1) else 0
-                val list = sync.result()
+                val list = sync.result
                 val totalCh = LongArray(Ch.entries.size)
                 val totalDi = LongArray(Di.entries.size + 1) //also count revised
                 val totalOp = LongArray(Op.entries.size)
@@ -221,7 +221,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     val di = "${l.proposed.icon} "
                     val op = "${map(l)} "
                     val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•'
-                    val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path //TODO indent files?
+                    val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path
                     val py = if (showName) l.l2.pq.y.name else l.l2.pq.y.path
                     val p2 = if (l.l2.pq.c.m()) " | $py" else ""
                     val c0 = "$ch$di$op$ff"
@@ -229,7 +229,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         if (l === item) invert()
                         if (l.proposed == Di.U) red()
                         if (l.proposed != l.actual) green()
-                        if (showBoth) { //TODO grid + cellMetrics?
+                        if (showBoth) {
                             val cw = max((width - c0.length) / 2 - 1, 1)
                             val c1 = if (l.l2.pq.x.real) cutW(px, cw * sign) else ""
                             val c2 = if (l.l2.pq.y.real) cutW(py, cw * sign) else ""
@@ -334,7 +334,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     if (action != TUI.Action.MAIN) signal()
                 }
                 aside { textLine() }
-                if (TUI.optionQuitWhenDone && sync.result().all { it.l2.pq.c.u() }) {
+                if (TUI.optionQuitWhenDone && sync.result.all { it.l2.pq.c.u() }) {
                     action = TUI.Action.QUIT
                     signal()
                 }
@@ -439,7 +439,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO about | keys | paths (state)?
+            val views = listOf("symbols", "options") //TODO help | about | keys | paths (state)?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
