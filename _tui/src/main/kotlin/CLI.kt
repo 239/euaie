@@ -94,13 +94,14 @@ class CLI : java.util.concurrent.Callable<Int> {
         Sync.optionStateless = stateless
         TUI.optionQuitWhenDone = quit
         Sync(rootL, rootR, include, exclude).run {
-            if (automatic) { //TODO improve!
+            if (automatic) {
                 compare()
-                result().groupBy { it.l2.pq.c }.entries.run {
+                val r = result()
+                execute()
+                r.groupBy { it.l2.pq.c }.entries.run {
                     println(joinToString("  ") { "${it.value.size}${it.key.icon}" })
                 }
-                execute()
-                result().groupBy { it.actual }.entries.run {
+                r.groupBy { it.actual }.entries.run {
                     println(joinToString("  ") { "${it.value.size}${it.key.icon}" })
                 }
             } else start(this)
