@@ -30,13 +30,13 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     fun compare(save: Boolean = false) {
-        Logger.debug { "-----------------------compare" }
-        Logger.debug { "$rootL $rootR +$include -$exclude" }
-        scan.start(true)
-        if (pathL == pathR) { //TODO require?
+        if (pathL == pathR) {
             Logger.error { "identical root paths" }
             return
         }
+        Logger.debug { "-----------------------compare" }
+        Logger.debug { "$rootL $rootR +$include -$exclude" }
+        scan.start(true)
         val sl = scanL.scan(save)
         val sr = scanR.scan(save)
         val ll = scanL.load(optionStateless)
