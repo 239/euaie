@@ -50,9 +50,9 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     fun execute() {
+        Logger.debug { "-----------------------execute" }
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        Logger.debug { "-----------------------execute" }
         copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
@@ -67,7 +67,9 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 //            Thread.sleep(1000) //debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
-            if (optionRetain && it.x.file && it.y.file) //TODO check if files did not change?
+//            if (Path(rootL, it.x.path).unchanged(it.x)) //TODO blocking!
+//                if (Path(rootR, it.y.path).unchanged(it.y))
+            if (optionRetain && it.x.file && it.y.file)
                 operateRetaining(it, o, dump) else operate(it, o)
             task.done.incrementAndGet()
         }
@@ -165,9 +167,18 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 }
 
-fun hash(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).toHexString()
+private fun hash(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).toHexString()
 
-fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
+private fun Path.unchanged(l: L0): Boolean = !l.real || runCatching {
+    (fileSize() == l.size && getLastModifiedTime().toMillis() == l.time).also {
+        if (!it) Logger.error { "changed: ${l.path}" }
+    }
+}.getOrElse {
+    Logger.error { "changed? ${it.message}" }
+    false
+}
+
+private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
     task.start(true)
     task.goal.set(fileSize())
     inputStream().use { input ->
