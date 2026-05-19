@@ -101,8 +101,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var start = 0L
             var cycle by liveVarOf(0)
             var previous = Pair<Int, L3?>(index, null)
-            section {
-                if (!active || action != TUI.Action.MAIN) return@section //prevents IOOBE with RCPS
+            section { //IOOBE with RCPS
                 if (showRCPS) Thread.sleep(10)
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
@@ -286,12 +285,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     var i = index
                     var o = Di.U
                     when (key) {
-                        Keys.Enter, Keys.E     -> a = TUI.Action.SYNC
-                        Keys.Backspace, Keys.C -> a = TUI.Action.SCAN
+                        Keys.D                 -> a = TUI.Action.DIFF
+                        Keys.F                 -> a = TUI.Action.FIND
                         Keys.Tab               -> a = TUI.Action.HELP
                         Keys.Escape, Keys.Q    -> a = TUI.Action.QUIT
-                        Keys.F                 -> a = TUI.Action.FIND
-                        Keys.D                 -> a = TUI.Action.DIFF
+                        Keys.Backspace, Keys.C -> a = TUI.Action.SCAN
+                        Keys.Enter, Keys.E     -> a = TUI.Action.SYNC
                         Keys.Dollar            -> a = TUI.Action.TEST
                         Keys.Home, Keys.Y, Keys.Z -> i = 0
                         Keys.End, Keys.O          -> i = limit
@@ -331,7 +330,10 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     }
                     order = o
                     index = max(min(i, limit), 0) //avoiding second update on rerender
-                    if (action != TUI.Action.MAIN) signal()
+                    if (action != TUI.Action.MAIN) {
+                        showRCPS = false
+                        signal()
+                    }
                 }
                 aside { textLine() }
                 if (TUI.optionQuitWhenDone && sync.result.all { it.l2.pq.c.u() }) {
