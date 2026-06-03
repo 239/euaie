@@ -292,7 +292,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     var i = index
                     var o = Di.U
                     var s = sortBy.ordinal
-                    when (key) { //TODO skip all?
+                    when (key) { //TODO skip all: Delete?
                         Keys.D                 -> a = TUI.Action.DIFF
                         Keys.F                 -> a = TUI.Action.FIND
                         Keys.Tab               -> a = TUI.Action.HELP
@@ -319,7 +319,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.Period               -> showMore = !showMore
                         Keys.Plus                 -> filterCh = if (filterCh == Ch.A) Ch.U else Ch.A
                         Keys.Star                 -> filterCh = if (filterCh == Ch.C) Ch.U else Ch.C
-                        Keys.Tilde                -> filterCh = if (filterCh == Ch.M) Ch.U else Ch.M
+                        Keys.Slash             -> filterCh = if (filterCh == Ch.M) Ch.U else Ch.M
                         Keys.Minus                -> filterCh = if (filterCh == Ch.R) Ch.U else Ch.R
                         Keys.Equals               -> filterCh = if (filterCh == Ch.U) null else Ch.U
                         Keys.Less                 -> filterDi = if (filterDi == Di.L) null else Di.L
