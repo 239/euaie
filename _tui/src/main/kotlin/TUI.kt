@@ -40,7 +40,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     var filter by liveVarOf("") //find
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
-    var sortBySize by liveVarOf(false)
+    var sortBySize by liveVarOf(false) //TODO sort by name?
     var showBoth by liveVarOf(false)
     var showName by liveVarOf(false)
     var showMore by liveVarOf(false)
@@ -284,7 +284,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     var a = action
                     var i = index
                     var o = Di.U
-                    when (key) {
+                    when (key) { //TODO skip all?
                         Keys.D                 -> a = TUI.Action.DIFF
                         Keys.F                 -> a = TUI.Action.FIND
                         Keys.Tab               -> a = TUI.Action.HELP
@@ -441,7 +441,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         }
 //-------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
-            val views = listOf("symbols", "options") //TODO help | about | keys | paths (state)?
+            val views = listOf("symbols", "options") //TODO help | about | keys | paths (state) | dump size?
             var index by liveVarOf(0)
             section {
                 val topL = version.substringBefore('-')
@@ -489,7 +489,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     cell { text("quit when done") }; cell { text("${TUI.optionQuitWhenDone}") }
                     cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
                 }
-                bold { text(cut("[Enter|Esc|Space] return [Tab] switch", width)) }
+                bold { text(cut("[Tab] switch [Enter|Esc|Space] return", width)) }
             }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Space) {
                 onKeyPressed { if (key == Keys.Tab) index = (index + 1) % views.size }
                 aside { textLine() }
