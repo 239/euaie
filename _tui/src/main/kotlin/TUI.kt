@@ -18,6 +18,7 @@ import org.tinylog.*
 
 object TUI {
     enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST }
+    enum class Sort { NAME, PATH, SIZE } //TODO TIME?
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
@@ -40,7 +41,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     var filter by liveVarOf("") //find
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
-    var sortBySize by liveVarOf(false) //TODO sort by name?
+    var sortBy by liveVarOf(TUI.Sort.PATH)
     var showBoth by liveVarOf(false)
     var showName by liveVarOf(false)
     var showMore by liveVarOf(false)
@@ -125,7 +126,13 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     if (filter.isNotBlank()) filter {
                         it.l2.pq.x.path.contains(filter, true) || it.l2.pq.y.path.contains(filter, true)
                     } else this
-                }.run { if (sortBySize) sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) } else this }
+                }.run {
+                    when (sortBy) {
+                        TUI.Sort.NAME -> sortedBy { it.l2.pq.x.name }
+                        TUI.Sort.SIZE -> sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) }
+                        else          -> this
+                    }
+                }
                 if (previous.first == index && previous.second !== sector.getOrNull(index)) //list changed
                     sector.indexOf(previous.second).let { if (it >= 0) index = it } //try to find old item
                 limit = sector.size - 1 //can be negative!
@@ -162,7 +169,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 val view = if (showBoth) "2" else "1"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
-                val sort = if (sortBySize) "size" else "path"
+                val sort = sortBy.name.lowercase()
                 val topL = "${list.size} (${list.count { it.l2.pq.x.real }} | ${list.count { it.l2.pq.y.real }}) "
                 val topR = "$view | $path | $line | $sort | " + if (rcps > 0) "$rcps" else "$width x $height"
                 underline { textLine(spread(topL, topR, width)) }
@@ -284,6 +291,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     var a = action
                     var i = index
                     var o = Di.U
+                    var s = sortBy.ordinal
                     when (key) { //TODO skip all?
                         Keys.D                 -> a = TUI.Action.DIFF
                         Keys.F                 -> a = TUI.Action.FIND
@@ -301,6 +309,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.Left, Keys.H         -> o = Di.L
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
+                        Keys.S                 -> s = (s + 1) % TUI.Sort.entries.size
                         Keys.Digit0            -> showRCPS = !showRCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
@@ -308,7 +317,6 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.P, Keys.N         -> showName = !showName
                         Keys.Comma             -> showTail = !showTail
                         Keys.Period               -> showMore = !showMore
-                        Keys.S                    -> sortBySize = !sortBySize
                         Keys.Plus                 -> filterCh = if (filterCh == Ch.A) Ch.U else Ch.A
                         Keys.Star                 -> filterCh = if (filterCh == Ch.C) Ch.U else Ch.C
                         Keys.Tilde                -> filterCh = if (filterCh == Ch.M) Ch.U else Ch.M
@@ -330,6 +338,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     }
                     order = o
                     index = max(min(i, limit), 0) //avoiding second update on rerender
+                    sortBy = TUI.Sort.entries.getOrElse(s) { TUI.Sort.entries.first() }
                     if (action != TUI.Action.MAIN) {
                         showRCPS = false
                         signal()
