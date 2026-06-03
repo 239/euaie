@@ -38,6 +38,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
+    var reset by liveVarOf<Boolean?>(null)
     var filter by liveVarOf("") //find
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
@@ -143,6 +144,8 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 val item = sector.getOrNull(index)
                 previous = index to item
                 diff = item?.l2?.pq ?: L1.fake
+                reset?.run { list.forEach { it.actual = if (this) it.proposed else Di.N } }
+                reset = null
                 if (order != Di.U && item != null) {
                     if (item.proposed != Di.N) item.actual = order
                     if (!item.l2.pq.x.file) list.filter { it.l2.pq.x.path.startsWith(item.l2.pq.x.path) }
@@ -292,7 +295,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     var i = index
                     var o = Di.U
                     var s = sortBy.ordinal
-                    when (key) { //TODO skip all: Delete?
+                    when (key) {
                         Keys.D                 -> a = TUI.Action.DIFF
                         Keys.F                 -> a = TUI.Action.FIND
                         Keys.Tab               -> a = TUI.Action.HELP
@@ -310,6 +313,8 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
                         Keys.S                 -> s = (s + 1) % TUI.Sort.entries.size
+                        Keys.Delete            -> reset = false
+                        Keys.Insert            -> reset = true
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
