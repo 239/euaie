@@ -62,6 +62,15 @@
       "type": "groovy.lang.Closure"
     },
     {
+      "type": "java.io.Console",
+      "methods": [
+        {
+          "name": "isTerminal",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
       "type": "java.lang.Boolean",
       "jniAccessible": true,
       "methods": [
@@ -81,6 +90,15 @@
       "methods": [
         {
           "name": "current",
+          "parameterTypes": []
+        }
+      ]
+    },
+    {
+      "type": "java.lang.System",
+      "methods": [
+        {
+          "name": "console",
           "parameterTypes": []
         }
       ]
@@ -150,6 +168,9 @@
     },
     {
       "type": "java.util.concurrent.ScheduledThreadPoolExecutor"
+    },
+    {
+      "type": "kotlin.reflect.jvm.internal.ReflectionFactoryImpl"
     },
     {
       "type": "kotlinx.coroutines.CancellableContinuationImpl"
