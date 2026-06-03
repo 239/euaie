@@ -1,10 +1,10 @@
 [versions]
-ggp = "2.5.7"
-kotlin = "2.3.20"
+ggp = "4.0.1"
+kotlin = "2.4.0"
 kotter = "1.3.0"
-native = "0.11.5" #TODO upgrade with 25.0.4/25.1
+native = "1.1.1"
 picocli = "4.7.7"
-shadow = "9.4.1"
+shadow = "9.4.2"
 tinylog = "2.7.0"
 truthish = "1.0.4"
 versions = "0.54.0"
