@@ -324,7 +324,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.Equals               -> filterCh = if (filterCh == Ch.U) null else Ch.U
                         Keys.Less                 -> filterDi = if (filterDi == Di.L) null else Di.L
                         Keys.Greater              -> filterDi = if (filterDi == Di.R) null else Di.R
-                        Keys.Slash                -> filterDi = if (filterDi == Di.N) null else Di.N
+                        Keys.Colon             -> filterDi = if (filterDi == Di.N) null else Di.N
                         Keys.QuestionMark         -> filterDi = if (filterDi == Di.U) null else Di.U
                         Keys.ExclamationMark      -> {
                             filterDi = if (filterCh == Ch.U && filterDi == Di.N) null else Di.N
