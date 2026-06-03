@@ -310,13 +310,13 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         Keys.Right, Keys.L        -> o = Di.R
                         Keys.Space, Keys.M        -> o = Di.N
                         Keys.S                 -> s = (s + 1) % TUI.Sort.entries.size
-                        Keys.Digit0            -> showRCPS = !showRCPS
                         Keys.Digit1               -> showBoth = false
                         Keys.Digit2               -> showBoth = true
                         Keys.V                    -> showBoth = !showBoth
                         Keys.P, Keys.N         -> showName = !showName
                         Keys.Comma             -> showTail = !showTail
                         Keys.Period               -> showMore = !showMore
+                        Keys.NumberSign        -> showRCPS = !showRCPS
                         Keys.Plus                 -> filterCh = if (filterCh == Ch.A) Ch.U else Ch.A
                         Keys.Star                 -> filterCh = if (filterCh == Ch.C) Ch.U else Ch.C
                         Keys.Slash             -> filterCh = if (filterCh == Ch.M) Ch.U else Ch.M
