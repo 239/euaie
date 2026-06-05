@@ -17,7 +17,7 @@ build-native-image-podman-static-nolibc: build-jar
     podman run --rm --volume ./_tui/build/jar:/app \
         ghcr.io/graalvm/native-image-community:25 --static-nolibc -jar euaie.jar
 
-# ⚠️ broken UI and poor performance ⚠️
+# ⚠️faulty⚠️
 [linux]
 build-native-image-podman-static-musl: build-jar
     podman run --rm --volume ./_tui/build/jar:/app \
@@ -29,6 +29,9 @@ clean:
 native-image-agent +arguments: build-jar
     java -agentlib:native-image-agent=config-merge-dir=_tui/src/main/resources/META-INF/native-image/euaie/ \
         -jar _tui/build/jar/euaie.jar {{ arguments }}
+
+update:
+    ./gradlew dependencyUpdates
 
 upx:
     upx _tui/build/native/nativeCompile/*
