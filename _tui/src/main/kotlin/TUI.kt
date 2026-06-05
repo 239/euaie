@@ -18,7 +18,7 @@ import org.tinylog.*
 
 object TUI {
     enum class Action { DIFF, FIND, HELP, MAIN, QUIT, SCAN, SURE, SYNC, TEST }
-    enum class Sort { NAME, PATH, SIZE } //TODO TIME?
+    enum class Sort { NAME, PATH, SIZE, TIME }
 
     val orderCh = setOf(Ch.U, Ch.R, Ch.M, Ch.C, Ch.A)
     val orderDi = setOf(Di.N, Di.L, Di.R, Di.U)
@@ -131,6 +131,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     when (sortBy) {
                         TUI.Sort.NAME -> sortedBy { it.l2.pq.x.name }
                         TUI.Sort.SIZE -> sortedByDescending { max(it.l2.pq.x.size, it.l2.pq.y.size) }
+                        TUI.Sort.TIME -> sortedByDescending { max(it.l2.pq.x.time, it.l2.pq.y.time) }
                         else          -> this
                     }
                 }
