@@ -4,13 +4,13 @@
     <img src="media/icon.png" alt="icon" width="256"/>
 </p>
 
-- local file synchronization with a functional TUI
-- scalable and tiling window friendly layout
-- flexible but minimal and easy configuration
-- plain and effective filter syntax (no glob or regex)
-- tries to minimize complexity of application and codebase
+- local file synchronization via functional TUI
+- tiling window friendly, fully scalable layout
+- minimal and easy but flexible configuration
+- plain and effective filter syntax without glob/regex
+- strives for low complexity of app and codebase
 - runs in all terminals on Linux, macOS and Windows
-- native executables built with **GraalVM Native Image**
+- native executables built with GraalVM Native Image
 
 ![main](media/main.png)
 ![help](media/help.png)
