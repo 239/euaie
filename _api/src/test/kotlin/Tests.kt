@@ -19,4 +19,19 @@ class TestScan {
             assertThat(it.keys).containsExactly(setOf("inc-0/okay.inc"))
         }
     }
+
+    @Test
+    fun `case sensitivity`() {
+        Scan.optionInsensitive = true
+        Scan(root, setOf("included::.inc"), emptySet(), "", Task()).scan().also {
+            assertThat(it.keys).containsExactly(setOf("included/EmPtY.iNc"))
+        }
+        Scan.optionInsensitive = false
+        Scan(root, setOf("included::.inc"), emptySet(), "", Task()).scan().also {
+            assertThat(it.keys).isEmpty()
+        }
+        Scan(root, setOf("included::.iNc"), emptySet(), "", Task()).scan().also {
+            assertThat(it.keys).containsExactly(setOf("included/EmPtY.iNc"))
+        }
+    }
 }
