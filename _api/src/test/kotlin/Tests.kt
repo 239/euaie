@@ -4,6 +4,53 @@ import com.varabyte.truthish.*
 import kotlin.io.path.*
 import kotlin.test.Test
 
+class TestL0 {
+    val path = "some/path/to/test/file"
+
+    @Test
+    fun `time tolerance`() {
+        val a = L0(path, 100, 10000)
+        val b = L0(path, 100, 11500)
+        L0.tolerance = 0
+        assertThat(a.et(b)).isFalse()
+        L0.tolerance = 2000
+        assertThat(a.et(b)).isTrue()
+        val c = L0(path, 100, 12000)
+        assertThat(a.et(c)).isTrue()
+        val d = L0(path, 100, 12001)
+        assertThat(a.et(d)).isFalse()
+        L0.tolerance = 0
+    }
+
+    @Test
+    fun `time shifts`() {
+        val a = L0(path, 100, 10000)
+        val b = L0(path, 100, 10000 + 3600000L)
+        L0.tolerance = 1
+        assertThat(a.et(b)).isTrue()
+        val c = L0(path, 100, 10000 + 7200000L)
+        assertThat(a.et(c)).isTrue()
+        val d = L0(path, 100, 10000 + 10800000L)
+        assertThat(a.et(d)).isFalse()
+        L0.shifts = setOf(10800000L)
+        assertThat(a.et(d)).isTrue()
+        assertThat(a.et(b)).isFalse()
+        L0.tolerance = 0
+        L0.shifts = setOf(3600000L, 7200000L)
+    }
+
+    @Test
+    fun `string serialization`() {
+        val original = L0(path, 123456L, 1622548800000L)
+        val serialized = original.toLine()
+        val deserialized = L0.fromLine(serialized)
+        assertThat(deserialized).isEqualTo(original)
+        assertThat(deserialized?.path).isEqualTo(path)
+        assertThat(deserialized?.size).isEqualTo(123456L)
+        assertThat(deserialized?.time).isEqualTo(1622548800000L)
+    }
+}
+
 class TestScan {
     val root = "src/test/resources/scan"
     val void = emptySet<String>()
