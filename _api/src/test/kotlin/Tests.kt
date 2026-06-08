@@ -41,13 +41,56 @@ class TestL0 {
 
     @Test
     fun `string serialization`() {
-        val original = L0(path, 123456L, 1622548800000L)
-        val serialized = original.toLine()
-        val deserialized = L0.fromLine(serialized)
-        assertThat(deserialized).isEqualTo(original)
-        assertThat(deserialized?.path).isEqualTo(path)
-        assertThat(deserialized?.size).isEqualTo(123456L)
-        assertThat(deserialized?.time).isEqualTo(1622548800000L)
+        val size = 123456L
+        val time = 1622548800000L
+        val original = L0(path, size, time)
+        L0.fromLine(original.toLine())?.also {
+            assertThat(it).isEqualTo(original)
+            assertThat(it.path).isEqualTo(path)
+            assertThat(it.size).isEqualTo(size)
+            assertThat(it.time).isEqualTo(time)
+        }
+    }
+}
+
+class TestL1 {
+    val path = "some/path/to/test/file"
+
+    @Test
+    fun `move detection`() {
+        val old = "old/path/to/test/file"
+        val new = "new/path/to/test/file"
+        val mx = mapOf(old to L0(old, 100, 1000))
+        val my = mapOf(new to L0(new, 100, 1000))
+        val links = link(mx, my)
+        assertThat(links.size).isEqualTo(1)
+        assertThat(links[0].c).isEqualTo(Ch.M)
+        assertThat(links[0].x.path).isEqualTo(old)
+        assertThat(links[0].y.path).isEqualTo(new)
+    }
+
+    @Test
+    fun `change detection`() {
+        val mx = mapOf(path to L0(path, 100, 1000))
+        val my = mapOf(path to L0(path, 200, 1000))
+        link(mx, my).apply {
+            assertThat(size).isEqualTo(1)
+            assertThat(last().c).isEqualTo(Ch.C)
+        }
+    }
+
+    @Test
+    fun `added or removed`() {
+        val dummy = L0(path, 100, 1000)
+        val marker = L0("", 0, 0)
+        link(mapOf(path to dummy), emptyMap()).apply {
+            assertThat(size).isEqualTo(1)
+            assertThat(last().c).isEqualTo(Ch.A)
+        }
+        link(mapOf(path to dummy, "" to marker), emptyMap()).apply {
+            assertThat(size).isEqualTo(1)
+            assertThat(last().c).isEqualTo(Ch.R)
+        }
     }
 }
 
