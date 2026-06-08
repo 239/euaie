@@ -1,5 +1,7 @@
 package euaie
 
+import java.nio.*
+import java.nio.channels.*
 import java.nio.file.*
 import java.security.*
 import kotlin.io.path.*
@@ -26,7 +28,8 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
         var optionRetain = false // opt-in
         var optionStateless = false
-        var optionCopyThreshold = 512
+        var optionCopyThreshold = 512 // MiB
+        var optionMatchBytes = 0
     }
 
     fun compare(save: Boolean = false) {
@@ -96,15 +99,17 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             }
             Op.ML -> {
                 move(Path(rootL, l.y.path), Path(rootL, dump, l.y.path), true)
-                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
+                if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
+                    move(Path(rootL, l.x.path), Path(rootL, l.y.path))
             }
             Op.MR -> {
                 move(Path(rootR, l.x.path), Path(rootR, dump, l.x.path), true)
-                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
+                if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
+                    move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             }
             Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
             Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
-            else -> Logger.debug { "operate: skip" }
+            else  -> Logger.debug { "operate: skip" }
         }
     }
 
@@ -113,11 +118,13 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         when (o) {
             Op.CL -> copy(Path(rootR, l.y.path), Path(rootL, l.x.path))
             Op.CR -> copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
-            Op.ML -> move(Path(rootL, l.x.path), Path(rootL, l.y.path))
-            Op.MR -> move(Path(rootR, l.y.path), Path(rootR, l.x.path))
+            Op.ML -> if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
+                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
+            Op.MR -> if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
+                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             Op.DL -> delete(Path(rootL, l.x.path))
             Op.DR -> delete(Path(rootR, l.y.path))
-            else -> Logger.debug { "operate: skip" }
+            else  -> Logger.debug { "operate: skip" }
         }
     }
 
@@ -169,15 +176,6 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
 private fun hash(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).toHexString()
 
-private fun Path.unchanged(l: L0): Boolean = !l.real || runCatching {
-    (fileSize() == l.size && getLastModifiedTime().toMillis() == l.time).also {
-        if (!it) Logger.error { "changed: ${l.path}" }
-    }
-}.getOrElse {
-    Logger.error { "changed? ${it.message}" }
-    false
-}
-
 private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
     task.start(true)
     task.goal.set(fileSize())
@@ -199,4 +197,39 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
     }
     if (task.finished()) target.setLastModifiedTime(getLastModifiedTime()) // after stream.use!
     else target.deleteExisting()
+}
+
+private fun Path.matches(other: Path, size: Long, bytes: Int = Sync.optionMatchBytes): Boolean {
+    return size <= 0 || bytes <= 0 || runCatching {
+        if (size <= 2 * bytes) return readBytes().contentEquals(other.readBytes())
+        inputStream().use { i1 ->
+            other.inputStream().use { i2 ->
+                val b1 = ByteArray(bytes)
+                val b2 = ByteArray(bytes)
+                if (i1.read(b1) != b1.size || i2.read(b2) != b2.size
+                    || !b1.contentEquals(b2)) return false // head
+            }
+        }
+        FileChannel.open(this, StandardOpenOption.READ).use { c1 ->
+            FileChannel.open(other, StandardOpenOption.READ).use { c2 ->
+                val b1 = ByteBuffer.allocate(bytes)
+                val b2 = ByteBuffer.allocate(bytes)
+                if (c1.read(b1, size - bytes) != bytes || c2.read(b2, size - bytes) != bytes
+                    || !b1.array().contentEquals(b2.array())) return false // tail
+            }
+        }
+        true
+    }.getOrElse {
+        Logger.error { "matches: ${it.message}" }
+        false
+    }.also { if (!it) Logger.error { "discrepancy: $this | $other" } }
+}
+
+private fun Path.unchanged(l: L0): Boolean = !l.real || runCatching {
+    (fileSize() == l.size && getLastModifiedTime().toMillis() == l.time).also {
+        if (!it) Logger.error { "changed: ${l.path}" }
+    }
+}.getOrElse {
+    Logger.error { "changed? ${it.message}" }
+    false
 }

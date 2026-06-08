@@ -36,7 +36,7 @@ private fun moved(mx: M0, my: M0): List<L1> = buildList {
     val gy = my.values.groupBy { hash(it) }
     for ((hx, lx) in gx) for (x in lx) if (x.file) {
         lx.singleOrNull { it.es(x) && it.et(x) }?.run {
-            gy[hx]?.singleOrNull { it.es(x) && it.et(x) }?.let { add(L1(x, it, Ch.M)) } //TODO check content?
+            gy[hx]?.singleOrNull { it.es(x) && it.et(x) }?.let { add(L1(x, it, Ch.M)) }
         }
     }
 }
