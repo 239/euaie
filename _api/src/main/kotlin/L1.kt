@@ -31,13 +31,12 @@ private fun unchanged(mx: M0, my: M0): List<L1> = buildList {
 }
 
 private fun moved(mx: M0, my: M0): List<L1> = buildList {
-    val gx = mx.values.groupBy { it.size + if (L0.tolerance > 0) 0 else it.time } //ignore vague time
-    val gy = my.values.groupBy { it.size + if (L0.tolerance > 0) 0 else it.time }
-    for (lx in gx.values) for (x in lx) if (x.file) {
+    fun hash(l: L0) = (l.size * 1000003L) xor if (L0.tolerance > 0) 0L else l.time // ignore vague time
+    val gx = mx.values.groupBy { hash(it) }
+    val gy = my.values.groupBy { hash(it) }
+    for ((hx, lx) in gx) for (x in lx) if (x.file) {
         lx.singleOrNull { it.es(x) && it.et(x) }?.run {
-            gy[x.size + if (L0.tolerance > 0) 0 else x.time]
-                ?.singleOrNull { it.es(x) && it.et(x) }
-                ?.let { add(L1(x, it, Ch.M)) }
+            gy[hx]?.singleOrNull { it.es(x) && it.et(x) }?.let { add(L1(x, it, Ch.M)) } //TODO check content?
         }
     }
 }
