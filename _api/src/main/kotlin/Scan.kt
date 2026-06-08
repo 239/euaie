@@ -5,7 +5,7 @@ import kotlin.io.path.*
 import org.tinylog.kotlin.*
 
 class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
-    val base = Path(root)
+    val base = Path(root).absolute()
     val state = Path(statePath(NAME).pathString, hash)
     private val result = mutableMapOf<String, L0>()
     private val including = parse(include)
@@ -30,16 +30,16 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         Logger.debug { "scan: $base" }
         Logger.debug { "filesys: '$separator' | $sensitive" }
         Logger.debug { "symlinks: $optionSymbolicLink" }
-        if (root.isBlank() || !base.isDirectory()) {
-            Logger.error { "invalid root path '$root'" }
-            return emptyMap()
-        }
         included = 0
         excluded = 0
         result.clear()
-        base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
-        Logger.debug { "$base (included: $included excluded: $excluded)" }
-        if (save) save()
+        if (root.isBlank() || !base.isDirectory())
+            Logger.error { "invalid root path '$root'" }
+        else {
+            base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
+            Logger.debug { "$base (included: $included excluded: $excluded)" }
+            if (save) save()
+        }
         return result
     }
 
