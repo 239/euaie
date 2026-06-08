@@ -99,13 +99,13 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             }
             Op.ML -> {
                 move(Path(rootL, l.y.path), Path(rootL, dump, l.y.path), true)
-                if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
-                    move(Path(rootL, l.x.path), Path(rootL, l.y.path))
+//                if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
+                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
             }
             Op.MR -> {
                 move(Path(rootR, l.x.path), Path(rootR, dump, l.x.path), true)
-                if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
-                    move(Path(rootR, l.y.path), Path(rootR, l.x.path))
+//                if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
+                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             }
             Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
             Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
@@ -118,9 +118,9 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         when (o) {
             Op.CL -> copy(Path(rootR, l.y.path), Path(rootL, l.x.path))
             Op.CR -> copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
-            Op.ML -> if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
+            Op.ML -> //if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
                 move(Path(rootL, l.x.path), Path(rootL, l.y.path))
-            Op.MR -> if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
+            Op.MR -> //if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
                 move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             Op.DL -> delete(Path(rootL, l.x.path))
             Op.DR -> delete(Path(rootR, l.y.path))
