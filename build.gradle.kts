@@ -20,7 +20,7 @@ allprojects {
         resolutionStrategy.cacheChangingModulesFor(1, "hours")
     }
 
-    //reproducible jar
+    // reproducible jar
     tasks.withType<AbstractArchiveTask>().configureEach {
         isPreserveFileTimestamps = false
         isReproducibleFileOrder = true

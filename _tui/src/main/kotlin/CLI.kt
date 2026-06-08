@@ -31,7 +31,7 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Parameters(index = "1")
     lateinit var rootR: String
 
-    //1
+    // 1
     @Option(names = ["-e", "--exclude"], arity = "*", paramLabel = "<s:c:e>",
         description = ["filter syntax: '<starts>:<contains>:<ends>'"])
     var exclude: Set<String> = emptySet()
@@ -54,7 +54,7 @@ class CLI : java.util.concurrent.Callable<Int> {
             "negative values: detect automatically"])
     var tolerance: Long = -1L //L0.tolerance
 
-    //2
+    // 2
     @Option(names = ["-A", "--automatic"],
         description = ["run automatically ignoring unclear items"])
     var automatic: Boolean = false
@@ -106,7 +106,7 @@ class CLI : java.util.concurrent.Callable<Int> {
                 }
             } else start(this)
         }
-        return if (version) 1 else 0 //avoiding 'never used' warning
+        return if (version) 1 else 0 // avoiding 'never used' warning
     }
 }
 

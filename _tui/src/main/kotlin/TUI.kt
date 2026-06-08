@@ -34,12 +34,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     sectionExceptionHandler = { org.tinylog.kotlin.Logger.error(it, "Kotter") }) {
     val cache = mutableMapOf<Pair<Ch?, Di?>, List<L3>>()
     var action = TUI.Action.SCAN
-    var active = true //exit flag
+    var active = true // exit flag
     var shift = 0
     var index by liveVarOf(0)
     var order by liveVarOf(Di.U)
     var reset by liveVarOf<Boolean?>(null)
-    var filter by liveVarOf("") //find
+    var filter by liveVarOf("") // find
     var filterCh by liveVarOf<Ch?>(Ch.U)
     var filterDi by liveVarOf<Di?>(null)
     var sortBy by liveVarOf(TUI.Sort.PATH)
@@ -48,8 +48,8 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
     var showMore by liveVarOf(false)
     var showTail by liveVarOf(false)
     var showRCPS by liveVarOf(false)
-    var diff = L1.fake //short-cut to current selection
-    val empty = createTempFile("$NAME-") //for one-sided diff
+    var diff = L1.fake // short-cut to current selection
+    val empty = createTempFile("$NAME-") // for one-sided diff
     val printLog = fun MainRenderScope.(topL: String, topR: String): Unit {
         underline { textLine(spread(topL, topR, width)) }
         val log = synchronized(MainWriter.log) { MainWriter.log.toList() }
@@ -71,12 +71,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         org.tinylog.kotlin.Logger.info {
             if (compare && sync.scan.finished() || !compare && sync.task.finished()) "$d" else "canceled"
         }
-        rerender() //ensure that final state is visible
+        rerender() // ensure that final state is visible
         action = TUI.Action.MAIN
         if (MainWriter.normal()) sendKeys(Keys.Escape)
     }
     while (active) when (action) {
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.SCAN -> section {
             printLog("${sync.scan.textual()} ", "${sync.scan.duration().inWholeSeconds} s")
             if (sync.scan.started())
@@ -95,7 +95,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             }
             runSync(true)
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.MAIN -> run {
             var confirm = false
             var limit = 0
@@ -103,24 +103,24 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             var start = 0L
             var cycle by liveVarOf(0)
             var previous = Pair<Int, L3?>(index, null)
-            section { //IOOBE with RCPS
+            section { // IOOBE with RCPS
                 if (showRCPS) Thread.sleep(10)
                 cycle = if (showRCPS) cycle + 1 else 0
                 start = if (showRCPS) if (start == 0L) System.currentTimeMillis() else start else 0L
                 val rcps = if (showRCPS) cycle * 1000 / (System.currentTimeMillis() - start + 1) else 0
                 val list = sync.result
                 val totalCh = LongArray(Ch.entries.size)
-                val totalDi = LongArray(Di.entries.size + 1) //also count revised
+                val totalDi = LongArray(Di.entries.size + 1) // also count revised
                 val totalOp = LongArray(Op.entries.size)
                 val bytes = LongArray(3)
                 val sign = if (showTail) -1 else 1
-                val static = 11 + arrayOf(showMore).count { it } //fixed lines
+                val static = 11 + arrayOf(showMore).count { it } // fixed lines
                 val sector = (if (filterCh == Ch.U && filterDi == Di.N)
-                    list.filter { it.proposed != it.actual } //dynamic
+                    list.filter { it.proposed != it.actual } // dynamic
                 else cache.getOrPut(filterCh to filterDi) {
                     list.filter { // static
-                        (if (filterCh == Ch.U) it.l2.pq.c != Ch.U //exclude unchanged
-                        else filterCh == null || filterCh == it.l2.pq.c) && //all or filter only
+                        (if (filterCh == Ch.U) it.l2.pq.c != Ch.U // exclude unchanged
+                        else filterCh == null || filterCh == it.l2.pq.c) && // all or filter only
                                 (filterDi == null || filterDi == it.proposed)
                     }
                 }).run {
@@ -135,13 +135,13 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         else          -> this
                     }
                 }
-                if (previous.first == index && previous.second !== sector.getOrNull(index)) //list changed
-                    sector.indexOf(previous.second).let { if (it >= 0) index = it } //try to find old item
-                limit = sector.size - 1 //can be negative!
-                range = max(height - static, 0) //fixed top and bottom lines
-                index = max(min(index, limit), 0) //LiveVar: update only once!
-                shift = max(min(shift, limit - range + 1), 0) //scroll back but...
-                shift = max(min(shift, index), index - range + 1) //follow index
+                if (previous.first == index && previous.second !== sector.getOrNull(index)) // list changed
+                    sector.indexOf(previous.second).let { if (it >= 0) index = it } // try to find old item
+                limit = sector.size - 1 // can be negative!
+                range = max(height - static, 0) // fixed top and bottom lines
+                index = max(min(index, limit), 0) // LiveVar: update only once!
+                shift = max(min(shift, limit - range + 1), 0) // scroll back but...
+                shift = max(min(shift, index), index - range + 1) // follow index
                 val item = sector.getOrNull(index)
                 previous = index to item
                 diff = item?.l2?.pq ?: L1.fake
@@ -169,7 +169,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     bytes[2] += y
                 }
                 confirm = totalOp.sum() - totalOp[Op.NO.ordinal] > totalOp[Op.NO.ordinal]
-//overview------
+// overview-----
                 val view = if (showBoth) "2" else "1"
                 val path = if (showName) "name" else "full"
                 val line = if (showTail) "tail" else "head"
@@ -224,7 +224,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     if (filter.isNotBlank()) magenta()
                     underline { textLine(spread(lineL, lineR, width * sign)) }
                 }
-//list----------
+// list---------
                 for (i in shift until minOf(shift + range, sector.size)) {
                     val l = sector[i]
                     val ch = "${l.l2.pq.c.icon} ${l.l2.bp.c.icon}${l.l2.qd.c.icon} "
@@ -248,7 +248,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         } else textLine(c0 + cutW("$px$p2", (width - c0.length) * sign))
                     }
                 }
-//details-------
+// details------
                 if (item != null) {
                     val pq = item.l2.pq
                     val px = if (pq.x.real) pq.x.path.removeSuffix("/").removeSuffix(pq.x.name) else ""
@@ -276,7 +276,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     textLine(cut("$sd ($sx | $sy) [$wx | $wy]", width * sign))
                     textLine(cut("$td ($tx | $ty)", width * sign))
                 }
-//keys----------
+// keys---------
                 val more = "[S] sort [D] diff [F] find [V] view [P] path [,] line [${TUI.keysF}] filter"
                 val keysL = if (!showMore)
                     "[Enter] execute [Backspace] compare [←|Space|→] change "
@@ -343,7 +343,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         else            -> a
                     }
                     order = o
-                    index = max(min(i, limit), 0) //avoiding second update on rerender
+                    index = max(min(i, limit), 0) // avoiding second update on rerender
                     sortBy = TUI.Sort.entries.getOrElse(s) { TUI.Sort.entries.first() }
                     if (action != TUI.Action.MAIN) {
                         showRCPS = false
@@ -357,7 +357,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 }
             }
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.FIND -> section {
             magenta { text("find: "); input(initialText = filter) }
             textLine()
@@ -367,7 +367,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             aside { textLine() }
             action = TUI.Action.MAIN
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.SURE -> section {
             yellow { textLine(cut("are you sure?", width)) }
             bold { text(spread("[Space|Y] continue", "[Delete|N] cancel", width, true)) }
@@ -380,7 +380,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             }
             aside { textLine() }
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.SYNC -> section {
             printLog("${sync.task.textual()} ", "${sync.task.duration().inWholeSeconds} s")
             if (sync.copy.enabled()) {
@@ -415,12 +415,12 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             aside { textLine() }
             runSync(false)
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.DIFF -> run {
             var result = listOf("")
             var drop by liveVarOf(0)
             var head by liveVarOf(true)
-            if (max(diff.x.size, diff.y.size) < 8388608L) section { //8 MiB limit
+            if (max(diff.x.size, diff.y.size) < 8388608L) section { // 8 MiB limit
                 val line = if (head) "head" else "tail"
                 underline { textLine(spread("diff ", "$line | $drop / ${result.size}", width)) }
                 val w = if (head) width else -width
@@ -454,7 +454,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
             }
             action = TUI.Action.MAIN
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.HELP -> run {
             val views = listOf("symbols", "options") //TODO help | about | keys | paths (state) | dump size?
             var index by liveVarOf(0)
@@ -511,7 +511,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 action = TUI.Action.MAIN
             }
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.TEST -> run {
             val text = runCatching { Path("../LICENSE").readLines() }.getOrElse { emptyList() } + listOf(
                 "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、…",
@@ -541,7 +541,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 action = TUI.Action.QUIT
             }
         }
-//-------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
         TUI.Action.QUIT -> section {}.run { //TODO save settings?
             empty.deleteIfExists()
             active = false

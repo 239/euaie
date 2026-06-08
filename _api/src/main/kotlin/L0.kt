@@ -12,7 +12,7 @@ data class L0(val path: String, val size: Long, val time: Long) {
     fun e(a: L0) = ep(a) && es(a) && et(a)
     fun ep(a: L0) = path == a.path
     fun es(a: L0) = size == a.size
-    fun et(a: L0) = if (tolerance == 0L) time == a.time else //avoiding difference
+    fun et(a: L0) = if (tolerance == 0L) time == a.time else // avoiding difference
         abs(time - a.time).let { it <= tolerance || it in shifts }
     fun link() = time == LINK
     fun toLine() = "$path$D$size$D$time"

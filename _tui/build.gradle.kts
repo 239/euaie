@@ -13,7 +13,7 @@ application {
     mainClass = "euaie.CLIKt"
     //https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
     applicationDefaultJvmArgs = listOf(
-        "--enable-native-access=ALL-UNNAMED" //needed for java -cp ... (distribution builds)
+        "--enable-native-access=ALL-UNNAMED" // needed for java -cp ... (distribution builds)
     )
 }
 
@@ -55,13 +55,13 @@ graalvmNative {
             imageName.set("${rootProject.name}-$type-$arch")
             useFatJar.set(false)
             if (type == "windows")
-                buildArgs.add("-H:+AddAllCharsets") //UnsupportedCharsetException: Cp1252
+                buildArgs.add("-H:+AddAllCharsets") // UnsupportedCharsetException: Cp1252
         }
     }
     agent {
         enabled.set(true)
         metadataCopy {
-            inputTaskNames.add("run") //system terminal does not work with 'gradle run'!
+            inputTaskNames.add("run") // system terminal does not work with 'gradle run'!
             outputDirectories.add("src/main/resources/META-INF/native-image/${rootProject.name}")
             mergeWithExisting.set(true)
         }

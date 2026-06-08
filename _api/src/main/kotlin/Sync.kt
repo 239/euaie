@@ -24,7 +24,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
-        var optionRetain = false //opt-in
+        var optionRetain = false // opt-in
         var optionStateless = false
         var optionCopyThreshold = 512
     }
@@ -53,7 +53,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         Logger.debug { "-----------------------execute" }
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 //1 MiB .. 1 GiB
+        copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 // 1 MiB .. 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
         for (l in result) map.getOrPut(map(l)) { mutableListOf() }.add(l.l2.pq)
@@ -64,7 +64,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             Op.DR        -> map[o]?.sortedByDescending { it.x.path }
             else         -> map[o]
         }?.forEach {
-//            Thread.sleep(1000) //debug slowdown
+//            Thread.sleep(1000) // debug slowdown
             while (task.paused()) Thread.sleep(SLEEP)
             if (task.canceled()) break@loop
 //            if (Path(rootL, it.x.path).unchanged(it.x)) //TODO blocking!
@@ -80,7 +80,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         finish.clear()
         result = emptyList()
         if (task.started()) task.finish()
-        if (task.finished()) compare(!optionStateless) //save new state
+        if (task.finished()) compare(!optionStateless) // save new state
     }
 
     private fun operateRetaining(l: L1, o: Op, dump: String) {
@@ -185,7 +185,7 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
         target.outputStream().use { output ->
             val buffer = ByteArray(bufferKiB * 1024)
             var check = 0
-            while (check-- > 0 || task.enabled()) { //do not check task on every loop
+            while (check-- > 0 || task.enabled()) { // do not check task on every loop
                 if (check < 0) check = 64
                 while (task.paused()) Thread.sleep(Sync.SLEEP)
                 val bytes = input.read(buffer)
@@ -193,10 +193,10 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
                     output.write(buffer, 0, bytes)
                     task.done.addAndGet(bytes.toLong())
                 } else task.finish()
-//                Thread.sleep(10) //debug slowdown
+//                Thread.sleep(10) // debug slowdown
             }
         }
     }
-    if (task.finished()) target.setLastModifiedTime(getLastModifiedTime()) //after stream.use!
+    if (task.finished()) target.setLastModifiedTime(getLastModifiedTime()) // after stream.use!
     else target.deleteExisting()
 }

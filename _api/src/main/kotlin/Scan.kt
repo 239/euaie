@@ -21,7 +21,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         const val S = '/'
         private val separator = java.io.File.separatorChar
         private val sensitive = Path("a") != Path("A")
-        var optionInsensitive = !sensitive //use system default
+        var optionInsensitive = !sensitive // use system default
         var optionSymbolicLink = OptionSymbolicLink.PRESERVE
     }
 
@@ -51,7 +51,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         } catch (e: Exception) {
             Logger.warn { "failed to load previous state: ${e.message}" }
         }
-        r[""] = L0("", 0, 0) //mark loaded (previous state)
+        r[""] = L0("", 0, 0) // mark loaded (previous state)
         return r
     }
 
@@ -85,7 +85,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         onPreVisitDirectory { p, a ->
             val r = p.relativeTo(base).toString() + S
             val path = if (separator == S) r else r.replace(separator, S)
-            if (path == "/") FileVisitResult.CONTINUE //p == base
+            if (path == "/") FileVisitResult.CONTINUE // p == base
             else if (valid(path)) {
                 val size = a.size().let { if (it > 0) -it else -1 }
                 val time = a.lastModifiedTime().toMillis()
@@ -102,7 +102,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
             FileVisitResult.CONTINUE
         }
         onVisitFile { p, a ->
-//            Thread.sleep(100) //debug slowdown
+//            Thread.sleep(100) // debug slowdown
             val r = p.relativeTo(base).toString()
             val path = if (separator == S) r else r.replace(separator, S)
             if (valid(path)) {
