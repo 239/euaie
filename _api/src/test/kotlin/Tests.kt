@@ -57,7 +57,7 @@ class TestL1 {
     val path = "some/path/to/test/file"
 
     @Test
-    fun `move detection`() {
+    fun `was moved`() {
         val old = "old/path/to/test/file"
         val new = "new/path/to/test/file"
         val mx = mapOf(old to L0(old, 100, 1000))
@@ -70,7 +70,7 @@ class TestL1 {
     }
 
     @Test
-    fun `change detection`() {
+    fun `was changed`() {
         val mx = mapOf(path to L0(path, 100, 1000))
         val my = mapOf(path to L0(path, 200, 1000))
         link(mx, my).apply {
@@ -80,7 +80,7 @@ class TestL1 {
     }
 
     @Test
-    fun `added or removed`() {
+    fun `was added or removed`() {
         val dummy = L0(path, 100, 1000)
         val marker = L0("", 0, 0)
         link(mapOf(path to dummy), emptyMap()).apply {
