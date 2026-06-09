@@ -42,13 +42,16 @@ simple file synchronization
 #### examples
 
 dotfiles:  
-`euaie ~/ ~/sync/ -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
+`euaie ~ ~/sync -r -i .config/ .local/share/ -e .config/too/big .local/share/Trash/`
 
 pictures and videos:  
-`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM -Q`
+`euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM --retain --quit`
+
+remote sync via **rclone mount** (alternative to **rclone bisync**):
+`euaie ~/mount/rclone/sftp1 ~/mount/rclone/pcloud --tolerance 2000`
 
 all options can be provided by arguments and argument files:  
-`euaie @path/to/arguments.txt --quit`
+`euaie @path/to/arguments.txt -Q`
 
 `arguments.txt`:
 
@@ -56,8 +59,8 @@ all options can be provided by arguments and argument files:
 # comments start with #
 
 #roots first
-/home/user/
-/home/user/Cloud/Sync/
+/home/user
+/home/user/Cloud/Sync
 
 --retain
 --insensitive
