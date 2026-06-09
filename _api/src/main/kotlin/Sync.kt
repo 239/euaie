@@ -29,7 +29,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         var optionRetain = false // opt-in
         var optionStateless = false
         var optionCopyThreshold = 512 // MiB
-        var optionMatchBytes = 0
+        var optionCompareBytes = 0 //TODO set via option?
     }
 
     fun compare(save: Boolean = false) {
@@ -56,7 +56,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         Logger.debug { "-----------------------execute" }
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 // 1 MiB .. 1 GiB
+        copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 // 1 MiB / 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
         for (l in result) map.getOrPut(map(l)) { mutableListOf() }.add(l.l2.pq)
@@ -97,18 +97,16 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
                 move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
                 copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
             }
+            Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
+            Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
             Op.ML -> {
                 move(Path(rootL, l.y.path), Path(rootL, dump, l.y.path), true)
-//                if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
-                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
+                move(Path(rootL, l.x.path), Path(rootL, l.y.path), false, Path(rootR, l.y.path))
             }
             Op.MR -> {
                 move(Path(rootR, l.x.path), Path(rootR, dump, l.x.path), true)
-//                if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
-                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
+                move(Path(rootR, l.y.path), Path(rootR, l.x.path), false, Path(rootL, l.x.path))
             }
-            Op.DL -> move(Path(rootL, l.x.path), Path(rootL, dump, l.x.path), true)
-            Op.DR -> move(Path(rootR, l.y.path), Path(rootR, dump, l.y.path), true)
             else  -> Logger.debug { "operate: skip" }
         }
     }
@@ -118,12 +116,10 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         when (o) {
             Op.CL -> copy(Path(rootR, l.y.path), Path(rootL, l.x.path))
             Op.CR -> copy(Path(rootL, l.x.path), Path(rootR, l.y.path))
-            Op.ML -> //if (Path(rootL, l.x.path).matches(Path(rootR, l.y.path), l.x.size))
-                move(Path(rootL, l.x.path), Path(rootL, l.y.path))
-            Op.MR -> //if (Path(rootR, l.y.path).matches(Path(rootL, l.x.path), l.y.size))
-                move(Path(rootR, l.y.path), Path(rootR, l.x.path))
             Op.DL -> delete(Path(rootL, l.x.path))
             Op.DR -> delete(Path(rootR, l.y.path))
+            Op.ML -> move(Path(rootL, l.x.path), Path(rootL, l.y.path), false, Path(rootR, l.y.path))
+            Op.MR -> move(Path(rootR, l.y.path), Path(rootR, l.x.path), false, Path(rootL, l.x.path))
             else  -> Logger.debug { "operate: skip" }
         }
     }
@@ -146,7 +142,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         }
     }
 
-    private fun move(source: Path, target: Path, overwrite: Boolean = false) {
+    private fun move(source: Path, target: Path, overwrite: Boolean = false, counterpart: Path? = null) {
         if (source.notExists()) return
         var t = target
         if (!overwrite && target.exists()) {
@@ -156,7 +152,9 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         try {
             Logger.info { "move $source to $t" }
             t.createParentDirectories()
-            source.moveTo(t, overwrite)
+            if (counterpart == null || source.contentEquals(counterpart, optionCompareBytes))
+                source.moveTo(t, overwrite)
+            else Logger.error { "discrepancy: $source ≠ $counterpart" }
         } catch (e: Exception) {
             Logger.error { "move: ${e.message}" }
         }
@@ -199,30 +197,24 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
     else target.deleteExisting()
 }
 
-private fun Path.matches(other: Path, size: Long, bytes: Int = Sync.optionMatchBytes): Boolean {
-    return size <= 0 || bytes <= 0 || runCatching {
+private fun Path.contentEquals(other: Path, bytes: Int): Boolean {
+    val size = fileSize()
+    return size <= 0 || bytes <= 0 || run {
         if (size <= 2 * bytes) return readBytes().contentEquals(other.readBytes())
-        inputStream().use { i1 ->
-            other.inputStream().use { i2 ->
-                val b1 = ByteArray(bytes)
-                val b2 = ByteArray(bytes)
-                if (i1.read(b1) != b1.size || i2.read(b2) != b2.size
-                    || !b1.contentEquals(b2)) return false // head
-            }
-        }
         FileChannel.open(this, StandardOpenOption.READ).use { c1 ->
             FileChannel.open(other, StandardOpenOption.READ).use { c2 ->
                 val b1 = ByteBuffer.allocate(bytes)
                 val b2 = ByteBuffer.allocate(bytes)
+                if (c1.read(b1, 0) != bytes || c2.read(b2, 0) != bytes
+                    || !b1.array().contentEquals(b2.array())) return false // head
+                b1.clear()
+                b2.clear()
                 if (c1.read(b1, size - bytes) != bytes || c2.read(b2, size - bytes) != bytes
                     || !b1.array().contentEquals(b2.array())) return false // tail
             }
         }
         true
-    }.getOrElse {
-        Logger.error { "matches: ${it.message}" }
-        false
-    }.also { if (!it) Logger.error { "discrepancy: $this | $other" } }
+    }
 }
 
 private fun Path.unchanged(l: L0): Boolean = !l.real || runCatching {
