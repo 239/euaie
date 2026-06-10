@@ -1,14 +1,13 @@
 package euaie
 
-import com.varabyte.kotter.runtime.terminal.TerminalSize
-import com.varabyte.kotter.terminal.virtual.VirtualTerminal
 import com.varabyte.truthish.*
 import kotlin.test.Test
 
 class Tests {
     @Test
-    fun run() {
-        TUI.terminal = VirtualTerminal.create("Test", TerminalSize(60, 30))
+    fun `run VT`() {
+        TUI.terminal = com.varabyte.kotter.terminal.virtual.VirtualTerminal
+            .create("Test", com.varabyte.kotter.runtime.terminal.TerminalSize(60, 30))
         picocli.CommandLine(CLI())
             .setCaseInsensitiveEnumValuesAllowed(true)
             .setUseSimplifiedAtFiles(true)
@@ -16,7 +15,7 @@ class Tests {
     }
 
     @Test
-    fun cutC() {
+    fun `cutW basics`() {
         assertThat(cutW("", +1)).isEmpty()
         assertThat(cutW("", +0)).isEmpty()
         assertThat(cutW("", -1)).isEmpty()
@@ -49,10 +48,14 @@ class Tests {
     }
 
     @Test
-    fun `cutC with emoji`() {
+    fun `cutW with emoji`() {
         val e = "\uD83C\uDDFA\uD83C\uDDE6"
         val s = "abc${e}def"
+        assertThat(cutW(s, +4)).isEqualTo("abc…")
+        assertThat(cutW(s, +5)).isEqualTo("abc…")
         assertThat(cutW(s, +7)).isEqualTo("abc${e}d…")
+        assertThat(cutW(s, -4)).isEqualTo("…def")
+        assertThat(cutW(s, -5)).isEqualTo("…def")
         assertThat(cutW(s, -7)).isEqualTo("…c${e}def")
     }
 }
