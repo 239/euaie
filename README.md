@@ -47,7 +47,7 @@ dotfiles:
 pictures and videos:  
 `euaie ~/Pictures/DCIM /run/media/user/sdcard/DCIM --retain --quit`
 
-remote sync via **rclone mount** (alternative to **rclone bisync**):
+remote sync via **rclone mount** (alternative to **rclone bisync**):  
 `euaie ~/mount/rclone/sftp1 ~/mount/rclone/pcloud --tolerance 2000`
 
 all options can be provided by arguments and argument files:  
@@ -68,6 +68,7 @@ all options can be provided by arguments and argument files:
 
 #include in one line
 --include=.config/
+-i=.ssh/::.pub
 #or multiple lines
 --include
 .local/bin/
@@ -75,7 +76,7 @@ all options can be provided by arguments and argument files:
 Music/
 
 --exclude=Music/::.flac
---exclude
+-e
 .config/too/big
 .config/not/this/path
 .local/share/Trash/
