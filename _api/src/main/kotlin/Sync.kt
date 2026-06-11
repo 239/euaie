@@ -198,8 +198,8 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
 }
 
 private fun Path.contentEquals(other: Path, bytes: Int): Boolean {
-    val size = fileSize()
-    return size <= 0 || bytes <= 0 || run {
+    return bytes <= 0 || run {
+        val size = fileSize()
         if (size <= 2 * bytes) return readBytes().contentEquals(other.readBytes())
         FileChannel.open(this, StandardOpenOption.READ).use { c1 ->
             FileChannel.open(other, StandardOpenOption.READ).use { c2 ->
