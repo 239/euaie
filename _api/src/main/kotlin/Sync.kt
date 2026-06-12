@@ -18,7 +18,6 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     private val scanL = Scan(rootL, include, exclude, hash(pathL + L0.D + pathR), scan)
     private val scanR = Scan(rootR, include, exclude, hash(pathR + L0.D + pathL), scan)
     private val finish = mutableListOf<Pair<Path, Path>>()
-    private var copyThreshold = 0
 
     companion object {
         const val SLEEP = 239L
@@ -26,10 +25,16 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)
+        private var copyThreshold = 0 // byte
+        private var verifyChunks = 0 // byte
         var optionRetain = false // opt-in
         var optionStateless = false
-        var optionCopyThreshold = 512 // MiB
-        var optionCompareBytes = 0 //TODO set via option?
+        var optionCopyThreshold = 512 // MiB //TODO set() | _MiB?
+        var optionVerifyChunks_KiB = 0
+            set(value) {
+                field = value.coerceIn(0, 1024 * 1024) // max 1 GiB
+                verifyChunks = field * 1024
+            }
     }
 
     fun compare(save: Boolean = false) {
@@ -152,7 +157,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         try {
             Logger.info { "move $source to $t" }
             t.createParentDirectories()
-            if (counterpart == null || source.contentEquals(counterpart, optionCompareBytes))
+            if (counterpart == null || source.contentEquals(counterpart, verifyChunks))
                 source.moveTo(t, overwrite)
             else Logger.error { "discrepancy: $source ≠ $counterpart" }
         } catch (e: Exception) {
@@ -174,7 +179,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
 private fun hash(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).toHexString()
 
-private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
+private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) { //TODO bytes?
     task.start(true)
     task.goal.set(fileSize())
     inputStream().use { input ->
@@ -197,24 +202,22 @@ private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) {
     else target.deleteExisting()
 }
 
-private fun Path.contentEquals(other: Path, bytes: Int): Boolean {
-    return bytes <= 0 || run {
-        val size = fileSize()
-        if (size <= 2 * bytes) return readBytes().contentEquals(other.readBytes())
-        FileChannel.open(this, StandardOpenOption.READ).use { c1 ->
-            FileChannel.open(other, StandardOpenOption.READ).use { c2 ->
-                val b1 = ByteBuffer.allocate(bytes)
-                val b2 = ByteBuffer.allocate(bytes)
-                if (c1.read(b1, 0) != bytes || c2.read(b2, 0) != bytes
-                    || !b1.array().contentEquals(b2.array())) return false // head
-                b1.clear()
-                b2.clear()
-                if (c1.read(b1, size - bytes) != bytes || c2.read(b2, size - bytes) != bytes
-                    || !b1.array().contentEquals(b2.array())) return false // tail
-            }
+private fun Path.contentEquals(other: Path, bytes: Int): Boolean = bytes <= 0 || run {
+    val size = fileSize()
+    if (size <= 2 * bytes) return readBytes().contentEquals(other.readBytes())
+    FileChannel.open(this, StandardOpenOption.READ).use { c1 ->
+        FileChannel.open(other, StandardOpenOption.READ).use { c2 ->
+            val b1 = ByteBuffer.allocate(bytes)
+            val b2 = ByteBuffer.allocate(bytes)
+            if (c1.read(b1, 0) != bytes || c2.read(b2, 0) != bytes
+                || !b1.array().contentEquals(b2.array())) return false // head
+            b1.clear()
+            b2.clear()
+            if (c1.read(b1, size - bytes) != bytes || c2.read(b2, size - bytes) != bytes
+                || !b1.array().contentEquals(b2.array())) return false // tail
         }
-        true
     }
+    true
 }
 
 private fun Path.unchanged(l: L0): Boolean = !l.real || runCatching {
