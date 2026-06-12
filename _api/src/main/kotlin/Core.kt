@@ -9,18 +9,18 @@ enum class Ch(val icon: Char, val text: String) {
     R('-', "removed"),
     U('=', "unchanged");
 
-    fun a() = this == A
+    fun a() = this == A //TODO A()?
     fun c() = this == C
     fun m() = this == M
     fun r() = this == R
     fun u() = this == U
 }
 
-enum class Di(val icon: Char) {
-    L('<'),
-    N(':'),
-    R('>'),
-    U('?');
+enum class Di(val icon: Char, val text: String) {
+    L('<', "to the left"),
+    N(':', "neutral"),
+    R('>', "to the right"),
+    U('?', "unclear");
 }
 
 enum class Op(val icons: Pair<Char, Char>, val text: String) {

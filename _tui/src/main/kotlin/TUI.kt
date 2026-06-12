@@ -478,13 +478,13 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     cell { invert { text("${Ch.C.icon}") } }; cell { text("show only changed") }
                     cell { text("${Ch.A.icon}") }; cell { text("${Ch.A.text} / copy") }
                     cell { invert { text("${Ch.A.icon}") } }; cell { text("show only added") }
-                    cell { text("${Di.N.icon}") }; cell { text("neutral") }
+                    cell { text("${Di.N.icon}") }; cell { text("${Di.N.text} ") }
                     cell { invert { text("${Di.N.icon}") } }; cell { text("show only unchanged") }
-                    cell { text("${Di.L.icon}") }; cell { text("to the left") }
+                    cell { text("${Di.L.icon}") }; cell { text("${Di.L.text} ") }
                     cell { invert { text("${Di.L.icon}") } }; cell { text("show only left side") }
-                    cell { text("${Di.R.icon}") }; cell { text("to the right") }
+                    cell { text("${Di.R.icon}") }; cell { text("${Di.R.text} ") }
                     cell { invert { text("${Di.R.icon}") } }; cell { text("show only right side") }
-                    cell { text("${Di.U.icon}") }; cell { text("unclear") }
+                    cell { text("${Di.U.icon}") }; cell { text("${Di.U.text} ") }
                     cell { invert { red { text("${Di.U.icon}") } } }; cell { text("show only unclear") }
                     cell { text("!") }; cell { text("revised") }
                     cell { invert { green { text("!") } } }; cell { text("show only revised") }
