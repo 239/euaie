@@ -19,6 +19,9 @@
           "name": "insensitive"
         },
         {
+          "name": "paranoid"
+        },
+        {
           "name": "quit"
         },
         {
@@ -450,6 +453,15 @@
       ]
     },
     {
+      "type": "sun.text.resources.BreakIteratorInfo"
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorResources"
+    },
+    {
+      "type": "sun.text.resources.BreakIteratorResources_en"
+    },
+    {
       "type": "sun.text.resources.cldr.FormatData"
     },
     {
@@ -514,6 +526,10 @@
     },
     {
       "glob": "tinylog.properties"
+    },
+    {
+      "module": "java.base",
+      "glob": "sun/text/resources/LineBreakIteratorData"
     }
   ]
 }
