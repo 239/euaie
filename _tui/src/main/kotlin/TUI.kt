@@ -499,8 +499,9 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     cell { text("retain files") }; cell { text("${Sync.optionRetain}") }
                     cell { text("symlinks") }; cell { text("${Scan.optionSymbolicLink}") }
                     cell { text("time tolerance") }; cell { text("${L0.tolerance} ms") }
-                    cell { text("copy-threshold") }; cell { text("${Sync.optionCopyThreshold} MiB") }
+                    cell { text("copy threshold") }; cell { text("${Sync.optionCopyThreshold_MiB} MiB") }
                     cell { text("insensitive") }; cell { text("${Scan.optionInsensitive}") }
+                    cell { text("paranoid move") }; cell { text("${Sync.optionVerifyChunks_KiB} KiB") }
                     cell { text("quit when done") }; cell { text("${TUI.optionQuitWhenDone}") }
                     cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
                 }
