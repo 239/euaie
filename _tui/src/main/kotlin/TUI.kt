@@ -233,7 +233,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•'
                     val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path
                     val py = if (showName) l.l2.pq.y.name else l.l2.pq.y.path
-                    val p2 = if (l.l2.pq.c.m()) " | $py" else ""
+                    val p2 = if (l.l2.pq.c == Ch.M) " | $py" else ""
                     val c0 = "$ch$di$op$ff"
                     scopedState {
                         if (l === item) invert()
@@ -351,7 +351,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     }
                 }
                 aside { textLine() }
-                if (TUI.optionQuitWhenDone && sync.result.all { it.l2.pq.c.u() }) {
+                if (TUI.optionQuitWhenDone && sync.result.all { it.l2.pq.c == Ch.U }) {
                     action = TUI.Action.QUIT
                     signal()
                 }

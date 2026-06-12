@@ -17,8 +17,8 @@ fun link(bp: List<L1>, pq: List<L1>, qd: List<L1>): List<L2> {
         val ebp = mbp.getOrDefault(it.x.path, L1.fake)
         val eqd = mqd.getOrDefault(it.y.path, L1.fake)
         var epq = it
-        if (it.c.a() && ebp.c.r() && eqd.c.u()) epq = L1(it.x, it.y, Ch.R)
-        if (it.c.a() && ebp.c.u() && eqd.c.r()) epq = L1(it.x, it.y, Ch.R)
+        if (it.c == Ch.A && ebp.c == Ch.R && eqd.c == Ch.U) epq = L1(it.x, it.y, Ch.R)
+        if (it.c == Ch.A && ebp.c == Ch.U && eqd.c == Ch.R) epq = L1(it.x, it.y, Ch.R)
         L2(ebp, epq, eqd)
     }
 }

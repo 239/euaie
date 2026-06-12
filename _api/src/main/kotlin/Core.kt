@@ -8,12 +8,6 @@ enum class Ch(val icon: Char, val text: String) {
     M('/', "moved"),
     R('-', "removed"),
     U('=', "unchanged");
-
-    fun a() = this == A //TODO A()?
-    fun c() = this == C
-    fun m() = this == M
-    fun r() = this == R
-    fun u() = this == U
 }
 
 enum class Di(val icon: Char, val text: String) {

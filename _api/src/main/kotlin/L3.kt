@@ -6,9 +6,9 @@ fun wrap(ll2: List<L2>): List<L3> = ll2.map {
     L3(it, when (it.pq.c) {
         Ch.U -> Di.N
         else -> when {
-            it.qd.c == it.pq.c && it.bp.c.u() -> Di.L
-            it.bp.c == it.pq.c && it.qd.c.u() -> Di.R
-            else                              -> Di.U
+            it.qd.c == it.pq.c && it.bp.c == Ch.U -> Di.L
+            it.bp.c == it.pq.c && it.qd.c == Ch.U -> Di.R
+            else                                  -> Di.U
         }
     })
 }
