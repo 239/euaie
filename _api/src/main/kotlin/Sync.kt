@@ -182,12 +182,12 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
 private fun hash(s: String) = MessageDigest.getInstance("SHA-1").digest(s.toByteArray()).toHexString()
 
-private fun Path.copyTo(target: Path, task: Task, bufferKiB: Int = 64) { //TODO bytes?
+private fun Path.copyTo(target: Path, task: Task, bufferSize: Int = 64 * 1024) { // 64 KiB
     task.start(true)
     task.goal.set(fileSize())
     inputStream().use { input ->
         target.outputStream().use { output ->
-            val buffer = ByteArray(bufferKiB * 1024)
+            val buffer = ByteArray(bufferSize)
             var check = 0
             while (check-- > 0 || task.enabled()) { // do not check task on every loop
                 if (check < 0) check = 64
