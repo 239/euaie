@@ -61,7 +61,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
         description = [$$"set threshold for interruptable copy (${DEFAULT-VALUE})"])
-    var threshold: Int = Sync.optionCopyThreshold
+    var threshold: Int = Sync.optionCopyThreshold_MiB
 
     @Option(names = ["-I", "--insensitive"],
         description = [$$"use case insensitive filters (${DEFAULT-VALUE})"])
@@ -93,7 +93,7 @@ class CLI : java.util.concurrent.Callable<Int> {
         L0.tolerance = tolerance
         Scan.optionInsensitive = insensitive
         Scan.optionSymbolicLink = symlinks
-        Sync.optionCopyThreshold = threshold.coerceAtLeast(0) //TODO ?
+        Sync.optionCopyThreshold_MiB = threshold
         Sync.optionRetain = retain
         Sync.optionStateless = stateless
         Sync.optionVerifyChunks_KiB = paranoid

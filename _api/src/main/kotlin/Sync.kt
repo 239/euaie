@@ -29,7 +29,11 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         private var verifyChunks = 0 // byte
         var optionRetain = false // opt-in
         var optionStateless = false
-        var optionCopyThreshold = 512 // MiB //TODO set() | _MiB?
+        var optionCopyThreshold_MiB = 512
+            set(value) {
+                field = value.coerceIn(1, 1024) // max 1 GiB
+                copyThreshold = field * 1024 * 1024
+            }
         var optionVerifyChunks_KiB = 0
             set(value) {
                 field = value.coerceIn(0, 1024 * 1024) // max 1 GiB
@@ -61,7 +65,6 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
         Logger.debug { "-----------------------execute" }
         val map = mutableMapOf<Op, MutableList<L1>>()
         val dump = ".$NAME/${System.currentTimeMillis()}"
-        copyThreshold = optionCopyThreshold.coerceIn(1, 1024) * 1024 * 1024 // 1 MiB / 1 GiB
         task.start(true)
         task.goal.set(result.count { it.actual == Di.L || it.actual == Di.R }.toLong())
         for (l in result) map.getOrPut(map(l)) { mutableListOf() }.add(l.l2.pq)
