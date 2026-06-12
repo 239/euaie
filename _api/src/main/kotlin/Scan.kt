@@ -28,8 +28,8 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
     fun scan(save: Boolean = false): M0 {
         Logger.debug { "-----------------------scan" }
         Logger.debug { "scan: $base" }
-        Logger.debug { "filesys: '$separator' | $sensitive" }
         Logger.debug { "symlinks: $optionSymbolicLink" }
+        Logger.debug { "filesystem: '$separator' | $sensitive" }
         included = 0
         excluded = 0
         result.clear()
