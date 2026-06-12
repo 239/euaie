@@ -67,6 +67,10 @@ class CLI : java.util.concurrent.Callable<Int> {
         description = [$$"use case insensitive filters (${DEFAULT-VALUE})"])
     var insensitive: Boolean = Scan.optionInsensitive
 
+    @Option(names = ["-P", "--paranoid"], paramLabel = "<KiB>",
+        description = [$$"compare file head/tail when moving (${DEFAULT-VALUE})"])
+    var paranoid: Int = Sync.optionVerifyChunks_KiB
+
     @Option(names = ["-Q", "--quit"],
         description = [$$"exit when both sides are equal (${DEFAULT-VALUE})"])
     var quit: Boolean = TUI.optionQuitWhenDone
@@ -89,9 +93,10 @@ class CLI : java.util.concurrent.Callable<Int> {
         L0.tolerance = tolerance
         Scan.optionInsensitive = insensitive
         Scan.optionSymbolicLink = symlinks
-        Sync.optionCopyThreshold = threshold.coerceAtLeast(0)
+        Sync.optionCopyThreshold = threshold.coerceAtLeast(0) //TODO ?
         Sync.optionRetain = retain
         Sync.optionStateless = stateless
+        Sync.optionVerifyChunks_KiB = paranoid
         TUI.optionQuitWhenDone = quit
         Sync(rootL, rootR, include, exclude).run {
             if (automatic) {
