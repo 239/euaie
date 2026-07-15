@@ -514,30 +514,9 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         }
 // ------------------------------------------------------------------------------------------------
         TUI.Action.TEST -> run {
-            val text = runCatching { Path("../LICENSE").readLines() }.getOrElse { emptyList() } + listOf(
-                "ライセンスされたファイルそれぞれに元々ある著作権と特許権の記述はそのまま保持されなければならず、…",
-                "\uD83D\uDC4D".repeat(6),
-                "\uD83D\uDC4C\uD83C\uDFFE".repeat(7),
-                "\uD83E\uDDD1\u200D\uD83D\uDCBB".repeat(8),
-                "\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83D\uDCBB".repeat(9),
-            )
-            var w by liveVarOf(5)
             section {
-                w = w.coerceIn(0, width - 4)
-                bordered {
-                    text.forEachIndexed { index, line ->
-                        val l = "$index: $line"
-                        bordered { textLine(textMetrics.truncateToWidth(l, w)) }
-                    }
-                    bordered { text("$w / $width") }
-                }
+                repeat(width * height) { text('•') }
             }.runUntilKeyPressed(Keys.Escape) {
-                onKeyPressed {
-                    when (key) {
-                        Keys.Right -> w++
-                        Keys.Left  -> w--
-                    }
-                }
                 aside { textLine() }
                 action = TUI.Action.QUIT
             }
