@@ -9,16 +9,16 @@ class L1(val x: L0, val y: L0, val c: Ch) {
 fun link(mx: M0, my: M0): List<L1> = buildList {
     val x = mx.toMutableMap()
     val y = my.toMutableMap()
-    addAll(andRemove(unchanged(x, y), x, y))
+    addAll(andRemove(unchanged(x, y), x, y)) //TODO minus?
     addAll(andRemove(moved(x, y), x, y))
     addAll(andRemove(changed(x, y), x, y))
     addAll(andRemove(other(x, y), x, y))
 }
 
-private fun andRemove(xy: List<L1>, x: MM0, y: MM0) = xy.apply {
+private fun andRemove(xy: List<L1>, mx: MM0, my: MM0) = xy.apply {
     forEach {
-        x.remove(it.x.path)
-        y.remove(it.y.path)
+        mx.remove(it.x.path)
+        my.remove(it.y.path)
     }
 }
 
