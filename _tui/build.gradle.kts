@@ -11,7 +11,7 @@ kotlin { jvmToolchain(25) }
 
 application {
     mainClass = "euaie.CLIKt"
-    //https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
+    // https://jline.org/versions/4.0/docs/troubleshooting#jdk-24-restricted-method-warning
     applicationDefaultJvmArgs = listOf(
         "--enable-native-access=ALL-UNNAMED" // needed for java -cp ... (distribution builds)
     )

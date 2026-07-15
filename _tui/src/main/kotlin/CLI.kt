@@ -56,7 +56,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 
     // 2
     @Option(names = ["-A", "--automatic"],
-        description = ["run automatically ignoring unclear items"])
+        description = ["run automatically, ignoring unclear items"])
     var automatic: Boolean = false
 
     @Option(names = ["-C", "--copy-threshold"], paramLabel = "<MiB>",
@@ -116,7 +116,7 @@ class CLI : java.util.concurrent.Callable<Int> {
 }
 
 fun main(arguments: Array<String>) {
-    if (arguments.size == 1) { //TODO --edit?
+    if (arguments.size == 1) {
         val path = Path(arguments[0])
         if (path.isRegularFile()) arguments[0] = "@${arguments[0]}"
         if (path.isDirectory()) {
