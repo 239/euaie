@@ -1,6 +1,6 @@
 package euaie
 
-class L2(val bp: L1, val pq: L1, val qd: L1)
+class L2(val bp: L1, val pq: L1, val qd: L1) //TODO L2+L3?
 
 fun link(bp: List<L1>, pq: List<L1>, qd: List<L1>): List<L2> {
     val mbp = mutableMapOf<String, L1>()

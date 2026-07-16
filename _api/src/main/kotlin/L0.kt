@@ -24,7 +24,7 @@ data class L0(val path: String, val size: Long, val time: Long) {
         const val LINK = 239L
         val fake = L0("", 0, -1)
         var tolerance = 0L
-        var shifts = setOf(3600000L, 7200000L) //TODO set via option?
+        var shifts = setOf(3600000L, 7200000L) // 1h, 2h //TODO set via option?
         fun fromLine(line: String): L0? {
             val l = line.split(D)
             val p = l.getOrNull(0)
