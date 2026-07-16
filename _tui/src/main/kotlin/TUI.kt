@@ -211,7 +211,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         cell { _ ->
                             scopedState {
                                 if (confirm) yellow()
-                                text("${totalOp[it.ordinal]}$it")
+                                text("${totalOp[it.ordinal]}${it.icons()}")
                             }
                         }
                     }
@@ -229,7 +229,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     val l = sector[i]
                     val ch = "${l.l2.pq.c.icon} ${l.l2.bp.c.icon}${l.l2.qd.c.icon} "
                     val di = "${l.proposed.icon} "
-                    val op = "${map(l)} "
+                    val op = "${map(l).icons()} "
                     val ff = if (l.l2.pq.x.file && l.l2.pq.y.file) ' ' else '•'
                     val px = if (showName) l.l2.pq.x.name else l.l2.pq.x.path
                     val py = if (showName) l.l2.pq.y.name else l.l2.pq.y.path

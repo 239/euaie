@@ -18,15 +18,15 @@ enum class Di(val icon: Char, val text: String) {
 }
 
 enum class Op(val icons: Pair<Char, Char>, val text: String) {
-    CL('+' to '<', "copy to the left"),
-    CR('+' to '>', "copy to the right"),
-    DL('-' to '<', "delete on the left"),
-    DR('-' to '>', "delete on the right"),
-    ML('/' to '<', "move on the left"),
-    MR('/' to '>', "move on the right"),
-    NO('=' to ':', "skip");
+    CL(Ch.A.icon to Di.L.icon, "copy to the left"),
+    CR(Ch.A.icon to Di.R.icon, "copy to the right"),
+    DL(Ch.R.icon to Di.L.icon, "delete on the left"),
+    DR(Ch.R.icon to Di.R.icon, "delete on the right"),
+    ML(Ch.M.icon to Di.L.icon, "move on the left"),
+    MR(Ch.M.icon to Di.R.icon, "move on the right"),
+    NO(Ch.U.icon to Di.N.icon, "skip");
 
-    override fun toString() = "${icons.first}${icons.second}"
+    fun icons() = "${icons.first}${icons.second}"
 }
 
 enum class OptionSymbolicLink { FOLLOW, IGNORE, PRESERVE }
