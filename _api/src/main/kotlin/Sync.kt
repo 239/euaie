@@ -11,12 +11,12 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     val task = Task()
     val scan = Task()
     val copy = Task()
-    val pathL = Path(rootL).absolutePathString()
-    val pathR = Path(rootR).absolutePathString()
+    val pathL = Path(rootL).absolute()
+    val pathR = Path(rootR).absolute()
     var result = emptyList<L3>()
         private set
-    private val scanL = Scan(rootL, include, exclude, hash(pathL + L0.D + pathR), scan)
-    private val scanR = Scan(rootR, include, exclude, hash(pathR + L0.D + pathL), scan)
+    private val scanL = Scan(rootL, include, exclude, hash("$pathL${L0.D}$pathR"), scan)
+    private val scanR = Scan(rootR, include, exclude, hash("$pathR${L0.D}$pathL"), scan)
     private val finish = mutableListOf<Pair<Path, Path>>()
 
     companion object {
@@ -42,10 +42,13 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
     }
 
     fun compare(save: Boolean = false) {
-        if (pathL == pathR) {
-            Logger.error { "identical root paths" }
-            return
-        }
+        val invalidI = pathL == pathR
+        val invalidL = rootL.isBlank() || !pathL.isDirectory()
+        val invalidR = rootR.isBlank() || !pathR.isDirectory()
+        if (invalidI) Logger.error { "identical root paths" }
+        if (invalidL) Logger.error { "invalid root path: '$rootL'" }
+        if (invalidR) Logger.error { "invalid root path: '$rootR'" }
+        if (invalidI || invalidL || invalidR) return
         Logger.debug { "-----------------------compare" }
         Logger.debug { "$rootL $rootR +$include -$exclude" }
         scan.start(true)

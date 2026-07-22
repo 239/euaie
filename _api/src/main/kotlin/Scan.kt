@@ -33,13 +33,9 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         included = 0
         excluded = 0
         result.clear()
-        if (root.isBlank() || !base.isDirectory())
-            Logger.error { "invalid root path '$root'" }
-        else {
-            base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
-            Logger.debug { "$base (included: $included excluded: $excluded)" }
-            if (save) save()
-        }
+        base.visitFileTree(visitor, followLinks = optionSymbolicLink == OptionSymbolicLink.FOLLOW)
+        Logger.debug { "$base (included: $included excluded: $excluded)" }
+        if (save) save()
         return result
     }
 
