@@ -7,13 +7,6 @@ plugins {
 allprojects {
     repositories {
         mavenCentral()
-        maven("https://central.sonatype.com/repository/maven-snapshots/") {
-            mavenContent {
-                snapshotsOnly()
-                includeGroup("com.varabyte.kotter")
-                includeGroup("com.varabyte.kotterx")
-            }
-        }
     }
 
     configurations.configureEach {
