@@ -52,6 +52,7 @@ graalvmNative {
     }
     binaries {
         named("main") {
+//            buildArgs.add("--future-defaults=all") // https://github.com/graalvm/native-build-tools/issues/873
             imageName.set("${rootProject.name}-$type-$arch")
             useFatJar.set(false)
             if (type == "windows")
@@ -77,13 +78,17 @@ tasks.shadowJar {
     archiveBaseName = rootProject.name
     archiveClassifier = ""
     destinationDirectory = layout.buildDirectory.dir("jar")
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy = DuplicatesStrategy.WARN
+    failOnDuplicateEntries = true
     manifest {
         attributes("Enable-Native-Access" to "ALL-UNNAMED")
     }
     mergeServiceFiles()
     filesMatching("META-INF/services/**") {
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+    filesMatching("tinylog.properties") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 }
 
