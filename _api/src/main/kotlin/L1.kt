@@ -15,11 +15,9 @@ fun link(mx: M0, my: M0): List<L1> = buildList {
     addAll(andRemove(other(x, y), x, y))
 }
 
-private fun andRemove(xy: List<L1>, mx: MM0, my: MM0): List<L1> = xy.apply {
-    forEach {
-        mx.remove(it.x.path)
-        my.remove(it.y.path)
-    }
+private fun andRemove(xy: List<L1>, mx: MM0, my: MM0): List<L1> = xy.onEach {
+    mx.remove(it.x.path)
+    my.remove(it.y.path)
 }
 
 private fun unchanged(mx: M0, my: M0): List<L1> = buildList {
