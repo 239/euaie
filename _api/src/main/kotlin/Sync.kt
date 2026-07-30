@@ -21,7 +21,7 @@ class Sync(val rootL: String, val rootR: String, val include: Set<String>, val e
 
     companion object {
         const val SLEEP = 239L
-        private val copyOptions = if (Scan.optionSymbolicLink == OptionSymbolicLink.FOLLOW)
+        private val copyOptions = if (Scan.optionSymbolicLink == Scan.OptionSymbolicLink.FOLLOW)
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES)
         else
             arrayOf<CopyOption>(StandardCopyOption.COPY_ATTRIBUTES, LinkOption.NOFOLLOW_LINKS)

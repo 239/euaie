@@ -28,5 +28,3 @@ enum class Op(val icons: Pair<Char, Char>, val text: String) {
 
     fun icons() = "${icons.first}${icons.second}"
 }
-
-enum class OptionSymbolicLink { FOLLOW, IGNORE, PRESERVE }

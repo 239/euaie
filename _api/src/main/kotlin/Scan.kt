@@ -16,6 +16,7 @@ class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: S
         .map { it.replace(separator, S) }.sorted().map { it.split(D) }
         .map { Triple(it.getOrElse(0) { "" }, it.getOrElse(1) { "" }, it.getOrElse(2) { "" }) }.toSet()
 
+    enum class OptionSymbolicLink { FOLLOW, IGNORE, PRESERVE }
     companion object {
         const val D = ':'
         const val S = '/'
