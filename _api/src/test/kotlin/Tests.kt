@@ -137,16 +137,16 @@ class TestScan {
                 val path = resolve(target).also { it.writeText(target) }
                 val root = toString()
                 resolve(link).createSymbolicLinkPointingTo(path)
-                Scan.optionSymbolicLink = OptionSymbolicLink.IGNORE
+                Scan.optionSymbolicLink = Scan.OptionSymbolicLink.IGNORE
                 Scan(root, void, void, "", task).scan().also {
                     assertThat(it.keys).containsExactly(setOf(target))
                 }
-                Scan.optionSymbolicLink = OptionSymbolicLink.PRESERVE
+                Scan.optionSymbolicLink = Scan.OptionSymbolicLink.PRESERVE
                 Scan(root, void, void, "", task).scan().also {
                     assertThat(it.keys).containsExactly(setOf(target, link))
                     assertThat(it[link]?.time).isEqualTo(L0.LINK)
                 }
-                Scan.optionSymbolicLink = OptionSymbolicLink.FOLLOW
+                Scan.optionSymbolicLink = Scan.OptionSymbolicLink.FOLLOW
                 Scan(root, void, void, "", task).scan().also {
                     assertThat(it.keys).containsExactly(setOf(target, link))
                     assertThat(it[link]?.time).isNotEqualTo(L0.LINK)

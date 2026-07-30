@@ -47,7 +47,7 @@ class CLI : java.util.concurrent.Callable<Int> {
     @Option(names = ["-s", "--symlinks"], paramLabel = "<policy>",
         description = [$$"set policy for symbolic links (${DEFAULT-VALUE})",
             $$"policies: ${COMPLETION-CANDIDATES}"])
-    var symlinks: OptionSymbolicLink = Scan.optionSymbolicLink
+    var symlinks: Scan.OptionSymbolicLink = Scan.optionSymbolicLink
 
     @Option(names = ["-t", "--tolerance"], paramLabel = "<ms>",
         description = [$$"set tolerated time difference (${DEFAULT-VALUE})",
