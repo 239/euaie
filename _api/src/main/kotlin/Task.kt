@@ -13,14 +13,14 @@ class Task {
     private var start = time.markNow()
     private var stop = time.markNow()
 
+    fun progress(x: Double = 100.0) = if (goal.get() == 0L) 0.0 else done.get() * x / goal.get()
+    fun textual() = if (goal.get() == 0L) "$done" else "$done / $goal (${progress().toInt()}%)"
+    fun duration() = if (enabled()) time.markNow() - start else stop - start
+
     fun enabled() = enabled.get()
     fun active() = active.get()
 
-    fun progress(x: Double = 100.0) = if (goal.get() == 0L) 0.0 else done.get() * x / goal.get()
-    fun textual() = if (goal.get() == 0L) "$done" else "$done / $goal (${progress().toInt()}%)"
-    fun duration() = if (enabled.get()) time.markNow() - start else stop - start
-
-    fun started() = enabled.get() && active.get()
+    fun started() = enabled() && active()
     fun start(reset: Boolean = false) {
         enabled.set(true)
         active.set(true)
@@ -29,20 +29,20 @@ class Task {
         if (reset) start = time.markNow()
     }
 
-    fun paused() = enabled.get() && !active.get()
+    fun paused() = enabled() && !active()
     fun pause() {
         enabled.set(true)
         active.set(false)
     }
 
-    fun canceled() = !enabled.get() && active.get()
+    fun canceled() = !enabled() && active()
     fun cancel() {
         enabled.set(false)
         active.set(true)
         stop = time.markNow()
     }
 
-    fun finished() = !enabled.get() && !active.get()
+    fun finished() = !enabled() && !active()
     fun finish() {
         enabled.set(false)
         active.set(false)
