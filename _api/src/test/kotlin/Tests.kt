@@ -2,7 +2,7 @@ package euaie
 
 import com.varabyte.truthish.*
 import kotlin.io.path.*
-import kotlin.test.Test
+import kotlin.test.*
 
 class TestL0 {
     val path = "some/path/to/test/file"

@@ -1,7 +1,7 @@
 package euaie
 
 import com.varabyte.truthish.*
-import kotlin.test.Test
+import kotlin.test.*
 
 class Tests {
     @Test
