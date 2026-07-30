@@ -8,7 +8,6 @@ import com.varabyte.kotter.foundation.timer.*
 import com.varabyte.kotter.runtime.*
 import com.varabyte.kotter.runtime.terminal.*
 import com.varabyte.kotter.terminal.system.*
-import com.varabyte.kotterx.decorations.*
 import com.varabyte.kotterx.grid.*
 import com.varabyte.kotterx.text.*
 import kotlin.io.path.*
@@ -80,9 +79,9 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         TUI.Action.SCAN -> section {
             printLog("${sync.scan.textual()} ", "${sync.scan.duration().inWholeSeconds} s")
             if (sync.scan.started())
-                bold { text(cut("[Delete|Space] cancel", width)) }
+                bold { textLine(cut("[Delete|Space] cancel", width)) }
             if (!sync.scan.enabled() && !MainWriter.normal())
-                bold { text(cut("[Enter|Esc] continue", width)) }
+                bold { textLine(cut("[Enter|Esc] continue", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape) {
             onKeyPressed {
                 when (key) {
@@ -288,7 +287,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     "[Tab] help [Q] quit"
                 if (!TUI.optionQuitWhenDone || totalCh.sum() != totalCh[Ch.U.ordinal]) bold {
                     if (showMore) textLine(cut(more, width * sign))
-                    text(spread(keysL, keysR, width * sign))
+                    textLine(spread(keysL, keysR, width * sign))
                 }
             }.runUntilSignal {
                 onKeyPressed {
@@ -361,7 +360,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
         TUI.Action.FIND -> section {
             magenta { text("find: "); input(initialText = filter) }
             textLine()
-            bold { text(cut("[Enter] apply", width)) }
+            bold { textLine(cut("[Enter] apply", width)) }
         }.runUntilInputEntered {
             onInputEntered { filter = input }
             aside { textLine() }
@@ -370,7 +369,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
 // ------------------------------------------------------------------------------------------------
         TUI.Action.SURE -> section {
             yellow { textLine(cut("are you sure?", width)) }
-            bold { text(spread("[Space|Y] continue", "[Delete|N] cancel", width, true)) }
+            bold { textLine(spread("[Space|Y] continue", "[Delete|N] cancel", width, true)) }
         }.runUntilKeyPressed(Keys.Delete, Keys.N, Keys.Space, Keys.Y) {
             onKeyPressed {
                 action = when (key) {
@@ -394,11 +393,11 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                 invert { text(l.take(n)) }; textLine(l.drop(n))
             }
             if (sync.task.started())
-                bold { text(cut("[Space|Tab] pause", width)) }
+                bold { textLine(cut("[Space|Tab] pause", width)) }
             if (sync.task.paused())
-                bold { text(cut("[Space|Tab] resume [Delete|End] cancel", width)) }
+                bold { textLine(cut("[Space|Tab] resume [Delete|End] cancel", width)) }
             if (sync.task.finished() && !MainWriter.normal())
-                bold { text(cut("[Enter|Esc] continue", width)) }
+                bold { textLine(cut("[Enter|Esc] continue", width)) }
         }.runUntilKeyPressed(Keys.Enter, Keys.Escape) {
             onKeyPressed {
                 when (key) {
@@ -431,7 +430,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                         else -> textLine(cut(it, w))
                     }
                 }
-                bold { text(cut("[Enter|Esc|Space] return", width)) }
+                bold { textLine(cut("[Enter|Esc|Space] return", width)) }
             }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Space) {
                 onKeyPressed {
                     when (key) {
@@ -505,7 +504,7 @@ fun start(sync: Sync) = session(terminal = TUI.terminal ?: SystemTerminal(),
                     cell { text("quit when done") }; cell { text("${TUI.optionQuitWhenDone}") }
                     cell { text("stateless") }; cell { text("${Sync.optionStateless}") }
                 }
-                bold { text(cut("[Tab] switch [Enter|Esc|Space] return", width)) }
+                bold { textLine(cut("[Tab] switch [Enter|Esc|Space] return", width)) }
             }.runUntilKeyPressed(Keys.Enter, Keys.Escape, Keys.Space) {
                 onKeyPressed { if (key == Keys.Tab) index = (index + 1) % views.size }
                 aside { textLine() }
