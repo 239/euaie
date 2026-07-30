@@ -1,3 +1,8 @@
+## 1.0.1
+
+- fully dynamic UI size thanks to Kotter to v1.4.0 🚀
+- fixed operating on invalid root paths as precaution
+
 ## 1.0.0
 
 - defined better symbols for **move** `/` and **neutral direction** `:`
@@ -15,7 +20,7 @@
 
 ## 0.26.8
 
-- Kotter updated to 1.3.0 🎉
+- Kotter updated to v1.3.0 🎉
 - applied sticky list index
 - fixed filtering with case-insensitive paths
 - added build for macOS on Intel
