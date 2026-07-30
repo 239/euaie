@@ -4,7 +4,7 @@ import java.nio.file.*
 import kotlin.io.path.*
 import org.tinylog.kotlin.*
 
-class Scan(val root: String, include: Set<String>, exclude: Set<String>, hash: String, val task: Task) {
+class Scan(root: String, include: Set<String>, exclude: Set<String>, hash: String, task: Task) {
     val base = Path(root).absolute()
     val state = Path(statePath(NAME).pathString, hash)
     private val result = mutableMapOf<String, L0>()
